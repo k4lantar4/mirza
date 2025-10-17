@@ -751,7 +751,7 @@ echo -e "$text_to_save" >> /var/www/html/mirzabotconfig/config.php
                 echo -e "\e[91mError: Failed to start Apache2.\033[0m"
                 exit 1
             }
-            url="https://${YOUR_DOMAIN}/mirzabotconfig/table.php"
+            url="https://${YOUR_DOMAIN}/table.php"
             curl $url || {
                 echo -e "\e[91mError: Failed to fetch URL from domain.\033[0m"
                 exit 1
@@ -1289,7 +1289,7 @@ EOF
     }
 
     # Execute table creation script
-    TABLE_SETUP_URL="https://${YOUR_DOMAIN}/mirzabotconfig/table.php"
+    TABLE_SETUP_URL="https://${YOUR_DOMAIN}/table.php"
     echo -e "\033[33mSetting up database tables...\033[0m"
     curl $TABLE_SETUP_URL || {
         echo -e "\033[31mError: Failed to execute table creation script at $TABLE_SETUP_URL.\033[0m"
