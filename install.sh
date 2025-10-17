@@ -445,10 +445,36 @@ fi
     rm -rf "$TEMP_DIR"
 
     sudo chown -R www-data:www-data "$BOT_DIR"
-    sudo chmod -R 755 "$BOT_DIR"
+sudo chmod -R 755 "$BOT_DIR"
 
-    echo -e "\n\033[33mMirza config and script have been installed successfully.\033[0m"
+echo -e "\n\033[33mMirza config and script have been installed successfully.\033[0m"
 
+# === ADD APACHE CONFIG HERE (after line 384) ===
+# Add Apache configuration for mirzabotconfig
+echo "Adding Apache configuration for mirzabotconfig..."
+APACHE_CONF="/etc/apache2/apache2.conf"
+MIRZA_CONFIG="
+Alias / /var/www/html/mirzabotconfig/
+<Directory /var/www/html/mirzabotconfig/>
+    Options Indexes FollowSymLinks
+    AllowOverride All
+    Require all granted
+</Directory>"
+
+# Check if configuration already exists
+if ! grep -q "Alias / /var/www/html/mirzabotconfig/" "$APACHE_CONF"; then
+    echo "$MIRZA_CONFIG" | sudo tee -a "$APACHE_CONF" > /dev/null
+    echo -e "\e[32mApache configuration added successfully.\033[0m"
+else
+    echo -e "\e[33mApache configuration already exists.\033[0m"
+fi
+
+# ریستارت Apache برای اعمال تغییرات
+sudo systemctl restart apache2 || {
+    echo -e "\e[91mError: Failed to restart Apache2 after configuration.\033[0m"
+    exit 1
+}
+# === END OF NEW CODE ===
 
 wait
 if [ ! -d "/root/confmirza" ]; then
