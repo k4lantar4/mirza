@@ -7,7 +7,7 @@ global $connect;
 try {
 
     $tableName = 'user';
-    $stmt = $connect->prepare("SELECT 1 FROM information_schema.tables WHERE table_name = :tableName");
+    $stmt = $pdo->prepare("SELECT 1 FROM information_schema.tables WHERE table_name = :tableName");
     $stmt->bindParam(':tableName', $tableName);
     $stmt->execute();
     $tableExists = $stmt->fetch(PDO::FETCH_ASSOC);
