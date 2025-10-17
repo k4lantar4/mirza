@@ -1274,7 +1274,7 @@ try {
 EOF
 
     # Set webhook with port 88
-    curl -F "url=https://${YOUR_DOMAIN}/mirzabotconfig/index.php" \
+    curl -F "url=https://${YOUR_DOMAIN}/index.php" \
          -F "secret_token=${secrettoken}" \
          "https://api.telegram.org/bot${YOUR_BOT_TOKEN}/setWebhook" || {
         echo -e "\e[91mError: Failed to set webhook.\033[0m"
@@ -1993,7 +1993,7 @@ function change_domain() {
         sudo sed -i "s/\$secrettoken = '.*';/\$secrettoken = '${NEW_SECRET%%}';/" "$CONFIG_FILE"
 
         BOT_TOKEN=$(awk -F"'" '/\$APIKEY/{print $2}' "$CONFIG_FILE")
-        curl -s -o /dev/null -F "url=https://${new_domain}/mirzabotconfig/index.php" \
+        curl -s -o /dev/null -F "url=https://${new_domain}/index.php" \
              -F "secret_token=${NEW_SECRET}" \
              "https://api.telegram.org/bot${BOT_TOKEN}/setWebhook" || {
             echo -e "\033[33m[WARNING] Webhook update failed\033[0m"
@@ -2193,7 +2193,7 @@ EOF
 
     # Set Webhook
     echo -e "\033[33mSetting webhook for bot...\033[0m"
-    curl -F "url=https://$DOMAIN_NAME/$BOT_NAME/index.php" "https://api.telegram.org/bot$BOT_TOKEN/setWebhook" || {
+    curl -F "url=https://$DOMAIN_NAME/index.php" "https://api.telegram.org/bot$BOT_TOKEN/setWebhook" || {
         echo -e "\033[31mError: Failed to set webhook for bot.\033[0m"
         return 1
     }
@@ -2206,7 +2206,7 @@ EOF
     }
 
     # Execute table creation script
-    TABLE_SETUP_URL="https://${DOMAIN_NAME}/$BOT_NAME/table.php"
+    TABLE_SETUP_URL="https://${DOMAIN_NAME}/table.php"
     echo -e "\033[33mSetting up database tables...\033[0m"
     curl $TABLE_SETUP_URL || {
         echo -e "\033[31mError: Failed to execute table creation script at $TABLE_SETUP_URL.\033[0m"
