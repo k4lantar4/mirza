@@ -1304,9 +1304,9 @@ function update_bot() {
     # Fetch latest release from GitHub
     # Check for version flag
     if [[ "$1" == "-beta" ]] || [[ "$1" == "-v" && "$2" == "beta" ]]; then
-        ZIP_URL="https://github.com/mahdiMGF2/botmirzapanel/archive/refs/heads/main.zip"
+        ZIP_URL="https://github.com/abolfazl88x/mirza_pro/archive/refs/heads/main.zip"
     else
-        ZIP_URL=$(curl -s https://api.github.com/repos/mahdiMGF2/botmirzapanel/releases/latest | grep "zipball_url" | cut -d '"' -f4)
+        ZIP_URL=$(curl -s https://api.github.com/repos/abolfazl88x/mirza_pro/releases/latest | grep "zipball_url" | cut -d '"' -f4)
     fi
 
     # Create temporary directory
