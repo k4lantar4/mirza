@@ -2079,7 +2079,7 @@ EOF"
     # Clone a Fresh Copy of the Bot's Source Code
     BOT_DIR="/var/www/html/$BOT_NAME"
     echo -e "\033[33mCloning bot's source code...\033[0m"
-    git clone https://github.com/mahdiMGF2/botmirzapanel.git "$BOT_DIR" || {
+    git clone https://github.com/abolfazl88x/mirza_pro.git "$BOT_DIR" || {
         echo -e "\033[31mError: Failed to clone the repository.\033[0m"
         return 1
     }
@@ -2246,7 +2246,7 @@ function update_additional_bot() {
     fi
 
     # Clone the new version of the bot
-    if ! git clone https://github.com/mahdiMGF2/botmirzapanel.git "$BOT_PATH"; then
+    if ! git clone https://github.com/abolfazl88x/mirza_pro.git "$BOT_PATH"; then
         echo -e "\033[31mFailed to clone the repository. Exiting...\033[0m"
         return 1
     fi
