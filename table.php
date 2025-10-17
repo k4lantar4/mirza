@@ -12,7 +12,7 @@ try {
     $stmt->execute();
     $tableExists = $stmt->fetch(PDO::FETCH_ASSOC);
     if (!$tableExists) {
-        $stmt = $pdo->prepare("CREATE TABLE $tableName (
+        $stmt = $connect->prepare("CREATE TABLE $tableName (
             id VARCHAR(500) PRIMARY KEY,
             limit_usertest INT(100) NOT NULL,
             roll_Status BOOL NOT NULL,
