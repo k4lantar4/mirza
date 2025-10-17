@@ -706,7 +706,7 @@ done
             echo -e "${ASAS}usernamedb = '${dbuser}';" >> /var/www/html/mirzabotconfig/config.php
             echo -e "${ASAS}passworddb = '${dbpass}';" >> /var/www/html/mirzabotconfig/config.php
             echo -e "${ASAS}dbname = '${dbname}';" >> /var/www/html/mirzabotconfig/config.php
-            echo -e "${ASAS}domainhosts = '${YOUR_DOMAIN}/mirzabotconfig';" >> /var/www/html/mirzabotconfig/config.php
+            echo -e "${ASAS}domainhosts = '${YOUR_DOMAIN}';" >> /var/www/html/mirzabotconfig/config.php
             echo -e "${ASAS}adminnumber = '${YOUR_CHAT_ID}';" >> /var/www/html/mirzabotconfig/config.php
             echo -e "${ASAS}usernamebot = '${YOUR_BOTNAME}';" >> /var/www/html/mirzabotconfig/config.php
             echo -e "${ASAS}secrettoken = '${secrettoken}';" >> /var/www/html/mirzabotconfig/config.php
@@ -1248,7 +1248,7 @@ ${ASAS}APIKEY = '$YOUR_BOT_TOKEN';
 ${ASAS}usernamedb = '$dbuser';
 ${ASAS}passworddb = '$dbpass';
 ${ASAS}dbname = '$dbname';
-${ASAS}domainhosts = '$YOUR_DOMAIN/mirzabotconfig';
+${ASAS}domainhosts = '$YOUR_DOMAIN';
 ${ASAS}adminnumber = '$YOUR_CHAT_ID';
 ${ASAS}usernamebot = '$YOUR_BOTNAME';
 ${ASAS}secrettoken = '$secrettoken';
@@ -1987,7 +1987,7 @@ function change_domain() {
     if [ -f "$CONFIG_FILE" ]; then
         sudo cp "$CONFIG_FILE" "$CONFIG_FILE.$(date +%s).bak"
 
-        sudo sed -i "s/\$domainhosts = '.*\/mirzabotconfig';/\$domainhosts = '${new_domain}\/mirzabotconfig';/" "$CONFIG_FILE"
+        sudo sed -i "s|\$domainhosts = '.*';|\$domainhosts = '${new_domain}';|" "$CONFIG_FILE"
 
         NEW_SECRET=$(openssl rand -base64 12 | tr -dc 'a-zA-Z0-9')
         sudo sed -i "s/\$secrettoken = '.*';/\$secrettoken = '${NEW_SECRET%%}';/" "$CONFIG_FILE"
@@ -2164,7 +2164,7 @@ EOF"
 \$usernamedb = '$DB_USERNAME';
 \$passworddb = '$DB_PASSWORD';
 \$dbname = '$DB_NAME';
-\$domainhosts = '$DOMAIN_NAME/$BOT_NAME';
+\$domainhosts = '$DOMAIN_NAME';
 \$adminnumber = '$CHAT_ID';
 \$usernamebot = '$BOT_NAME';
 \$connect = mysqli_connect('localhost', \$usernamedb, \$passworddb, \$dbname);
