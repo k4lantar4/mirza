@@ -529,7 +529,7 @@ function tronratee()
         ],
     ]);
 
-    $url = 'https://api.coingecko.com/api/v3/simple/price?ids=tron,toncoin,tether&vs_currencies=irr,irt';
+    $url = 'https://bapi.officialvpn.shop/arz/mirza_arz.php';
     $response = @file_get_contents($url, false, $context);
 
     if ($response === false) {
