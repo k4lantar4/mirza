@@ -5867,7 +5867,7 @@ $textonebuy
         $usd = $rates['USD'];
         $ton = $rates['Ton'];
         $usdprice = round($user['Processing_value'] / $usd, 2);
-        $starAmount = $ton * 0.004456;
+        $starAmount = $usd * 0.016;
         $starAmount = intval($user['Processing_value'] / $starAmount);
         $mainbalance = select("PaySetting", "ValuePay", "NamePay", "minbalancestar", "select")['ValuePay'];
         $maxbalance = select("PaySetting", "ValuePay", "NamePay", "maxbalancestar", "select")['ValuePay'];
