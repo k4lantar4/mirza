@@ -1,24 +1,17 @@
 <?php
 #----------------[  admin section  ]------------------#
 $textadmin = ["panel", "/panel", $textbotlang['Admin']['textpaneladmin']];
-$text_panel_admin_login_base64_parts = [
-    '8J+SjiB8IFZlcnNpb24gQm90OiA1LjEwLjc3ICAK8J+TjCB8IFZlcnNpb24gTWluaSBBcHA6IDAuMS4x',
-    'CjxibG9ja3F1b3RlPvCflLkgfCDYp9uM2YYg2LHYqNin2Kog2qnYp9mF2YTYp9mLINix2KfbjNqv2KfZ',
-    'hiDYp9iz2Kog2Ygg2KrZiNiz2Lcg2KrZiNiz2LnZh+KAjNiv2YfZhtiv2Ycg2YXbjNix2LLYpyDYudix',
-    '2LbZhyDYtNiv2Ycg2YggbW1kOGFtaXIg2K/bjNio2KfaryDYtNiv2Ycg2KfYs9iqLjwvYmxvY2txdW90',
-    'ZT4KCjxibG9ja3F1b3RlPvCflLkgfCDZh9ix2q/ZiNmG2Ycg2YHYsdmI2LQg24zYpyDYr9ix24zYp9mB',
-    '2Kog2YjYrNmHINio2KfYqNiqINin24zZhiDYsdio2KfYqiDYqtiu2YTZgSDZhdit2LPZiNioINmF24zi',
-    'gIzYtNmI2K8uPC9ibG9ja3F1b3RlPgoKPGJsb2NrcXVvdGU+8J+UuSB8INiv2LEg2LXZiNix2Kog2YXY',
-    'tNin2YfYr9mH2ZQg2YHYsdmI2LQg24zYpyDYr9ix24zYp9mB2Kog2YjYrNmH2Iwg2YTYt9mB2KfZiyDZ',
-    'iNis2Ycg2K7ZiNivINix2Kcg2b7bjNqv24zYsduMINqp2LHYr9mHINmIINio2KfYstm+2LPigIzar9uM',
-    '2LHbjCDZhtmF2KfbjNuM2K8uPC9ibG9ja3F1b3RlPgoKPGJsb2NrcXVvdGU+8J+QniB8INin2q/YsSDY',
-    'r9ixINi52YXZhNqp2LHYryDYsdio2KfYqiDYqNinINio2KfaryDbjNinINmF2LTaqdmE24wg2YXZiNin',
-    '2KzZhyDYtNiv24zYr9iMINin2LIg2LfYsduM2YIg2K/aqdmF2YfZlCA8Yj7wn5OsINqv2LLYp9ix2LQg',
-    '2LHYqNin2Ko8L2I+INiv2LEg2b7ZhtmEINin2K/ZhduM2YYg2KjYpyDZhdinINiv2LEg2KfYsdiq2KjY',
-    'p9i3INio2KfYtNuM2K8uPC9ibG9ja3F1b3RlPg==',
-];
-$text_panel_admin_login_base64 = implode('', $text_panel_admin_login_base64_parts);
-$text_panel_admin_login_template = base64_decode($text_panel_admin_login_base64, true) ?: '';
+$text_panel_admin_login_template = "💎 | Version Bot: 5.10.77  
+📌 | Version Mini App: 0.1.1
+
+>🔹 | این ربات کاملاً رایگان است و توسط توسعه‌دهنده میرزا عرضه شده و ImSoheilPx دیباگ شده است.
+
+>🔹 | هرگونه فروش یا دریافت وجه بابت این ربات تخلف محسوب می‌شود.
+
+>🔹 | در صورت مشاهدهٔ فروش یا دریافت وجه، لطفاً وجه خود را پیگیری کرده و بازپس‌گیری نمایید.
+
+>🐞 | اگر در عملکرد ربات با باگ یا مشکلی مواجه شدید، از طریق دکمهٔ **📬 گزارش ربات** در پنل ادمین با ما در ارتباط باشید.";
+
 if (!in_array($from_id, $admin_ids))
     return;
 
