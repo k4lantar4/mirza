@@ -3128,6 +3128,54 @@ $caption";
     }
     $createForumTopic = telegram('createForumTopic', [
         'chat_id' => $text,
+        'name' => "🤖 بکاپ ربات نماینده"
+    ]);
+    if (!$createForumTopic['ok']) {
+        $texterror = "❌ ربات ادمین گروه نیست";
+        sendmessage($from_id, $texterror, null, 'HTML');
+        return;
+    }
+    if ($reporttest != $createForumTopic['result']['message_thread_id']) {
+        update("topicid", "idreport", $createForumTopic['result']['message_thread_id'], "report", "backupfile");
+    }
+    $createForumTopic = telegram('createForumTopic', [
+        'chat_id' => $text,
+        'name' => "📝 گزارش اطلاع رسانی ها"
+    ]);
+    if (!$createForumTopic['ok']) {
+        $texterror = "❌ ربات ادمین گروه نیست";
+        sendmessage($from_id, $texterror, null, 'HTML');
+        return;
+    }
+    if ($reporttest != $createForumTopic['result']['message_thread_id']) {
+        update("topicid", "idreport", $createForumTopic['result']['message_thread_id'], "report", "reportcron");
+    }
+    $createForumTopic = telegram('createForumTopic', [
+        'chat_id' => $text,
+        'name' => "🌙 گزارش شبانه"
+    ]);
+    if (!$createForumTopic['ok']) {
+        $texterror = "❌ ربات ادمین گروه نیست";
+        sendmessage($from_id, $texterror, null, 'HTML');
+        return;
+    }
+    if ($reporttest != $createForumTopic['result']['message_thread_id']) {
+        update("topicid", "idreport", $createForumTopic['result']['message_thread_id'], "report", "reportnight");
+    }
+    $createForumTopic = telegram('createForumTopic', [
+        'chat_id' => $text,
+        'name' => "🎁 گزارش پورسانت ها"
+    ]);
+    if (!$createForumTopic['ok']) {
+        $texterror = "❌ ربات ادمین گروه نیست";
+        sendmessage($from_id, $texterror, null, 'HTML');
+        return;
+    }
+    if ($reporttest != $createForumTopic['result']['message_thread_id']) {
+        update("topicid", "idreport", $createForumTopic['result']['message_thread_id'], "report", "porsantreport");
+    }
+    $createForumTopic = telegram('createForumTopic', [
+        'chat_id' => $text,
         'name' => "🛍 گزارش های خرید"
     ]);
     if (!$createForumTopic['ok']) {
