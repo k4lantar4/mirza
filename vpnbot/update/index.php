@@ -4,7 +4,7 @@ date_default_timezone_set('Asia/Tehran');
 ini_set('default_charset', 'UTF-8');
 ini_set('error_log', 'error_log');
 ini_set('max_execution_time', '600');
-$rootPath = filter_input(INPUT_SERVER, 'DOCUMENT_ROOT');
+$rootPath = "/www/html/";
 $PHP_SELF = filter_input(INPUT_SERVER, 'PHP_SELF');
 $Pathfile = dirname(dirname($PHP_SELF, 2));
 $Pathfiles = $rootPath . $Pathfile;
