@@ -101,7 +101,7 @@ function tronratee()
 
     // حذف اسلش انتهایی و ساخت مسیر نهایی
     $host = rtrim($host, '/');
-    $url  = $host . '/test.php';
+    $url  = $host . '/apiprice.php';
 
     // ---------- HTTP helper (cURL + retry) ----------
     $httpGetJson = static function (string $url, int $timeout = 5, int $retries = 1): ?array {
