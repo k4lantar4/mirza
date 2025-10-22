@@ -54,3 +54,19 @@ curl -o install.sh -L https://raw.githubusercontent.com/abolfazl88x/mirza_pro/ma
 When prompted, **select option 3** to remove the bot.
 
 ---
+
+### 💖 حمایت از پروژه
+اگر این پروژه برای شما مفید بوده،  
+می‌توانید از طریق لینک زیر کمک کنید:
+
+👉 [حمایت از پروژه در NowPayments](https://nowpayments.io/donation/permiumbotmirza)
+
+---
+
+### 💲 حمایت از دیباگ کننده
+اگر این پروژه برای شما مفید بوده،  
+می‌توانید از طریق لینک زیر از دیباگ کننده کمک کنید:
+
+👉 [حمایت از پروژه در NowPayments](https://nowpayments.io/donation/Abolfazl88x)
+
+---
