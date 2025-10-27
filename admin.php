@@ -76,6 +76,9 @@ $miniAppInstructionText = <<<HTML
 
 <b>💳 انجام تراکنش‌های کارت‌به‌کارت — هر 1 دقیقه</b>
 <code>curl https://{$domainhostsEscaped}/cronbot/croncard.php</code>
+
+<b>💳 انجام قرعه کشی شبانه — هر 1 دقیقه</b>
+<code>curl https://{$domainhostsEscaped}/cronbot/lottery.php</code>
 HTML;
 
 if (in_array($text, $textadmin) || $datain == "admin") {
