@@ -13,9 +13,9 @@ $options = [
 ];
 $dsn = "mysql:host=localhost;dbname=$dbname;charset=utf8mb4";
 try { $pdo = new PDO($dsn, $usernamedb, $passworddb, $options); } catch (\PDOException $e) { error_log("Database connection failed: " . $e->getMessage()); }
-$APIKEY = '8444337751:AAEF29Qxejphr7dpRMJ3kw9n-AmIZkMO9c4'; // اینجا توکن ربات تلگرام خود را وارد کنید
-$adminnumber = '1713374557'; // اینجا شناسه عددی ادمین اصلی (Telegram User ID) را بنویسید
-$domainhosts = 'bb.farsbazar.com'; // اینجا دامنه یا آدرس اصلی پنل خود را بدون https:// وارد کنید
+$APIKEY = '8444337751:AAEF29Qxejphr7dpRMJ3kw9n-AmIZkMO9c4'; را وارد کنید
+$adminnumber = '1713374557'; 
+$domainhosts = 'bb.farsbazar.com'; وارد کنید
 $usernamebot = 'capitanvpn_adminbot'; // اینجا نام کاربری ربات تلگرام را قرار دهید (بدون @)
 
 $new_marzban = true;
