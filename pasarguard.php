@@ -2,80 +2,218 @@
 require_once 'config.php';
 require_once 'request.php';
 ini_set('error_log', 'error_log');
+date_default_timezone_set('Asia/Tehran');
 
-function pg_get_api_key($code_panel)
+#-----------------------------#
+function pg_token_panel($code_panel, $verify = true)
 {
     $panel = select("marzban_panel", "*", "code_panel", $code_panel, "select");
     if ($panel === null) {
-        return null;
+        return array("error" => "Panel not found");
     }
-    // Pasarguard uses API_KEY from .env file, stored in password_panel field
-    return $panel['password_panel'];
+
+    // Check cached token (valid for 1 hour)
+    if ($panel['datelogin'] != null && $verify) {
+        $date = json_decode($panel['datelogin'], true);
+        if (isset($date['time'])) {
+            $timecurrent = time();
+            $start_date = time() - strtotime($date['time']);
+            if ($start_date <= 3600) {
+                return $date;
+            }
+        }
+    }
+
+    // Get new token
+    $url_get_token = $panel['url_panel'] . '/api/admin/token';
+    $username_panel = $panel['username_panel'];
+    $password_panel = $panel['password_panel'];
+
+    $data_token = array(
+        'grant_type' => 'password',
+        'username' => $username_panel,
+        'password' => $password_panel,
+        'scope' => '',
+        'client_id' => '',
+        'client_secret' => ''
+    );
+
+    $headers = array(
+        'Content-Type: application/x-www-form-urlencoded',
+        'accept: application/json'
+    );
+
+    $req = new CurlRequest($url_get_token);
+    $req->setHeaders($headers);
+    $response = $req->post($data_token);
+
+    if (!empty($response['error'])) {
+        return array("error" => $response['error']);
+    }
+
+    $body = json_decode($response['body'], true);
+    if (isset($body['access_token'])) {
+        $time = date('Y/m/d H:i:s');
+        $data = json_encode(array(
+            'time' => $time,
+            'access_token' => $body['access_token']
+        ));
+        update("marzban_panel", "datelogin", $data, 'name_panel', $panel['name_panel']);
+    }
+
+    return $body;
 }
+#-----------------------------#
 
 function pg_add_user($location, $data_limit, $username, $expire, $note = '', $data_limit_reset = 'no_reset', $name_product = false)
 {
     $panel = select("marzban_panel", "*", "name_panel", $location, "select");
-    $api_key = pg_get_api_key($panel['code_panel']);
-    if (!$api_key) {
-        return array("error" => "API key not found");
+    $Check_token = pg_token_panel($panel['code_panel']);
+    if (!empty($Check_token['error'])) {
+        return $Check_token;
+    }
+    if (!isset($Check_token['access_token'])) {
+        return array("error" => "Token not found");
     }
 
-    // Pasarguard uses PUT /user/sync with User protobuf
-    $url = rtrim($panel['url_panel'], '/') . '/user/sync';
+    // Pasarguard uses POST /api/user like Marzban
+    $url = rtrim($panel['url_panel'], '/') . '/api/user';
 
-    // Build User protobuf structure (simplified JSON representation)
+    // Build user data following Pasarguard API spec
     $user_data = array(
-        'email' => $username,
-        'proxies' => array(
-            'type' => 'XRAY',
-            'config' => json_encode(array(
-                'data_limit' => $data_limit,
-                'expire' => $expire,
-                'note' => $note
-            ))
-        ),
-        'inbounds' => array()
+        'username' => $username,
+        'data_limit' => $data_limit,
+        'data_limit_reset_strategy' => $data_limit_reset,
+        'note' => $note,
+        'status' => 'active'
     );
 
-    // Add inbounds if configured
-    if (!empty($panel['inbounds']) && $panel['inbounds'] != "null") {
-        $inbounds = json_decode($panel['inbounds'], true);
-        if (is_array($inbounds)) {
-            $user_data['inbounds'] = $inbounds;
+    // Handle expire timestamp - convert to ISO 8601 format if not 0
+    if ($expire == 0) {
+        $user_data['expire'] = 0;
+    } else {
+        $user_data['expire'] = date('c', $expire);
+    }
+
+    // Handle proxy_settings (NOT proxies) - Pasarguard uses proxy_settings object
+    $proxy_settings = array();
+    if (!empty($panel['proxies']) && $panel['proxies'] != "null") {
+        $proxies = json_decode($panel['proxies'], true);
+        if (is_array($proxies) && !empty($proxies)) {
+            $proxy_settings = $proxies;
         }
     }
 
-    // Try JSON first
+    // Handle product-specific proxy_settings if provided
+    if ($name_product && $name_product != "usertest") {
+        global $pdo;
+        $product = select("product", "*", "name_product", $name_product, "select");
+        if ($product && !empty($product['proxies']) && $product['proxies'] != "null") {
+            $product_proxies = json_decode($product['proxies'], true);
+            if (is_array($product_proxies) && !empty($product_proxies)) {
+                $proxy_settings = $product_proxies;
+            }
+        }
+    }
+
+    // Only add proxy_settings if not empty
+    if (!empty($proxy_settings)) {
+        $user_data['proxy_settings'] = $proxy_settings;
+    }
+
+    // Handle group_ids - Pasarguard uses group_ids array of integers
+    // Use group_ids column from database (not inbounds) for Pasarguard
+    $group_ids_array = null;
+
+    // Helper function to parse group_ids value to array
+    $parse_group_ids = function($group_ids_value) {
+        if (empty($group_ids_value) || $group_ids_value === null || $group_ids_value === "null" || $group_ids_value === "") {
+            return null;
+        }
+
+        // Try JSON decode first
+        $decoded = json_decode($group_ids_value, true);
+
+        // If JSON decode failed or returned non-array, try other formats
+        if ($decoded === null && json_last_error() !== JSON_ERROR_NONE) {
+            // Maybe it's comma-separated: "1,2,3"
+            if (preg_match('/^[\d,\s]+$/', $group_ids_value)) {
+                $decoded = array_map('trim', explode(',', $group_ids_value));
+            }
+            // Maybe it's a single number: "1"
+            elseif (is_numeric($group_ids_value)) {
+                $decoded = array(intval($group_ids_value));
+            }
+        }
+
+        // Validate and convert to integer array
+        if (is_array($decoded) && !empty($decoded)) {
+            // Filter out empty values and convert to integers
+            $ids = array_filter(array_map('intval', $decoded), function($val) {
+                return $val > 0; // Only positive integers
+            });
+            return !empty($ids) ? array_values($ids) : null; // Re-index array
+        } elseif (is_numeric($group_ids_value)) {
+            // Single integer value
+            $id = intval($group_ids_value);
+            return $id > 0 ? array($id) : null;
+        }
+
+        return null;
+    };
+
+    // First, try to get group_ids from panel's group_ids column (NEW column for Pasarguard)
+    if (!empty($panel['group_ids']) && $panel['group_ids'] !== "null") {
+        $group_ids_array = $parse_group_ids($panel['group_ids']);
+    }
+    // Fallback to inbounds if group_ids is not set (backward compatibility)
+    elseif (!empty($panel['inbounds']) && $panel['inbounds'] !== "null") {
+        $group_ids_array = $parse_group_ids($panel['inbounds']);
+    }
+
+    // Override with product-specific group_ids if provided (product takes priority)
+    if ($name_product && $name_product != "usertest") {
+        global $pdo;
+        $product = select("product", "*", "name_product", $name_product, "select");
+        if ($product) {
+            // Try product's group_ids first (if it exists), then fallback to inbounds
+            if (!empty($product['group_ids']) && $product['group_ids'] !== "null") {
+                $product_group_ids = $parse_group_ids($product['group_ids']);
+                if ($product_group_ids !== null) {
+                    $group_ids_array = $product_group_ids;
+                }
+            } elseif (!empty($product['inbounds']) && $product['inbounds'] !== "null") {
+                $product_group_ids = $parse_group_ids($product['inbounds']);
+                if ($product_group_ids !== null) {
+                    $group_ids_array = $product_group_ids;
+                }
+            }
+        }
+    }
+
+    // Add group_ids to user_data if we have valid group_ids
+    if ($group_ids_array !== null && !empty($group_ids_array)) {
+        $user_data['group_ids'] = $group_ids_array;
+    }
+
     $headers = array(
-        'Authorization: Bearer ' . $api_key,
-        'Content-Type: application/json'
+        'Content-Type: application/json',
+        'accept: application/json'
     );
+
+    // Debug: Log what we're sending (remove in production if needed)
+    // Uncomment the next lines for debugging:
+    // error_log("Pasarguard create user - URL: " . $url);
+    // error_log("Pasarguard create user - Data: " . json_encode($user_data, JSON_PRETTY_PRINT));
+    // error_log("Pasarguard create user - group_ids: " . (isset($user_data['group_ids']) ? json_encode($user_data['group_ids']) : 'NOT SET'));
 
     $req = new CurlRequest($url);
     $req->setHeaders($headers);
-    $response = $req->put(json_encode($user_data));
-    if (isset($response['status']) && in_array($response['status'], [400, 415])) {
-        // retry with protobuf content type (payload kept JSON-like until full encoder is needed)
-        $req = new CurlRequest($url);
-        $req->setHeaders(array(
-            'Authorization: Bearer ' . $api_key,
-            'Content-Type: application/x-protobuf'
-        ));
-        $response = $req->put(json_encode($user_data));
-    }
+    $req->setBearerToken($Check_token['access_token']);
+    $response = $req->post(json_encode($user_data));
 
-    // Return success response with subscription URL
-    if (empty($response['error']) && (!isset($response['status']) || $response['status'] == 200)) {
-        $subscription_url = rtrim($panel['url_panel'], '/') . '/sub/' . $username;
-        return array(
-            'body' => json_encode(array(
-                'username' => $username,
-                'subscription_url' => $subscription_url,
-                'links' => array($subscription_url)
-            ))
-        );
-    }
+    // Debug: Log response (remove in production if needed)
+    // error_log("Pasarguard create user - Response: " . json_encode($response));
 
     return $response;
 }
@@ -83,64 +221,25 @@ function pg_add_user($location, $data_limit, $username, $expire, $note = '', $da
 function pg_get_user($username, $location)
 {
     $panel = select("marzban_panel", "*", "name_panel", $location, "select");
-    $api_key = pg_get_api_key($panel['code_panel']);
-    if (!$api_key) {
-        return array("error" => "API key not found");
+    $Check_token = pg_token_panel($panel['code_panel']);
+    if (!empty($Check_token['error'])) {
+        return $Check_token;
+    }
+    if (!isset($Check_token['access_token'])) {
+        return array("error" => "Token not found");
     }
 
-    // Pasarguard doesn't have direct user retrieval, use stats instead
-    $url = rtrim($panel['url_panel'], '/') . '/stats';
-
-    // Build StatRequest for user stats
-    $stat_request = array(
-        'name' => $username,
-        'type' => 'UserStat', // 5 = UserStat
-        'reset' => false
-    );
+    // Pasarguard uses GET /api/user/{username} like Marzban
+    $url = rtrim($panel['url_panel'], '/') . '/api/user/' . $username;
 
     $headers = array(
-        'Authorization: Bearer ' . $api_key,
-        'Content-Type: application/json'
+        'accept: application/json'
     );
 
     $req = new CurlRequest($url);
     $req->setHeaders($headers);
-    $response = $req->getWithBody(json_encode($stat_request));
-    if (isset($response['status']) && in_array($response['status'], [400, 415])) {
-        $req = new CurlRequest($url);
-        $req->setHeaders(array(
-            'Authorization: Bearer ' . $api_key,
-            'Content-Type: application/x-protobuf'
-        ));
-        $response = $req->getWithBody(json_encode($stat_request));
-    }
-
-    // Parse stats to compute used_traffic
-    if (empty($response['error']) && (!isset($response['status']) || $response['status'] == 200)) {
-        $used_traffic = 0;
-        $body = json_decode($response['body'], true);
-        if (isset($body['stats']) && is_array($body['stats'])) {
-            foreach ($body['stats'] as $stat) {
-                if (isset($stat['name']) && isset($stat['value'])) {
-                    // Sum all values for the user (bytes)
-                    $used_traffic += intval($stat['value']);
-                }
-            }
-        }
-        $subscription_url = rtrim($panel['url_panel'], '/') . '/sub/' . $username;
-        return array(
-            'body' => json_encode(array(
-                'username' => $username,
-                'status' => 'active',
-                'data_limit' => 0,
-                'expire' => 0,
-                'online_at' => null,
-                'used_traffic' => $used_traffic,
-                'subscription_url' => $subscription_url,
-                'links' => array($subscription_url)
-            ))
-        );
-    }
+    $req->setBearerToken($Check_token['access_token']);
+    $response = $req->get();
 
     return $response;
 }
@@ -148,162 +247,157 @@ function pg_get_user($username, $location)
 function pg_modify_user($location, $username, array $data)
 {
     $panel = select("marzban_panel", "*", "name_panel", $location, "select");
-    $api_key = pg_get_api_key($panel['code_panel']);
-    if (!$api_key) {
-        return array("error" => "API key not found");
+    $Check_token = pg_token_panel($panel['code_panel']);
+    if (!empty($Check_token['error'])) {
+        return $Check_token;
+    }
+    if (!isset($Check_token['access_token'])) {
+        return array("error" => "Token not found");
     }
 
-    // Pasarguard uses PUT /user/sync to update user
-    $url = rtrim($panel['url_panel'], '/') . '/user/sync';
+    // Pasarguard uses PUT /api/user/{username} like Marzban
+    $url = rtrim($panel['url_panel'], '/') . '/api/user/' . $username;
 
-    // Build updated User structure; encode extend/volume/time in config
-    $user_data = array(
-        'email' => $username,
-        'proxies' => array(
-            'type' => 'XRAY',
-            'config' => json_encode(array(
-                'data_limit' => isset($data['data_limit']) ? $data['data_limit'] : null,
-                'expire' => isset($data['expire']) ? $data['expire'] : null,
-                'extend_strategy' => isset($data['extend_strategy']) ? $data['extend_strategy'] : null
-            ))
-        ),
-        'inbounds' => array()
-    );
+    // Build update data following Pasarguard API spec
+    $user_data = array();
 
-    // Add inbounds if configured
-    if (!empty($panel['inbounds']) && $panel['inbounds'] != "null") {
-        $inbounds = json_decode($panel['inbounds'], true);
-        if (is_array($inbounds)) {
-            $user_data['inbounds'] = $inbounds;
+    // Handle data_limit
+    if (isset($data['data_limit'])) {
+        $user_data['data_limit'] = $data['data_limit'];
+    }
+
+    // Handle expire - convert timestamp to ISO 8601 if needed
+    if (isset($data['expire'])) {
+        if ($data['expire'] == 0) {
+            $user_data['expire'] = 0;
+        } elseif (is_numeric($data['expire'])) {
+            $user_data['expire'] = date('c', $data['expire']);
+        } else {
+            $user_data['expire'] = $data['expire'];
         }
     }
 
+    // Handle status
+    if (isset($data['status'])) {
+        $user_data['status'] = $data['status'];
+    }
+
+    // Handle data_limit_reset_strategy
+    if (isset($data['data_limit_reset_strategy'])) {
+        $user_data['data_limit_reset_strategy'] = $data['data_limit_reset_strategy'];
+    }
+
+    // Handle note
+    if (isset($data['note'])) {
+        $user_data['note'] = $data['note'];
+    }
+
+    // Handle proxy_settings (NOT proxies) - Pasarguard uses proxy_settings object
+    if (isset($data['proxy_settings'])) {
+        $user_data['proxy_settings'] = $data['proxy_settings'];
+    } elseif (isset($data['proxies'])) {
+        // Map proxies to proxy_settings for backward compatibility
+        $user_data['proxy_settings'] = $data['proxies'];
+    }
+
+    // Handle group_ids (NOT inbounds) - Pasarguard uses group_ids array of integers
+    if (isset($data['group_ids'])) {
+        // Ensure all values are integers
+        $user_data['group_ids'] = array_map('intval', $data['group_ids']);
+    } elseif (isset($data['inbounds'])) {
+        // Map inbounds to group_ids for backward compatibility
+        $user_data['group_ids'] = array_map('intval', $data['inbounds']);
+    }
+
     $headers = array(
-        'Authorization: Bearer ' . $api_key,
-        'Content-Type: application/json'
+        'Content-Type: application/json',
+        'accept: application/json'
     );
 
     $req = new CurlRequest($url);
     $req->setHeaders($headers);
+    $req->setBearerToken($Check_token['access_token']);
     $res = $req->put(json_encode($user_data));
-    if (isset($res['status']) && in_array($res['status'], [400, 415])) {
-        $req = new CurlRequest($url);
-        $req->setHeaders(array(
-            'Authorization: Bearer ' . $api_key,
-            'Content-Type: application/x-protobuf'
-        ));
-        $res = $req->put(json_encode($user_data));
-    }
+
     return $res;
 }
 
 function pg_reset_usage($username, $location)
 {
     $panel = select("marzban_panel", "*", "name_panel", $location, "select");
-    $api_key = pg_get_api_key($panel['code_panel']);
-    if (!$api_key) {
-        return array("error" => "API key not found");
+    $Check_token = pg_token_panel($panel['code_panel']);
+    if (!empty($Check_token['error'])) {
+        return $Check_token;
+    }
+    if (!isset($Check_token['access_token'])) {
+        return array("error" => "Token not found");
     }
 
-    // Pasarguard uses GET /stats with reset=true to reset user stats
-    $url = rtrim($panel['url_panel'], '/') . '/stats';
-
-    $stat_request = array(
-        'name' => $username,
-        'type' => 'UserStat', // 5 = UserStat
-        'reset' => true
-    );
+    // Pasarguard uses POST /api/user/{username}/reset like Marzban
+    $url = rtrim($panel['url_panel'], '/') . '/api/user/' . $username . '/reset';
 
     $headers = array(
-        'Authorization: Bearer ' . $api_key,
-        'Content-Type: application/json'
+        'accept: application/json'
     );
 
     $req = new CurlRequest($url);
     $req->setHeaders($headers);
-    $res = $req->getWithBody(json_encode($stat_request));
-    if (isset($res['status']) && in_array($res['status'], [400, 415])) {
-        $req = new CurlRequest($url);
-        $req->setHeaders(array(
-            'Authorization: Bearer ' . $api_key,
-            'Content-Type: application/x-protobuf'
-        ));
-        $res = $req->getWithBody(json_encode($stat_request));
-    }
+    $req->setBearerToken($Check_token['access_token']);
+    $res = $req->post(array());
+
     return $res;
 }
 
 function pg_revoke_sub($username, $location)
 {
-    // Pasarguard doesn't have explicit revoke_sub, regenerate user config instead
     $panel = select("marzban_panel", "*", "name_panel", $location, "select");
-    $api_key = pg_get_api_key($panel['code_panel']);
-    if (!$api_key) {
-        return array("error" => "API key not found");
+    $Check_token = pg_token_panel($panel['code_panel']);
+    if (!empty($Check_token['error'])) {
+        return $Check_token;
+    }
+    if (!isset($Check_token['access_token'])) {
+        return array("error" => "Token not found");
     }
 
-    // Update user with new config to effectively revoke old subscription
-    $url = rtrim($panel['url_panel'], '/') . '/user/sync';
-
-    $user_data = array(
-        'email' => $username,
-        'proxies' => array(
-            'type' => 'XRAY',
-            'config' => json_encode(array(
-                'revoked_at' => time(),
-                'regenerated' => true
-            ))
-        ),
-        'inbounds' => array()
-    );
+    // Pasarguard uses POST /api/user/{username}/revoke_sub like Marzban
+    $url = rtrim($panel['url_panel'], '/') . '/api/user/' . $username . '/revoke_sub';
 
     $headers = array(
-        'Authorization: Bearer ' . $api_key,
-        'Content-Type: application/json'
+        'accept: application/json'
     );
 
     $req = new CurlRequest($url);
     $req->setHeaders($headers);
-    $res = $req->put(json_encode($user_data));
-    if (isset($res['status']) && in_array($res['status'], [400, 415])) {
-        $req = new CurlRequest($url);
-        $req->setHeaders(array(
-            'Authorization: Bearer ' . $api_key,
-            'Content-Type: application/x-protobuf'
-        ));
-        $res = $req->put(json_encode($user_data));
-    }
+    $req->setBearerToken($Check_token['access_token']);
+    $res = $req->post(array());
+
     return $res;
 }
 
 function pg_remove_user($location, $username)
 {
     $panel = select("marzban_panel", "*", "name_panel", $location, "select");
-    $api_key = pg_get_api_key($panel['code_panel']);
-    if (!$api_key) {
-        return array("error" => "API key not found");
+    $Check_token = pg_token_panel($panel['code_panel']);
+    if (!empty($Check_token['error'])) {
+        return $Check_token;
+    }
+    if (!isset($Check_token['access_token'])) {
+        return array("error" => "Token not found");
     }
 
-    // Pasarguard removes user by sending empty inbounds array
-    $url = rtrim($panel['url_panel'], '/') . '/user/sync';
-
-    $user_data = array(
-        'email' => $username,
-        'proxies' => array(
-            'type' => 'XRAY',
-            'config' => json_encode(array())
-        ),
-        'inbounds' => array() // Empty inbounds = remove user
-    );
+    // Pasarguard uses DELETE /api/user/{username} like Marzban
+    $url = rtrim($panel['url_panel'], '/') . '/api/user/' . $username;
 
     $headers = array(
-        'Authorization: Bearer ' . $api_key,
-        'Content-Type: application/x-protobuf'
+        'accept: application/json'
     );
 
     $req = new CurlRequest($url);
     $req->setHeaders($headers);
-    return $req->put(json_encode($user_data));
+    $req->setBearerToken($Check_token['access_token']);
+    $res = $req->delete();
+
+    return $res;
 }
 
 

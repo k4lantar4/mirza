@@ -4,14 +4,14 @@
  * Control bot process, view logs, manage webhook
  */
 
-require_once 'includes/auth.php';
+require_once __DIR__ . '/includes/auth.php';
 require_auth();
 check_permission('administrator');
 
 $page_title = 'مدیریت ربات';
 $active_page = 'bot_management';
 
-include 'includes/header.php';
+include __DIR__ . '/includes/header.php';
 
 // Get bot status
 $bot_status = [
@@ -30,7 +30,7 @@ if ($return_code === 0 && !empty($output[0])) {
         preg_match('/pid (\d+)/', $output[0], $matches);
         if (!empty($matches[1])) {
             $bot_status['pid'] = $matches[1];
-            
+
             // Get process details
             exec("ps -p {$matches[1]} -o %mem,%cpu,etimes --no-headers", $ps_output);
             if (!empty($ps_output[0])) {
@@ -50,7 +50,7 @@ if (isset($APIKEY)) {
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     $response = curl_exec($ch);
     curl_close($ch);
-    
+
     $data = json_decode($response, true);
     if ($data['ok'] ?? false) {
         $webhook_info = $data['result'];
@@ -62,7 +62,7 @@ if (isset($APIKEY)) {
     <div class="page-header">
         <h1><?php echo $page_title; ?></h1>
     </div>
-    
+
     <div class="row" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 30px;">
         <!-- Bot Status Card -->
         <div class="card">
@@ -80,7 +80,7 @@ if (isset($APIKEY)) {
                 <?php endif; ?>
             </div>
         </div>
-        
+
         <!-- Process Info -->
         <?php if ($bot_status['running']): ?>
         <div class="card">
@@ -101,7 +101,7 @@ if (isset($APIKEY)) {
             </table>
         </div>
         <?php endif; ?>
-        
+
         <!-- Webhook Status -->
         <div class="card">
             <h3>وضعیت Webhook</h3>
@@ -127,7 +127,7 @@ if (isset($APIKEY)) {
             <?php endif; ?>
         </div>
     </div>
-    
+
     <!-- Control Buttons -->
     <div class="card">
         <h3>کنترل ربات</h3>
@@ -144,21 +144,21 @@ if (isset($APIKEY)) {
                     ▶️ شروع ربات
                 </button>
             <?php endif; ?>
-            
+
             <button onclick="updateWebhook()" class="btn btn-primary">
                 🔗 تنظیم مجدد Webhook
             </button>
-            
+
             <button onclick="showLogs()" class="btn btn-secondary">
                 📋 نمایش لاگ‌ها
             </button>
-            
+
             <button onclick="clearLogs()" class="btn btn-secondary">
                 🗑️ پاک کردن لاگ‌ها
             </button>
         </div>
     </div>
-    
+
     <!-- Logs Viewer -->
     <div class="card" id="logs-section" style="display: none;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
@@ -176,9 +176,9 @@ function controlBot(action) {
     if (!confirm(`آیا از ${action === 'stop' ? 'توقف' : action === 'start' ? 'شروع' : 'راه‌اندازی مجدد'} ربات اطمینان دارید؟`)) {
         return;
     }
-    
+
     showLoading();
-    
+
     fetch('/webpanel/includes/bot_control.php', {
         method: 'POST',
         headers: {
@@ -204,7 +204,7 @@ function controlBot(action) {
 
 function updateWebhook() {
     showLoading();
-    
+
     fetch('/webpanel/includes/bot_control.php', {
         method: 'POST',
         headers: {
@@ -236,7 +236,7 @@ function showLogs() {
 function refreshLogs() {
     const logsContent = document.getElementById('logs-content');
     logsContent.textContent = 'در حال بارگذاری...';
-    
+
     fetch('/webpanel/includes/bot_control.php?action=logs')
     .then(response => response.json())
     .then(data => {
@@ -256,9 +256,9 @@ function clearLogs() {
     if (!confirm('آیا از پاک کردن لاگ‌ها اطمینان دارید؟')) {
         return;
     }
-    
+
     showLoading();
-    
+
     fetch('/webpanel/includes/bot_control.php', {
         method: 'POST',
         headers: {
@@ -305,9 +305,9 @@ function showAlert(type, message) {
     alertDiv.style.background = type === 'success' ? '#27ae60' : '#e74c3c';
     alertDiv.style.color = 'white';
     alertDiv.textContent = message;
-    
+
     document.body.appendChild(alertDiv);
-    
+
     setTimeout(() => {
         alertDiv.style.animation = 'slideOut 0.3s';
         setTimeout(() => alertDiv.remove(), 300);
@@ -350,4 +350,4 @@ function showAlert(type, message) {
 }
 </style>
 
-<?php include 'includes/footer.php'; ?>
+<?php include __DIR__ . '/includes/footer.php'; ?>

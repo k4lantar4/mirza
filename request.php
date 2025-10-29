@@ -22,7 +22,7 @@ class CurlRequest {
     public function setBearerToken($token) {
         $this->authToken = $token;
     }
-    
+
     public function api_key($token) {
         $this->api_key = $token;
     }
@@ -58,7 +58,7 @@ class CurlRequest {
             curl_setopt($ch, CURLOPT_HTTPHEADER, $finalHeaders);
         }
         if ($this->cookie) {
-         curl_setopt($ch, CURLOPT_COOKIEFILE, $this->cookie);   
+         curl_setopt($ch, CURLOPT_COOKIEFILE, $this->cookie);
         }
         if ($data) {
             if (is_array($data)) {

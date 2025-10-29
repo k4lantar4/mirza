@@ -4,14 +4,14 @@
  * SSL setup, backups, system monitoring, and server configuration
  */
 
-require_once 'includes/auth.php';
+require_once __DIR__ . '/includes/auth.php';
 require_auth();
 check_permission('administrator');
 
 $page_title = 'مدیریت سیستم';
 $active_page = 'system';
 
-include 'includes/header.php';
+include __DIR__ . '/includes/header.php';
 
 // Get system information
 $sys_info = [
@@ -47,7 +47,7 @@ if (!empty($domainhosts)) {
     <div class="page-header">
         <h1><?php echo $page_title; ?></h1>
     </div>
-    
+
     <!-- System Status Cards -->
     <div class="row" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 30px;">
         <div class="card">
@@ -62,7 +62,7 @@ if (!empty($domainhosts)) {
                 </div>
             </div>
         </div>
-        
+
         <div class="card">
             <h3>🧠 رم</h3>
             <div style="text-align: center;">
@@ -75,7 +75,7 @@ if (!empty($domainhosts)) {
                 </div>
             </div>
         </div>
-        
+
         <div class="card">
             <h3>⚡ بار سیستم</h3>
             <div style="text-align: center;">
@@ -84,12 +84,12 @@ if (!empty($domainhosts)) {
                 </div>
                 <div style="color: #666;">میانگین یک دقیقه</div>
                 <div style="font-size: 12px; color: #999; margin-top: 5px;">
-                    5 min: <?php echo round($sys_info['load_average'][1], 2); ?> | 
+                    5 min: <?php echo round($sys_info['load_average'][1], 2); ?> |
                     15 min: <?php echo round($sys_info['load_average'][2], 2); ?>
                 </div>
             </div>
         </div>
-        
+
         <div class="card">
             <h3>🐘 PHP</h3>
             <div style="text-align: center;">
@@ -100,7 +100,7 @@ if (!empty($domainhosts)) {
             </div>
         </div>
     </div>
-    
+
     <!-- SSL Certificate Management -->
     <div class="card">
         <h3>🔒 مدیریت SSL</h3>
@@ -108,7 +108,7 @@ if (!empty($domainhosts)) {
             <div style="margin-bottom: 15px;">
                 <strong>دامنه:</strong> <?php echo htmlspecialchars($domainhosts); ?>
             </div>
-            
+
             <?php if ($ssl_info): ?>
                 <div class="alert alert-success">
                     ✅ گواهی SSL نصب شده است
@@ -127,11 +127,11 @@ if (!empty($domainhosts)) {
             </div>
         <?php endif; ?>
     </div>
-    
+
     <!-- Backup Management -->
     <div class="card">
         <h3>💾 پشتیبان‌گیری</h3>
-        
+
         <div style="margin-bottom: 20px;">
             <h4>ایجاد پشتیبان جدید</h4>
             <div style="display: flex; gap: 10px; flex-wrap: wrap;">
@@ -140,7 +140,7 @@ if (!empty($domainhosts)) {
                 <button onclick="createBackup('full')" class="btn btn-success">📦 کامل (دیتابیس + فایل‌ها)</button>
             </div>
         </div>
-        
+
         <div>
             <h4>پشتیبان‌های موجود</h4>
             <div id="backups-list">
@@ -148,21 +148,21 @@ if (!empty($domainhosts)) {
             </div>
         </div>
     </div>
-    
+
     <!-- Cron Jobs -->
     <div class="card">
         <h3>⏰ وظایف زمان‌بندی شده (Cron Jobs)</h3>
-        
+
         <div style="margin-bottom: 15px;">
             <button onclick="addCronJob()" class="btn btn-primary">➕ افزودن وظیفه جدید</button>
             <button onclick="loadCronJobs()" class="btn btn-secondary">🔄 بروزرسانی</button>
         </div>
-        
+
         <div id="cron-jobs-list">
             <p style="color: #999; text-align: center;">در حال بارگذاری...</p>
         </div>
     </div>
-    
+
     <!-- System Information -->
     <div class="card">
         <h3>ℹ️ اطلاعات سیستم</h3>
@@ -184,7 +184,7 @@ if (!empty($domainhosts)) {
                 <td><?php echo $_SERVER['SERVER_ADDR'] ?? 'N/A'; ?></td>
             </tr>
         </table>
-        
+
         <div style="margin-top: 20px;">
             <button onclick="downloadPHPInfo()" class="btn btn-secondary">📄 دانلود اطلاعات کامل PHP</button>
             <button onclick="clearCache()" class="btn btn-warning">🗑️ پاک کردن کش</button>
@@ -204,9 +204,9 @@ function installSSL() {
     if (!confirm('آیا از نصب گواهی SSL با Let\'s Encrypt اطمینان دارید؟\nاین عملیات ممکن است چند دقیقه طول بکشد.')) {
         return;
     }
-    
+
     showLoading('در حال نصب SSL...');
-    
+
     fetch('/webpanel/includes/system_control.php', {
         method: 'POST',
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
@@ -232,9 +232,9 @@ function renewSSL() {
     if (!confirm('آیا از تمدید گواهی SSL اطمینان دارید؟')) {
         return;
     }
-    
+
     showLoading('در حال تمدید SSL...');
-    
+
     fetch('/webpanel/includes/system_control.php', {
         method: 'POST',
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
@@ -256,9 +256,9 @@ function createBackup(type) {
     if (!confirm(`آیا از ایجاد پشتیبان ${type === 'database' ? 'پایگاه داده' : type === 'files' ? 'فایل‌ها' : 'کامل'} اطمینان دارید؟`)) {
         return;
     }
-    
+
     showLoading('در حال ایجاد پشتیبان...');
-    
+
     fetch('/webpanel/includes/system_control.php', {
         method: 'POST',
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
@@ -314,7 +314,7 @@ function deleteBackup(filename) {
     if (!confirm(`آیا از حذف پشتیبان "${filename}" اطمینان دارید؟`)) {
         return;
     }
-    
+
     fetch('/webpanel/includes/system_control.php', {
         method: 'POST',
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
@@ -355,10 +355,10 @@ function loadCronJobs() {
 function addCronJob() {
     const schedule = prompt('زمان‌بندی را وارد کنید (فرمت cron):\nمثال: 0 2 * * * (هر شب ساعت 2)');
     if (!schedule) return;
-    
+
     const command = prompt('دستور را وارد کنید:');
     if (!command) return;
-    
+
     fetch('/webpanel/includes/system_control.php', {
         method: 'POST',
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
@@ -373,7 +373,7 @@ function addCronJob() {
 
 function deleteCron(index) {
     if (!confirm('آیا از حذف این وظیفه اطمینان دارید؟')) return;
-    
+
     fetch('/webpanel/includes/system_control.php', {
         method: 'POST',
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
@@ -388,7 +388,7 @@ function deleteCron(index) {
 
 function clearCache() {
     if (!confirm('آیا از پاک کردن کش اطمینان دارید؟')) return;
-    
+
     showLoading();
     fetch('/webpanel/includes/system_control.php', {
         method: 'POST',
@@ -404,7 +404,7 @@ function clearCache() {
 
 function restartServices() {
     if (!confirm('آیا از راه‌اندازی مجدد سرویس‌ها اطمینان دارید؟\nاین عملیات موقتاً سرویس‌ها را قطع می‌کند.')) return;
-    
+
     showLoading('در حال راه‌اندازی مجدد...');
     fetch('/webpanel/includes/system_control.php', {
         method: 'POST',
@@ -480,4 +480,4 @@ function showAlert(type, message) {
 }
 </style>
 
-<?php include 'includes/footer.php'; ?>
+<?php include __DIR__ . '/includes/footer.php'; ?>

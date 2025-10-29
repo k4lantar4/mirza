@@ -347,7 +347,7 @@ $step_payment = [
     if(intval($paymentsstartelegram) == 1){
      $step_payment['inline_keyboard'][] = [
             ['text' => $datatextbot['text_star_telegram'] , 'callback_data' => "startelegrams" ]
-    ];   
+    ];
     }
     $step_payment['inline_keyboard'][] = [
             ['text' => "❌ بستن لیست" , 'callback_data' => "colselist" ]
@@ -583,7 +583,7 @@ if ($table_exists) {
 if($setting['linkappstatus'] == "1"){
     $helpcwtgory['inline_keyboard'][] = [
         ['text' => "🔗 لینک دانلود برنامه", 'callback_data' => "linkappdownlod"],
-    ];    
+    ];
     }
 $helpcwtgory['inline_keyboard'][] = [
     ['text' => $textbotlang['users']['backbtn'], 'callback_data' => "backuser"],
@@ -640,9 +640,9 @@ $json_list_remove_helpـlink = json_encode($helpappremove);
         }
          if (count($temp_row) == 2) {
             $list_marzban_panel_users['inline_keyboard'][] = $temp_row;
-            $temp_row = []; 
+            $temp_row = [];
         }
-    } 
+    }
         if (!empty($temp_row)) {
         $list_marzban_panel_users['inline_keyboard'][] = $temp_row;
     }
@@ -667,7 +667,7 @@ $json_list_remove_helpـlink = json_encode($helpappremove);
         }
     }
     }
-$statusnote = false; 
+$statusnote = false;
 if($setting['statusnamecustom'] == 'onnamecustom')$statusnote = true;
 if($setting['statusnoteforf'] == "0" && $users['agent'] == "f")$statusnote = false;
     if($statusnote){
@@ -677,7 +677,7 @@ $list_marzban_panel_users['inline_keyboard'][] = [
 }else{
 $list_marzban_panel_users['inline_keyboard'][] = [
     ['text' => $textbotlang['users']['backbtn'], 'callback_data' => "backuser"],
-];  
+];
 }
 $list_marzban_panel_user = json_encode($list_marzban_panel_users);
 
@@ -706,7 +706,7 @@ $list_marzban_panel_userom = json_encode($list_marzban_panel_users_om);
         $temp_row = [];
         while ($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
         if ($result['hide_user'] != null && in_array($from_id, json_decode($result['hide_user'], true))) continue;
-    
+
             $temp_row[] = ['text' => $result['name_panel'], 'callback_data' => "changelocselectlo-{$result['code_panel']}"];
         if (count($temp_row) == 2) {
             $list_marzban_panel_users_change['inline_keyboard'][] = $temp_row;
@@ -852,7 +852,7 @@ if ($stmt->fetch(PDO::FETCH_ASSOC)) {
     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
     $Inboundkeyboard[] = [$row['NameInbound']];
 }
-    
+
 }
     $list_Inbound = [
         'keyboard' => [],
@@ -1149,7 +1149,7 @@ if($setting['statussupportpv'] == "onpvsupport"){
             ],[
                 ['text' => "🔙 بازگشت به منوی اصلی" ,'callback_data' => "backuser"]
             ],
- 
+
         ]
     ]);
 }else{
@@ -1161,7 +1161,7 @@ $supportoption = json_encode([
             ],[
                 ['text' => "🔙 بازگشت به منوی اصلی" ,'callback_data' => "backuser"]
             ],
- 
+
         ]
     ]);
 }
@@ -1620,7 +1620,7 @@ function keyboard_config($config_split,$id_invoice,$back_active = true){
         ['text' => "دریافت کانفیگ", 'callback_data' => "configget_{$id_invoice}_$i"],
         ['text' => urldecode($split_config), 'callback_data' => "none"],
         ];
-        
+
     }
     $keyboard_config['inline_keyboard'][] = [['text' => "⚙️ دریافت همه کانفیگ ها", 'callback_data' => "configget_$id_invoice"."_1520"]];
     if($back_active){

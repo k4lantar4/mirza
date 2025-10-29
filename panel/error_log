@@ -1,1 +1,8 @@
 [19-Oct-2025 21:44:26 UTC] PHP Warning:  Undefined array key "removeid" in /home/bb/public_html/panel/cancelService.php on line 16
+[29-Oct-2025 11:49:52 UTC] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 11:49:52 UTC] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 11:49:56 UTC] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 11:49:56 UTC] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 11:50:24 UTC] PHP Warning:  Undefined array key "nameproduct" in /home/bb/public_html/panel/product.php on line 19
+[29-Oct-2025 11:50:24 UTC] PHP Warning:  Undefined array key "oneproduct" in /home/bb/public_html/panel/product.php on line 43
+[29-Oct-2025 11:50:24 UTC] PHP Warning:  Undefined array key "removeid" in /home/bb/public_html/panel/product.php on line 50

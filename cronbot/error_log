@@ -961,3 +961,296 @@ Stack trace:
 [29-Oct-2025 12:01:01 Asia/Tehran] {"status":null,"body":null,"error":"Failed to connect to 91.107.133.232 port 2010 after 25 ms: Connection refused"}
 [29-Oct-2025 12:01:01 Asia/Tehran] {"status":null,"body":null,"error":"Failed to connect to 91.107.133.232 port 2010 after 25 ms: Connection refused"}
 [29-Oct-2025 12:01:02 Asia/Tehran] {"status":null,"body":null,"error":"Failed to connect to 91.107.133.232 port 2010 after 26 ms: Connection refused"}
+[29-Oct-2025 09:30:02 UTC] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 09:30:02 UTC] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 09:30:02 UTC] {"ok":false,"error_code":400,"description":"Bad Request: message thread not found"}
+[29-Oct-2025 09:30:02 UTC] {"ok":false,"error_code":400,"description":"Bad Request: message thread not found"}
+[29-Oct-2025 13:01:01 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 13:01:01 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 13:01:01 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 13:01:01 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 13:01:01 Asia/Tehran] PHP Warning:  Trying to access array offset on false in /home/bb/public_html/keyboard.php on line 284
+[29-Oct-2025 13:01:01 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 13:01:01 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 13:01:01 Asia/Tehran] {"error":"Failed to connect to 91.107.133.232 port 2010 after 25 ms: Connection refused"}
+[29-Oct-2025 13:01:01 Asia/Tehran] {"error":"Failed to connect to 91.107.133.232 port 2010 after 25 ms: Connection refused"}
+[29-Oct-2025 13:01:01 Asia/Tehran] {"error":"Failed to connect to 91.107.133.232 port 2010 after 25 ms: Connection refused"}
+[29-Oct-2025 13:01:01 Asia/Tehran] {"error":"Failed to connect to 91.107.133.232 port 2010 after 25 ms: Connection refused"}
+[29-Oct-2025 13:01:01 Asia/Tehran] {"error":"Failed to connect to 91.107.133.232 port 2010 after 25 ms: Connection refused"}
+[29-Oct-2025 13:01:01 Asia/Tehran] {"error":"Failed to connect to 91.107.133.232 port 2010 after 25 ms: Connection refused"}
+[29-Oct-2025 13:01:01 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 13:01:01 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 09:31:02 UTC] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 09:31:02 UTC] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 13:02:01 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 13:02:01 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 09:33:02 UTC] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 09:33:02 UTC] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 13:05:01 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 13:05:01 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 13:15:01 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 13:15:01 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 13:15:01 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 13:15:01 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 13:15:01 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 13:15:01 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 13:15:02 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 13:15:02 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 13:30:01 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 13:30:01 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 10:30:02 UTC] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 10:30:02 UTC] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 10:30:02 UTC] {"ok":false,"error_code":400,"description":"Bad Request: message thread not found"}
+[29-Oct-2025 10:30:02 UTC] {"ok":false,"error_code":400,"description":"Bad Request: message thread not found"}
+[29-Oct-2025 14:01:02 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 14:01:02 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 14:01:02 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 14:01:02 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 14:01:02 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 14:01:02 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 14:01:02 Asia/Tehran] {"error":"Failed to connect to 91.107.133.232 port 2010 after 25 ms: Connection refused"}
+[29-Oct-2025 14:01:02 Asia/Tehran] {"error":"Failed to connect to 91.107.133.232 port 2010 after 25 ms: Connection refused"}
+[29-Oct-2025 14:01:03 Asia/Tehran] {"error":"Failed to connect to 91.107.133.232 port 2010 after 25 ms: Connection refused"}
+[29-Oct-2025 14:01:03 Asia/Tehran] {"error":"Failed to connect to 91.107.133.232 port 2010 after 25 ms: Connection refused"}
+[29-Oct-2025 14:01:03 Asia/Tehran] {"error":"Failed to connect to 91.107.133.232 port 2010 after 25 ms: Connection refused"}
+[29-Oct-2025 14:01:03 Asia/Tehran] {"error":"Failed to connect to 91.107.133.232 port 2010 after 30 ms: Connection refused"}
+[29-Oct-2025 14:01:03 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 14:01:03 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 10:31:03 UTC] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 10:31:03 UTC] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 14:02:01 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 14:02:01 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 10:33:02 UTC] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 10:33:02 UTC] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 14:05:02 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 14:05:02 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 14:15:02 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 14:15:02 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 14:15:02 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 14:15:02 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 14:15:02 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 14:15:02 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 14:15:02 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 14:15:02 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 14:30:02 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 14:30:02 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 11:30:02 UTC] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 11:30:02 UTC] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 11:30:02 UTC] {"ok":false,"error_code":400,"description":"Bad Request: message thread not found"}
+[29-Oct-2025 11:30:03 UTC] {"ok":false,"error_code":400,"description":"Bad Request: message thread not found"}
+[29-Oct-2025 15:01:01 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 15:01:01 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 11:31:01 UTC] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 15:01:01 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 11:31:01 UTC] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 15:01:01 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 15:01:01 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 15:01:01 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 15:01:01 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 15:01:01 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 15:01:01 Asia/Tehran] PHP Warning:  Trying to access array offset on null in /home/bb/public_html/panels.php on line 936
+[29-Oct-2025 15:01:01 Asia/Tehran] PHP Warning:  Trying to access array offset on null in /home/bb/public_html/panels.php on line 937
+[29-Oct-2025 15:01:01 Asia/Tehran] PHP Warning:  Undefined array key "expire" in /home/bb/public_html/panels.php on line 940
+[29-Oct-2025 15:01:01 Asia/Tehran] PHP Warning:  Trying to access array offset on null in /home/bb/public_html/Marzban.php on line 475
+[29-Oct-2025 15:01:02 Asia/Tehran] PHP Warning:  Trying to access array offset on null in /home/bb/public_html/panels.php on line 955
+[29-Oct-2025 15:01:02 Asia/Tehran] PHP Warning:  Trying to access array offset on null in /home/bb/public_html/panels.php on line 955
+[29-Oct-2025 15:01:02 Asia/Tehran] PHP Warning:  Trying to access array offset on null in /home/bb/public_html/panels.php on line 956
+[29-Oct-2025 15:01:02 Asia/Tehran] PHP Warning:  Trying to access array offset on null in /home/bb/public_html/panels.php on line 957
+[29-Oct-2025 15:01:02 Asia/Tehran] PHP Warning:  Undefined array key "proxy_settings" in /home/bb/public_html/panels.php on line 965
+[29-Oct-2025 15:01:02 Asia/Tehran] PHP Warning:  Undefined array key "status" in /home/bb/public_html/panels.php on line 968
+[29-Oct-2025 15:01:02 Asia/Tehran] PHP Warning:  Undefined array key "username" in /home/bb/public_html/panels.php on line 969
+[29-Oct-2025 15:01:02 Asia/Tehran] PHP Warning:  Undefined array key "data_limit" in /home/bb/public_html/panels.php on line 970
+[29-Oct-2025 15:01:02 Asia/Tehran] PHP Warning:  Undefined array key "online_at" in /home/bb/public_html/panels.php on line 972
+[29-Oct-2025 15:01:02 Asia/Tehran] PHP Warning:  Undefined array key "used_traffic" in /home/bb/public_html/panels.php on line 973
+[29-Oct-2025 15:01:02 Asia/Tehran] PHP Warning:  Undefined array key "data_limit_reset_strategy" in /home/bb/public_html/panels.php on line 979
+[29-Oct-2025 15:01:02 Asia/Tehran] PHP Warning:  Trying to access array offset on null in /home/bb/public_html/panels.php on line 936
+[29-Oct-2025 15:01:02 Asia/Tehran] PHP Warning:  Trying to access array offset on null in /home/bb/public_html/panels.php on line 937
+[29-Oct-2025 15:01:02 Asia/Tehran] PHP Warning:  Undefined array key "expire" in /home/bb/public_html/panels.php on line 940
+[29-Oct-2025 15:01:02 Asia/Tehran] PHP Warning:  Trying to access array offset on null in /home/bb/public_html/Marzban.php on line 475
+[29-Oct-2025 15:01:02 Asia/Tehran] PHP Warning:  Trying to access array offset on null in /home/bb/public_html/panels.php on line 955
+[29-Oct-2025 15:01:02 Asia/Tehran] PHP Warning:  Trying to access array offset on null in /home/bb/public_html/panels.php on line 955
+[29-Oct-2025 15:01:02 Asia/Tehran] PHP Warning:  Trying to access array offset on null in /home/bb/public_html/panels.php on line 956
+[29-Oct-2025 15:01:02 Asia/Tehran] PHP Warning:  Trying to access array offset on null in /home/bb/public_html/panels.php on line 957
+[29-Oct-2025 15:01:02 Asia/Tehran] PHP Warning:  Undefined array key "proxy_settings" in /home/bb/public_html/panels.php on line 965
+[29-Oct-2025 15:01:02 Asia/Tehran] PHP Warning:  Undefined array key "status" in /home/bb/public_html/panels.php on line 968
+[29-Oct-2025 15:01:02 Asia/Tehran] PHP Warning:  Undefined array key "username" in /home/bb/public_html/panels.php on line 969
+[29-Oct-2025 15:01:02 Asia/Tehran] PHP Warning:  Undefined array key "data_limit" in /home/bb/public_html/panels.php on line 970
+[29-Oct-2025 15:01:02 Asia/Tehran] PHP Warning:  Undefined array key "online_at" in /home/bb/public_html/panels.php on line 972
+[29-Oct-2025 15:01:02 Asia/Tehran] PHP Warning:  Undefined array key "used_traffic" in /home/bb/public_html/panels.php on line 973
+[29-Oct-2025 15:01:02 Asia/Tehran] PHP Warning:  Undefined array key "data_limit_reset_strategy" in /home/bb/public_html/panels.php on line 979
+[29-Oct-2025 15:01:02 Asia/Tehran] PHP Warning:  Trying to access array offset on null in /home/bb/public_html/panels.php on line 936
+[29-Oct-2025 15:01:02 Asia/Tehran] PHP Warning:  Trying to access array offset on null in /home/bb/public_html/panels.php on line 937
+[29-Oct-2025 15:01:02 Asia/Tehran] PHP Warning:  Undefined array key "expire" in /home/bb/public_html/panels.php on line 940
+[29-Oct-2025 15:01:02 Asia/Tehran] PHP Warning:  Trying to access array offset on null in /home/bb/public_html/Marzban.php on line 475
+[29-Oct-2025 15:01:02 Asia/Tehran] PHP Warning:  Trying to access array offset on null in /home/bb/public_html/panels.php on line 955
+[29-Oct-2025 15:01:02 Asia/Tehran] PHP Warning:  Trying to access array offset on null in /home/bb/public_html/panels.php on line 955
+[29-Oct-2025 15:01:02 Asia/Tehran] PHP Warning:  Trying to access array offset on null in /home/bb/public_html/panels.php on line 956
+[29-Oct-2025 15:01:02 Asia/Tehran] PHP Warning:  Trying to access array offset on null in /home/bb/public_html/panels.php on line 957
+[29-Oct-2025 15:01:02 Asia/Tehran] PHP Warning:  Undefined array key "proxy_settings" in /home/bb/public_html/panels.php on line 965
+[29-Oct-2025 15:01:02 Asia/Tehran] PHP Warning:  Undefined array key "status" in /home/bb/public_html/panels.php on line 968
+[29-Oct-2025 15:01:02 Asia/Tehran] PHP Warning:  Undefined array key "username" in /home/bb/public_html/panels.php on line 969
+[29-Oct-2025 15:01:02 Asia/Tehran] PHP Warning:  Undefined array key "data_limit" in /home/bb/public_html/panels.php on line 970
+[29-Oct-2025 15:01:02 Asia/Tehran] PHP Warning:  Undefined array key "online_at" in /home/bb/public_html/panels.php on line 972
+[29-Oct-2025 15:01:02 Asia/Tehran] PHP Warning:  Undefined array key "used_traffic" in /home/bb/public_html/panels.php on line 973
+[29-Oct-2025 15:01:02 Asia/Tehran] PHP Warning:  Undefined array key "data_limit_reset_strategy" in /home/bb/public_html/panels.php on line 979
+[29-Oct-2025 15:01:02 Asia/Tehran] PHP Warning:  Trying to access array offset on null in /home/bb/public_html/panels.php on line 936
+[29-Oct-2025 15:01:02 Asia/Tehran] PHP Warning:  Trying to access array offset on null in /home/bb/public_html/panels.php on line 937
+[29-Oct-2025 15:01:02 Asia/Tehran] PHP Warning:  Undefined array key "expire" in /home/bb/public_html/panels.php on line 940
+[29-Oct-2025 15:01:02 Asia/Tehran] PHP Warning:  Trying to access array offset on null in /home/bb/public_html/Marzban.php on line 475
+[29-Oct-2025 15:01:02 Asia/Tehran] PHP Warning:  Trying to access array offset on null in /home/bb/public_html/panels.php on line 955
+[29-Oct-2025 15:01:02 Asia/Tehran] PHP Warning:  Trying to access array offset on null in /home/bb/public_html/panels.php on line 955
+[29-Oct-2025 15:01:02 Asia/Tehran] PHP Warning:  Trying to access array offset on null in /home/bb/public_html/panels.php on line 956
+[29-Oct-2025 15:01:02 Asia/Tehran] PHP Warning:  Trying to access array offset on null in /home/bb/public_html/panels.php on line 957
+[29-Oct-2025 15:01:02 Asia/Tehran] PHP Warning:  Undefined array key "proxy_settings" in /home/bb/public_html/panels.php on line 965
+[29-Oct-2025 15:01:02 Asia/Tehran] PHP Warning:  Undefined array key "status" in /home/bb/public_html/panels.php on line 968
+[29-Oct-2025 15:01:02 Asia/Tehran] PHP Warning:  Undefined array key "username" in /home/bb/public_html/panels.php on line 969
+[29-Oct-2025 15:01:02 Asia/Tehran] PHP Warning:  Undefined array key "data_limit" in /home/bb/public_html/panels.php on line 970
+[29-Oct-2025 15:01:02 Asia/Tehran] PHP Warning:  Undefined array key "online_at" in /home/bb/public_html/panels.php on line 972
+[29-Oct-2025 15:01:02 Asia/Tehran] PHP Warning:  Undefined array key "used_traffic" in /home/bb/public_html/panels.php on line 973
+[29-Oct-2025 15:01:02 Asia/Tehran] PHP Warning:  Undefined array key "data_limit_reset_strategy" in /home/bb/public_html/panels.php on line 979
+[29-Oct-2025 15:01:02 Asia/Tehran] PHP Warning:  Trying to access array offset on null in /home/bb/public_html/panels.php on line 936
+[29-Oct-2025 15:01:02 Asia/Tehran] PHP Warning:  Trying to access array offset on null in /home/bb/public_html/panels.php on line 937
+[29-Oct-2025 15:01:02 Asia/Tehran] PHP Warning:  Undefined array key "expire" in /home/bb/public_html/panels.php on line 940
+[29-Oct-2025 15:01:02 Asia/Tehran] PHP Warning:  Trying to access array offset on null in /home/bb/public_html/Marzban.php on line 475
+[29-Oct-2025 15:01:02 Asia/Tehran] PHP Warning:  Trying to access array offset on null in /home/bb/public_html/panels.php on line 955
+[29-Oct-2025 15:01:02 Asia/Tehran] PHP Warning:  Trying to access array offset on null in /home/bb/public_html/panels.php on line 955
+[29-Oct-2025 15:01:02 Asia/Tehran] PHP Warning:  Trying to access array offset on null in /home/bb/public_html/panels.php on line 956
+[29-Oct-2025 15:01:02 Asia/Tehran] PHP Warning:  Trying to access array offset on null in /home/bb/public_html/panels.php on line 957
+[29-Oct-2025 15:01:02 Asia/Tehran] PHP Warning:  Undefined array key "proxy_settings" in /home/bb/public_html/panels.php on line 965
+[29-Oct-2025 15:01:02 Asia/Tehran] PHP Warning:  Undefined array key "status" in /home/bb/public_html/panels.php on line 968
+[29-Oct-2025 15:01:02 Asia/Tehran] PHP Warning:  Undefined array key "username" in /home/bb/public_html/panels.php on line 969
+[29-Oct-2025 15:01:02 Asia/Tehran] PHP Warning:  Undefined array key "data_limit" in /home/bb/public_html/panels.php on line 970
+[29-Oct-2025 15:01:02 Asia/Tehran] PHP Warning:  Undefined array key "online_at" in /home/bb/public_html/panels.php on line 972
+[29-Oct-2025 15:01:02 Asia/Tehran] PHP Warning:  Undefined array key "used_traffic" in /home/bb/public_html/panels.php on line 973
+[29-Oct-2025 15:01:02 Asia/Tehran] PHP Warning:  Undefined array key "data_limit_reset_strategy" in /home/bb/public_html/panels.php on line 979
+[29-Oct-2025 15:01:02 Asia/Tehran] PHP Warning:  Trying to access array offset on null in /home/bb/public_html/panels.php on line 936
+[29-Oct-2025 15:01:02 Asia/Tehran] PHP Warning:  Trying to access array offset on null in /home/bb/public_html/panels.php on line 937
+[29-Oct-2025 15:01:02 Asia/Tehran] PHP Warning:  Undefined array key "expire" in /home/bb/public_html/panels.php on line 940
+[29-Oct-2025 15:01:03 Asia/Tehran] PHP Warning:  Trying to access array offset on null in /home/bb/public_html/Marzban.php on line 475
+[29-Oct-2025 15:01:03 Asia/Tehran] PHP Warning:  Trying to access array offset on null in /home/bb/public_html/panels.php on line 955
+[29-Oct-2025 15:01:03 Asia/Tehran] PHP Warning:  Trying to access array offset on null in /home/bb/public_html/panels.php on line 955
+[29-Oct-2025 15:01:03 Asia/Tehran] PHP Warning:  Trying to access array offset on null in /home/bb/public_html/panels.php on line 956
+[29-Oct-2025 15:01:03 Asia/Tehran] PHP Warning:  Trying to access array offset on null in /home/bb/public_html/panels.php on line 957
+[29-Oct-2025 15:01:03 Asia/Tehran] PHP Warning:  Undefined array key "proxy_settings" in /home/bb/public_html/panels.php on line 965
+[29-Oct-2025 15:01:03 Asia/Tehran] PHP Warning:  Undefined array key "status" in /home/bb/public_html/panels.php on line 968
+[29-Oct-2025 15:01:03 Asia/Tehran] PHP Warning:  Undefined array key "username" in /home/bb/public_html/panels.php on line 969
+[29-Oct-2025 15:01:03 Asia/Tehran] PHP Warning:  Undefined array key "data_limit" in /home/bb/public_html/panels.php on line 970
+[29-Oct-2025 15:01:03 Asia/Tehran] PHP Warning:  Undefined array key "online_at" in /home/bb/public_html/panels.php on line 972
+[29-Oct-2025 15:01:03 Asia/Tehran] PHP Warning:  Undefined array key "used_traffic" in /home/bb/public_html/panels.php on line 973
+[29-Oct-2025 15:01:03 Asia/Tehran] PHP Warning:  Undefined array key "data_limit_reset_strategy" in /home/bb/public_html/panels.php on line 979
+[29-Oct-2025 15:02:01 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 15:02:01 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 11:33:01 UTC] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 11:33:01 UTC] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 15:05:01 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 15:05:01 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 15:15:02 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 15:15:02 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 15:15:02 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 15:15:02 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 15:15:02 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 15:15:02 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 15:15:02 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 15:15:02 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 15:30:02 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 15:30:02 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 12:30:02 UTC] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 12:30:02 UTC] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 12:30:02 UTC] {"ok":false,"error_code":400,"description":"Bad Request: message thread not found"}
+[29-Oct-2025 12:30:02 UTC] {"ok":false,"error_code":400,"description":"Bad Request: message thread not found"}
+[29-Oct-2025 16:01:01 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 16:01:01 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 16:01:01 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 12:31:01 UTC] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 16:01:01 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 12:31:01 UTC] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 16:01:01 Asia/Tehran] {"error":"Failed to connect to 91.107.133.232 port 2010 after 29 ms: Connection refused"}
+[29-Oct-2025 16:01:01 Asia/Tehran] {"error":"Failed to connect to 91.107.133.232 port 2010 after 25 ms: Connection refused"}
+[29-Oct-2025 16:01:01 Asia/Tehran] {"error":"Failed to connect to 91.107.133.232 port 2010 after 25 ms: Connection refused"}
+[29-Oct-2025 16:01:01 Asia/Tehran] {"error":"Failed to connect to 91.107.133.232 port 2010 after 25 ms: Connection refused"}
+[29-Oct-2025 16:01:01 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 16:01:01 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 16:01:01 Asia/Tehran] {"error":"Failed to connect to 91.107.133.232 port 2010 after 28 ms: Connection refused"}
+[29-Oct-2025 16:01:01 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 16:01:01 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 16:01:02 Asia/Tehran] {"error":"Failed to connect to 91.107.133.232 port 2010 after 29 ms: Connection refused"}
+[29-Oct-2025 16:02:01 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 16:02:01 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 12:33:01 UTC] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 12:33:01 UTC] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 16:05:01 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 16:05:01 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 16:15:02 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 16:15:02 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 16:15:02 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 16:15:02 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 16:15:02 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 16:15:02 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 16:15:02 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 16:15:02 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 16:30:02 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 16:30:02 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 13:30:01 UTC] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 13:30:01 UTC] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 13:30:01 UTC] {"ok":false,"error_code":400,"description":"Bad Request: message thread not found"}
+[29-Oct-2025 13:30:02 UTC] {"ok":false,"error_code":400,"description":"Bad Request: message thread not found"}
+[29-Oct-2025 17:01:01 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 17:01:01 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 13:31:01 UTC] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 13:31:01 UTC] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 17:01:01 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 17:01:01 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 17:01:01 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 17:01:01 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 17:01:01 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 17:01:01 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 17:01:02 Asia/Tehran] {"error":"Failed to connect to 91.107.133.232 port 2010 after 25 ms: Connection refused"}
+[29-Oct-2025 17:01:02 Asia/Tehran] {"error":"Failed to connect to 91.107.133.232 port 2010 after 25 ms: Connection refused"}
+[29-Oct-2025 17:01:02 Asia/Tehran] {"error":"Failed to connect to 91.107.133.232 port 2010 after 25 ms: Connection refused"}
+[29-Oct-2025 17:01:02 Asia/Tehran] {"error":"Failed to connect to 91.107.133.232 port 2010 after 25 ms: Connection refused"}
+[29-Oct-2025 17:01:02 Asia/Tehran] {"error":"Failed to connect to 91.107.133.232 port 2010 after 25 ms: Connection refused"}
+[29-Oct-2025 17:01:02 Asia/Tehran] {"error":"Failed to connect to 91.107.133.232 port 2010 after 25 ms: Connection refused"}
+[29-Oct-2025 17:02:01 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 17:02:01 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 13:33:01 UTC] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 13:33:01 UTC] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 17:05:02 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 17:05:02 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 17:15:01 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 17:15:01 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 17:15:01 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 17:15:01 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 17:15:01 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 17:15:01 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 17:15:01 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 17:15:01 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 17:30:02 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 17:30:02 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 14:30:01 UTC] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 14:30:01 UTC] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 14:30:01 UTC] {"ok":false,"error_code":400,"description":"Bad Request: message thread not found"}
+[29-Oct-2025 14:30:02 UTC] {"ok":false,"error_code":400,"description":"Bad Request: message thread not found"}
+[29-Oct-2025 18:01:01 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:01:01 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:01:01 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:01:01 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 14:31:01 UTC] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 14:31:01 UTC] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:01:01 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:01:01 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:01:01 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:01:01 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:02:01 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:02:01 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 14:33:02 UTC] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 14:33:02 UTC] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:05:01 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:05:01 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:15:02 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:15:02 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:15:02 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:15:02 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:15:02 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:15:02 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:15:02 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:15:02 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}

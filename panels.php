@@ -12,6 +12,7 @@ require_once __DIR__ . '/WGDashboard.php';
 require_once __DIR__ . '/s_ui.php';
 require_once __DIR__ . '/ibsng.php';
 require_once __DIR__ . '/mikrotik.php';
+require_once __DIR__ . '/pasarguard.php';
 
 class ManagePanel
 {
@@ -368,6 +369,48 @@ class ManagePanel
                 $Output['username'] = $usernameC;
                 $Output['subscription_url'] = $password;
                 $Output['configs'] = [];
+            }
+        } elseif ($Get_Data_Panel['type'] == "pasarguard") {
+            //create user
+            $ConnectToPanel = pg_add_user($Get_Data_Panel['name_panel'], $data_limit, $usernameC, $expire, $note, $Get_Data_Product['data_limit_reset'], $Get_Data_Product['name_product']);
+            if (!empty($ConnectToPanel['status']) && $ConnectToPanel['status'] == 500) {
+                return array(
+                    'status' => 'Unsuccessful',
+                    'msg' => $ConnectToPanel['status']
+                );
+            }
+            if (!empty($ConnectToPanel['error'])) {
+                return array(
+                    'status' => 'Unsuccessful',
+                    'msg' => $ConnectToPanel['error']
+                );
+            }
+            $data_Output = json_decode($ConnectToPanel['body'], true);
+            if (!empty($data_Output['detail']) && $data_Output['detail']) {
+                $Output['status'] = 'Unsuccessful';
+                if ($data_Output['detail']) {
+                    $Output['msg'] = $data_Output['detail'];
+                } else {
+                    $Output['msg'] = '';
+                }
+            } else {
+                if (!preg_match('/^(https?:\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(:\d+)?((\/[^\s\/]+)+)?$/', $data_Output['subscription_url'])) {
+                    $data_Output['subscription_url'] = $Get_Data_Panel['url_panel'] . "/" . ltrim($data_Output['subscription_url'], "/");
+                }
+                if ($new_marzban) {
+                    $out_put_link = outputlunk($data_Output['subscription_url']);
+                    if (isBase64($out_put_link)) {
+                        $data_Output['links'] = base64_decode(outputlunk($data_Output['subscription_url']));
+                    }
+                    $data_Output['links'] = explode("\n", $data_Output['links']);
+                }
+                if ($inoice != false) {
+                    $data_Output['subscription_url'] = "https://$domainhosts/sub/" . $inoice['id_invoice'];
+                }
+                $Output['status'] = 'successful';
+                $Output['username'] = $data_Output['username'];
+                $Output['subscription_url'] = $data_Output['subscription_url'];
+                $Output['configs'] = $data_Output['links'];
             }
         } else {
             $Output['status'] = 'Unsuccessful';
@@ -870,6 +913,103 @@ class ManagePanel
                     'sub_last_user_agent' => null,
                 );
             }
+        } elseif ($Get_Data_Panel['type'] == "pasarguard") {
+            $UsernameData = pg_get_user($username, $Get_Data_Panel['name_panel']);
+            if (!empty($UsernameData['error'])) {
+                $Output = array(
+                    'status' => 'Unsuccessful',
+                    'msg' => $UsernameData['error']
+                );
+            } elseif (!empty($UsernameData['status']) && $UsernameData['status'] == 500) {
+                $Output = array(
+                    'status' => 'Unsuccessful',
+                    'msg' => $UsernameData['status']
+                );
+            } else {
+                $UsernameData = json_decode($UsernameData['body'], true);
+                if (!empty($UsernameData['detail'])) {
+                    return array(
+                        'status' => 'Unsuccessful',
+                        'msg' => $UsernameData['detail']
+                    );
+                }
+
+                // Handle subscription_url formatting
+                if (isset($UsernameData['subscription_url']) && !empty($UsernameData['subscription_url'])) {
+                    if (!preg_match('/^(https?:\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(:\d+)?((\/[^\s\/]+)+)?$/', $UsernameData['subscription_url'])) {
+                        $UsernameData['subscription_url'] = $Get_Data_Panel['url_panel'] . "/" . ltrim($UsernameData['subscription_url'], "/");
+                    }
+                } else {
+                    // Generate subscription URL if not in response
+                    $UsernameData['subscription_url'] = rtrim($Get_Data_Panel['url_panel'], '/') . '/sub/' . $username;
+                }
+
+                // Handle expire - Pasarguard returns ISO 8601 string or 0
+                $expire_timestamp = 0;
+                if (isset($UsernameData['expire'])) {
+                    if ($UsernameData['expire'] == 0 || $UsernameData['expire'] == "0") {
+                        $expire_timestamp = 0;
+                    } elseif (is_string($UsernameData['expire'])) {
+                        $expire_timestamp = strtotime($UsernameData['expire']);
+                    } else {
+                        $expire_timestamp = $UsernameData['expire'];
+                    }
+                }
+
+                // Extract links from subscription_url if needed
+                $links = array();
+                $sub_updated_at = null;
+                $sub_last_user_agent = null;
+
+                if ($new_marzban && isset($UsernameData['subscription_url'])) {
+                    $links_raw = outputlunk($UsernameData['subscription_url']);
+                    if (isBase64($links_raw)) {
+                        $links_raw = base64_decode($links_raw);
+                    }
+                    $links = explode("\n", trim($links_raw));
+
+                    // Try to get sub_update info (if available)
+                    $sublist_update = get_list_update($name_panel, $username);
+                    if (!empty($sublist_update['error'])) {
+                        // Ignore error, continue without sub_update info
+                    } elseif (!empty($sublist_update['status']) && $sublist_update['status'] == 500) {
+                        // Ignore error, continue without sub_update info
+                    } else {
+                        $sublist_update_data = json_decode($sublist_update['body'] ?? '{}', true);
+                        if (isset($sublist_update_data['updates'][0])) {
+                            $sub_updated_at = $sublist_update_data['updates'][0]['created_at'] ?? null;
+                            $sub_last_user_agent = $sublist_update_data['updates'][0]['user_agent'] ?? null;
+                        }
+                    }
+                }
+
+                if ($inoice != false) {
+                    $UsernameData['subscription_url'] = "https://$domainhosts/sub/" . $inoice['id_invoice'];
+                }
+
+                // Pasarguard uses proxy_settings (not proxies), map for consistency
+                $proxies_value = null;
+                if (isset($UsernameData['proxy_settings'])) {
+                    $proxies_value = $UsernameData['proxy_settings'];
+                } elseif (isset($UsernameData['proxies'])) {
+                    $proxies_value = $UsernameData['proxies'];
+                }
+
+                $Output = array(
+                    'status' => $UsernameData['status'] ?? 'active',
+                    'username' => $UsernameData['username'],
+                    'data_limit' => $UsernameData['data_limit'] ?? 0,
+                    'expire' => $expire_timestamp,
+                    'online_at' => $UsernameData['online_at'] ?? null,
+                    'used_traffic' => $UsernameData['used_traffic'] ?? 0,
+                    'links' => !empty($links) ? $links : array(),
+                    'subscription_url' => $UsernameData['subscription_url'],
+                    'sub_updated_at' => $sub_updated_at,
+                    'sub_last_user_agent' => $sub_last_user_agent,
+                    'uuid' => $proxies_value,
+                    'data_limit_reset' => $UsernameData['data_limit_reset_strategy'] ?? 'no_reset'
+                );
+            }
         } else {
             $Output = array(
                 'status' => 'Unsuccessful',
@@ -980,6 +1120,25 @@ class ManagePanel
                 'status' => 'Unsuccessful',
                 'msg' => 'panel not supported'
             );
+        } elseif ($Get_Data_Panel['type'] == "pasarguard") {
+            $revoke_sub = pg_revoke_sub($username, $name_panel);
+            if (isset($revoke_sub['detail']) && $revoke_sub['detail']) {
+                $Output = array(
+                    'status' => 'Unsuccessful',
+                    'msg' => $revoke_sub['detail']
+                );
+            } else {
+                $config = new ManagePanel();
+                $Data_User = $config->DataUser($name_panel, $username);
+                if (!preg_match('/^(https?:\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(:\d+)?((\/[^\s\/]+)+)?$/', $Data_User['subscription_url'])) {
+                    $Data_User['subscription_url'] = $Get_Data_Panel['url_panel'] . "/" . ltrim($Data_User['subscription_url'], "/");
+                }
+                $Output = array(
+                    'status' => 'successful',
+                    'configs' => $Data_User['links'],
+                    'subscription_url' => $Data_User['subscription_url']
+                );
+            }
         } elseif ($Get_Data_Panel['type'] == "s_ui") {
             $clients = GetClientsS_UI($username, $name_panel);
             $password = bin2hex(random_bytes(16));
@@ -1220,6 +1379,31 @@ class ManagePanel
                 );
             } else {
                 deleteUser_mikrotik($Get_Data_Panel['name_panel'], $UsernameData['.id']);
+                $Output = array(
+                    'status' => 'successful',
+                    'username' => $username,
+                );
+            }
+        } elseif ($Get_Data_Panel['type'] == "pasarguard") {
+            $UsernameData = pg_remove_user($Get_Data_Panel['name_panel'], $username);
+            if (!empty($UsernameData['status']) && $UsernameData['status'] != 200 && $UsernameData['status'] != 204) {
+                return array(
+                    'status' => 'Unsuccessful',
+                    'msg' => $UsernameData['status']
+                );
+            } elseif (!empty($UsernameData['error'])) {
+                return array(
+                    'status' => 'Unsuccessful',
+                    'msg' => $UsernameData['error']
+                );
+            }
+            $UsernameData = json_decode($UsernameData['body'] ?? '{}', true);
+            if (isset($UsernameData['detail']) && $UsernameData['detail'] != "User successfully deleted") {
+                $Output = array(
+                    'status' => 'Unsuccessful',
+                    'msg' => $UsernameData['detail'] ?? 'Unsuccessful'
+                );
+            } else {
                 $Output = array(
                     'status' => 'successful',
                     'username' => $username,
@@ -1486,6 +1670,30 @@ class ManagePanel
                 'status' => true,
                 'data' => $modify
             );
+        } elseif ($Get_Data_Panel['type'] == "pasarguard") {
+            $modify = pg_modify_user($name_panel, $username, $config);
+            if (!empty($modify['error'])) {
+                return array(
+                    'status' => false,
+                    'msg' => $modify['error']
+                );
+            } elseif (!empty($modify['status']) && $modify['status'] == 500) {
+                return array(
+                    'status' => false,
+                    'msg' => 'error code : ' . $modify['status']
+                );
+            }
+            $modifycheck = json_decode($modify['body'] ?? '{}', true);
+            if (!empty($modifycheck['detail'])) {
+                return array(
+                    'status' => false,
+                    'msg' => $modifycheck['detail']
+                );
+            }
+            return array(
+                'status' => true,
+                'data' => $modify
+            );
         }
     }
     function Change_status($username, $name_panel)
@@ -1724,6 +1932,30 @@ class ManagePanel
             return array(
                 'status' => true
             );
+        } elseif ($panel['type'] == "pasarguard") {
+            $reset = pg_reset_usage($username, $panel['name_panel']);
+            if (!empty($reset['status']) && $reset['status'] != 200) {
+                return array(
+                    'status' => false,
+                    'msg' => 'error code : ' . $reset['status']
+                );
+            } elseif (!empty($reset['error'])) {
+                return array(
+                    'status' => false,
+                    'msg' => 'error  : ' . $reset['error']
+                );
+            }
+            $reset = json_decode($reset['body'] ?? '{}', true);
+            if (!empty($reset['detail'])) {
+                return array(
+                    'status' => false,
+                    'msg' => $reset['detail']
+                );
+            }
+            return array(
+                'status' => true,
+                'msg' => 'successful'
+            );
         }
     }
     function extend($Method_extend, $new_limit, $time_day, $username, $code_product, $name_panel)
@@ -1759,7 +1991,7 @@ class ManagePanel
         $time_new = $time_day == 0 ? 0 : time() + $time_day * 86400;
         $time_old = $time_old == 0 ? time() : $time_old;
         $time_new_add = $time_day == 0 ? 0 : $time_old + ($time_day * 86400);
-        //inboud and proxies 
+        //inboud and proxies
         $inbound_id = isset($panel['inboundid']) ? $panel['inboundid'] : 1;
         $inbounds = is_string($panel['inbounds']) ? json_decode($panel['inbounds']) : "{}";
         $inbounds = $product['inbounds'] != null ? json_decode($product['inbounds']) : $inbounds;
@@ -1913,6 +2145,24 @@ class ManagePanel
                 "volume" => $data_limit_new,
                 "expiry" => $time_new
             );
+        } elseif ($panel['type'] == "pasarguard") {
+            // Pasarguard uses group_ids (not inbounds) and needs proper format
+            $group_ids = array();
+            if (is_array($inbounds)) {
+                $group_ids = array_map('intval', $inbounds);
+            } elseif (!empty($inbounds)) {
+                $group_ids = array_map('intval', json_decode($inbounds, true));
+            }
+
+            $data = array(
+                'data_limit' => $data_limit_new,
+                'expire' => $time_new,
+            );
+
+            // Only add group_ids if not empty
+            if (!empty($group_ids)) {
+                $data['group_ids'] = $group_ids;
+            }
         }
         $extend = $this->Modifyuser($username, $panel['name_panel'], $data);
         if ($extend['status'] == false) {
@@ -2026,6 +2276,23 @@ class ManagePanel
             $data = array(
                 "volume" => $new_limit,
             );
+        } elseif ($panel['type'] == "pasarguard") {
+            // Pasarguard uses group_ids (not inbounds) and needs proper format
+            $group_ids = array();
+            if (is_array($inbounds)) {
+                $group_ids = array_map('intval', $inbounds);
+            } elseif (!empty($inbounds)) {
+                $group_ids = array_map('intval', json_decode($inbounds, true));
+            }
+
+            $data = array(
+                'data_limit' => $new_limit,
+            );
+
+            // Only add group_ids if not empty
+            if (!empty($group_ids)) {
+                $data['group_ids'] = $group_ids;
+            }
         }
         $extra_volume = $this->Modifyuser($username_account, $panel['name_panel'], $data);
         if ($extra_volume['status'] == false) {
@@ -2144,6 +2411,23 @@ class ManagePanel
             $data = array(
                 "expiry" => $new_limit,
             );
+        } elseif ($panel['type'] == "pasarguard") {
+            // Pasarguard uses group_ids (not inbounds) and needs proper format
+            $group_ids = array();
+            if (is_array($inbounds)) {
+                $group_ids = array_map('intval', $inbounds);
+            } elseif (!empty($inbounds)) {
+                $group_ids = array_map('intval', json_decode($inbounds, true));
+            }
+
+            $data = array(
+                'expire' => $new_limit,
+            );
+
+            // Only add group_ids if not empty
+            if (!empty($group_ids)) {
+                $data['group_ids'] = $group_ids;
+            }
         }
         $extra_time = $this->Modifyuser($username_account, $panel['name_panel'], $data);
         if ($extra_time['status'] == false) {
