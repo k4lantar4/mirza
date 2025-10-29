@@ -945,3 +945,19 @@ Stack trace:
 [29-Oct-2025 10:01:01 Asia/Tehran] {"status":null,"body":null,"error":"Failed to connect to 91.107.133.232 port 2010 after 25 ms: Connection refused"}
 [29-Oct-2025 10:01:01 Asia/Tehran] {"status":null,"body":null,"error":"Failed to connect to 91.107.133.232 port 2010 after 25 ms: Connection refused"}
 [29-Oct-2025 10:01:01 Asia/Tehran] {"status":null,"body":null,"error":"Failed to connect to 91.107.133.232 port 2010 after 25 ms: Connection refused"}
+[29-Oct-2025 07:30:01 UTC] {"ok":false,"error_code":400,"description":"Bad Request: message thread not found"}
+[29-Oct-2025 07:30:02 UTC] {"ok":false,"error_code":400,"description":"Bad Request: message thread not found"}
+[29-Oct-2025 11:01:01 Asia/Tehran] {"status":null,"body":null,"error":"Failed to connect to 91.107.133.232 port 2010 after 25 ms: Connection refused"}
+[29-Oct-2025 11:01:01 Asia/Tehran] {"status":null,"body":null,"error":"Failed to connect to 91.107.133.232 port 2010 after 25 ms: Connection refused"}
+[29-Oct-2025 11:01:01 Asia/Tehran] {"status":null,"body":null,"error":"Failed to connect to 91.107.133.232 port 2010 after 25 ms: Connection refused"}
+[29-Oct-2025 11:01:01 Asia/Tehran] {"status":null,"body":null,"error":"Failed to connect to 91.107.133.232 port 2010 after 25 ms: Connection refused"}
+[29-Oct-2025 11:01:01 Asia/Tehran] {"status":null,"body":null,"error":"Failed to connect to 91.107.133.232 port 2010 after 25 ms: Connection refused"}
+[29-Oct-2025 11:01:01 Asia/Tehran] {"status":null,"body":null,"error":"Failed to connect to 91.107.133.232 port 2010 after 25 ms: Connection refused"}
+[29-Oct-2025 08:30:02 UTC] {"ok":false,"error_code":400,"description":"Bad Request: message thread not found"}
+[29-Oct-2025 08:30:02 UTC] {"ok":false,"error_code":400,"description":"Bad Request: message thread not found"}
+[29-Oct-2025 12:01:01 Asia/Tehran] {"status":null,"body":null,"error":"Failed to connect to 91.107.133.232 port 2010 after 25 ms: Connection refused"}
+[29-Oct-2025 12:01:01 Asia/Tehran] {"status":null,"body":null,"error":"Failed to connect to 91.107.133.232 port 2010 after 25 ms: Connection refused"}
+[29-Oct-2025 12:01:01 Asia/Tehran] {"status":null,"body":null,"error":"Failed to connect to 91.107.133.232 port 2010 after 25 ms: Connection refused"}
+[29-Oct-2025 12:01:01 Asia/Tehran] {"status":null,"body":null,"error":"Failed to connect to 91.107.133.232 port 2010 after 25 ms: Connection refused"}
+[29-Oct-2025 12:01:01 Asia/Tehran] {"status":null,"body":null,"error":"Failed to connect to 91.107.133.232 port 2010 after 25 ms: Connection refused"}
+[29-Oct-2025 12:01:02 Asia/Tehran] {"status":null,"body":null,"error":"Failed to connect to 91.107.133.232 port 2010 after 26 ms: Connection refused"}
