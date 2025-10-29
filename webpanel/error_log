@@ -1,0 +1,31 @@
+[28-Oct-2025 20:02:26 Asia/Tehran] PHP Warning:  Undefined array key "username_admin" in /home/bb/public_html/webpanel/index.php on line 66
+[28-Oct-2025 20:02:55 Asia/Tehran] PHP Warning:  Undefined array key "username_admin" in /home/bb/public_html/webpanel/index.php on line 66
+[28-Oct-2025 20:03:03 Asia/Tehran] PHP Warning:  Undefined variable $users_stmt in /home/bb/public_html/webpanel/users.php on line 28
+[28-Oct-2025 20:03:03 Asia/Tehran] PHP Fatal error:  Uncaught Error: Call to a member function fetchAll() on null in /home/bb/public_html/webpanel/users.php:28
+Stack trace:
+#0 {main}
+  thrown in /home/bb/public_html/webpanel/users.php on line 28
+[28-Oct-2025 20:08:06 Asia/Tehran] PHP Warning:  Undefined variable $users_stmt in /home/bb/public_html/webpanel/users.php on line 28
+[28-Oct-2025 20:08:06 Asia/Tehran] PHP Fatal error:  Uncaught Error: Call to a member function fetchAll() on null in /home/bb/public_html/webpanel/users.php:28
+Stack trace:
+#0 {main}
+  thrown in /home/bb/public_html/webpanel/users.php on line 28
+[28-Oct-2025 20:08:08 Asia/Tehran] PHP Warning:  Undefined variable $users_stmt in /home/bb/public_html/webpanel/users.php on line 28
+[28-Oct-2025 20:08:08 Asia/Tehran] PHP Fatal error:  Uncaught Error: Call to a member function fetchAll() on null in /home/bb/public_html/webpanel/users.php:28
+Stack trace:
+#0 {main}
+  thrown in /home/bb/public_html/webpanel/users.php on line 28
+[28-Oct-2025 20:12:05 Asia/Tehran] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'p.id_payment' in 'ORDER BY' in /home/bb/public_html/webpanel/payments.php:40
+Stack trace:
+#0 /home/bb/public_html/webpanel/payments.php(40): PDO->query()
+#1 {main}
+  thrown in /home/bb/public_html/webpanel/payments.php on line 40
+[28-Oct-2025 20:47:48 Asia/Tehran] PHP Warning:  Undefined array key "username_admin" in /home/bb/public_html/webpanel/index.php on line 66
+[28-Oct-2025 20:48:11 Asia/Tehran] PHP Warning:  Undefined array key "username_admin" in /home/bb/public_html/webpanel/index.php on line 66
+[28-Oct-2025 21:08:54 Asia/Tehran] PHP Warning:  Undefined array key "username_admin" in /home/bb/public_html/webpanel/index.php on line 66
+[28-Oct-2025 21:08:57 Asia/Tehran] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'p.id_payment' in 'ORDER BY' in /home/bb/public_html/webpanel/payments.php:40
+Stack trace:
+#0 /home/bb/public_html/webpanel/payments.php(40): PDO->query()
+#1 {main}
+  thrown in /home/bb/public_html/webpanel/payments.php on line 40
+[29-Oct-2025 10:13:18 Asia/Tehran] PHP Warning:  Undefined array key "username_admin" in /home/bb/public_html/webpanel/index.php on line 66

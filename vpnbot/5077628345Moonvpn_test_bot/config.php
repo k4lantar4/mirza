@@ -1,0 +1,3 @@
+<?php
+
+$ApiToken = "8227803529:AAGKuCLRYBHgNXmubKtpPYlkWEYvCPCVT0A";
