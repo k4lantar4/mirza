@@ -456,3 +456,90 @@ Stack trace:
 [29-Oct-2025 18:13:47 Asia/Tehran] PHP Warning:  Uninitialized string offset 0 in /home/bb/public_html/index.php on line 1353
 [29-Oct-2025 18:13:51 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
 [29-Oct-2025 18:13:51 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:30:56 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:30:56 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:31:01 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:31:01 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:31:07 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:31:07 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:32:09 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:32:09 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:32:23 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:32:23 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:32:29 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:32:29 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:32:32 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:32:32 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:32:38 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:32:38 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:34:08 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:34:08 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:34:08 Asia/Tehran] PHP Warning:  Uninitialized string offset 0 in /home/bb/public_html/index.php on line 1279
+[29-Oct-2025 18:34:08 Asia/Tehran] PHP Warning:  Trying to access array offset on false in /home/bb/public_html/Marzban.php on line 8
+[29-Oct-2025 18:34:08 Asia/Tehran] PHP Warning:  Trying to access array offset on false in /home/bb/public_html/Marzban.php on line 9
+[29-Oct-2025 18:34:08 Asia/Tehran] PHP Warning:  Trying to access array offset on false in /home/bb/public_html/Marzban.php on line 10
+[29-Oct-2025 18:34:08 Asia/Tehran] PHP Warning:  Trying to access array offset on false in /home/bb/public_html/Marzban.php on line 11
+[29-Oct-2025 18:34:13 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:34:13 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:34:19 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:34:19 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:34:23 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:34:23 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:34:26 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:34:26 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:34:53 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:34:53 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:34:56 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:34:56 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:34:59 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:34:59 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:35:11 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:35:11 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:35:14 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:35:14 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:35:17 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:35:17 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:35:23 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:35:23 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:35:23 Asia/Tehran] PHP Warning:  Uninitialized string offset 0 in /home/bb/public_html/index.php on line 1353
+[29-Oct-2025 18:35:27 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:35:27 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:36:34 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:36:34 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:36:36 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:36:36 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:36:49 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:36:49 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:36:52 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:36:52 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:36:56 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:36:56 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:36:59 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:36:59 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:37:06 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:37:06 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:37:09 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:37:09 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:37:12 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:37:12 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:37:21 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:37:21 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:37:26 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:37:26 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:38:26 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:38:26 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:38:30 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:38:30 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:38:33 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:38:33 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:38:33 Asia/Tehran] 
+[29-Oct-2025 18:38:35 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:38:35 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:38:37 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:38:37 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:38:39 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:38:39 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:38:41 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:38:41 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:39:27 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:39:27 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}

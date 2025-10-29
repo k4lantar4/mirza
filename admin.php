@@ -9608,6 +9608,31 @@ elseif ($text == "🫣 مخفی کردن پنل برای یک کاربر" && $ad
             $servies[] = $service;
         }
         $datainbound = json_encode($servies);
+    } elseif ($marzban_list_get['type'] == "pasarguard") {
+        require_once __DIR__ . '/pasarguard.php';
+        $DataUserOut = pg_get_user($text, $marzban_list_get['name_panel']);
+        if (!empty($DataUserOut['error'])) {
+            sendmessage($from_id, "❌ خطا در دریافت اطلاعات کاربر: " . $DataUserOut['error'], $shopkeyboard, 'HTML');
+            return;
+        }
+        if (!empty($DataUserOut['status']) && $DataUserOut['status'] != 200) {
+            sendmessage($from_id, "❌ کاربر در پنل وجود ندارد", $shopkeyboard, 'HTML');
+            return;
+        }
+        $DataUserOut = json_decode($DataUserOut['body'], true);
+        if ((isset($DataUserOut['detail']) && $DataUserOut['detail']) || !isset($DataUserOut['username'])) {
+            sendmessage($from_id, "❌ کاربر در پنل وجود ندارد", $shopkeyboard, 'HTML');
+            return;
+        }
+
+        // Extract group_ids from user response (Pasarguard uses group_ids, not inbounds)
+        if (isset($DataUserOut['group_ids']) && is_array($DataUserOut['group_ids']) && !empty($DataUserOut['group_ids'])) {
+            // Save group_ids as JSON array to product.inbounds
+            $datainbound = json_encode($DataUserOut['group_ids']);
+        } else {
+            // If user has no groups, return empty array
+            $datainbound = json_encode(array());
+        }
     } elseif ($marzban_list_get['type'] == "ibsng" || $marzban_list_get['type'] == "mikrotik") {
         $datainbound = $text;
     } else {

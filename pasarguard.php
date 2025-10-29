@@ -400,4 +400,289 @@ function pg_remove_user($location, $username)
     return $res;
 }
 
+function pg_get_inbounds($location)
+{
+    $panel = select("marzban_panel", "*", "name_panel", $location, "select");
+    $Check_token = pg_token_panel($panel['code_panel']);
+    if (!empty($Check_token['error'])) {
+        return array("error" => $Check_token['error']);
+    }
+    if (!isset($Check_token['access_token'])) {
+        return array("error" => "Token not found");
+    }
+
+    // Pasarguard uses GET /api/inbounds like Marzban
+    $url = rtrim($panel['url_panel'], '/') . '/api/inbounds';
+
+    $headers = array(
+        'accept: application/json'
+    );
+
+    $req = new CurlRequest($url);
+    $req->setHeaders($headers);
+    $req->setBearerToken($Check_token['access_token']);
+    $response = $req->get();
+
+    if (!empty($response['error'])) {
+        return array("error" => $response['error']);
+    }
+
+    // Parse response and return inbounds/groups
+    $inbounds = json_decode($response['body'], true);
+    return $inbounds;
+}
+
+function pg_get_user_usage($username, $location)
+{
+    $panel = select("marzban_panel", "*", "name_panel", $location, "select");
+    $Check_token = pg_token_panel($panel['code_panel']);
+    if (!empty($Check_token['error'])) {
+        return array("error" => $Check_token['error']);
+    }
+    if (!isset($Check_token['access_token'])) {
+        return array("error" => "Token not found");
+    }
+
+    // Pasarguard uses GET /api/user/{username}/usage
+    $url = rtrim($panel['url_panel'], '/') . '/api/user/' . $username . '/usage';
+
+    $headers = array(
+        'accept: application/json'
+    );
+
+    $req = new CurlRequest($url);
+    $req->setHeaders($headers);
+    $req->setBearerToken($Check_token['access_token']);
+    $response = $req->get();
+
+    return $response;
+}
+
+function pg_check_panel_status($location)
+{
+    $panel = select("marzban_panel", "*", "name_panel", $location, "select");
+    $Check_token = pg_token_panel($panel['code_panel']);
+    if (!empty($Check_token['error'])) {
+        return array("error" => $Check_token['error'], "status" => false);
+    }
+    if (!isset($Check_token['access_token'])) {
+        return array("error" => "Token not found", "status" => false);
+    }
+
+    // Try GET /api/admin to verify panel connectivity
+    $url = rtrim($panel['url_panel'], '/') . '/api/admin';
+
+    $headers = array(
+        'accept: application/json'
+    );
+
+    $req = new CurlRequest($url);
+    $req->setHeaders($headers);
+    $req->setBearerToken($Check_token['access_token']);
+    $response = $req->get();
+
+    if (!empty($response['error'])) {
+        return array("error" => $response['error'], "status" => false);
+    }
+
+    if (isset($response['status']) && $response['status'] == 200) {
+        return array("status" => true, "message" => "Panel is connected");
+    }
+
+    return $response;
+}
+
+function pg_get_expired_users($location)
+{
+    $panel = select("marzban_panel", "*", "name_panel", $location, "select");
+    $Check_token = pg_token_panel($panel['code_panel']);
+    if (!empty($Check_token['error'])) {
+        return array("error" => $Check_token['error']);
+    }
+    if (!isset($Check_token['access_token'])) {
+        return array("error" => "Token not found");
+    }
+
+    // Pasarguard uses GET /api/users/expired
+    $url = rtrim($panel['url_panel'], '/') . '/api/users/expired';
+
+    $headers = array(
+        'accept: application/json'
+    );
+
+    $req = new CurlRequest($url);
+    $req->setHeaders($headers);
+    $req->setBearerToken($Check_token['access_token']);
+    $response = $req->get();
+
+    return $response;
+}
+
+function pg_delete_expired_users($location)
+{
+    $panel = select("marzban_panel", "*", "name_panel", $location, "select");
+    $Check_token = pg_token_panel($panel['code_panel']);
+    if (!empty($Check_token['error'])) {
+        return array("error" => $Check_token['error']);
+    }
+    if (!isset($Check_token['access_token'])) {
+        return array("error" => "Token not found");
+    }
+
+    // Pasarguard uses DELETE /api/users/expired
+    $url = rtrim($panel['url_panel'], '/') . '/api/users/expired';
+
+    $headers = array(
+        'accept: application/json'
+    );
+
+    $req = new CurlRequest($url);
+    $req->setHeaders($headers);
+    $req->setBearerToken($Check_token['access_token']);
+    $response = $req->delete();
+
+    return $response;
+}
+
+function pg_bulk_reset_users($location)
+{
+    $panel = select("marzban_panel", "*", "name_panel", $location, "select");
+    $Check_token = pg_token_panel($panel['code_panel']);
+    if (!empty($Check_token['error'])) {
+        return array("error" => $Check_token['error']);
+    }
+    if (!isset($Check_token['access_token'])) {
+        return array("error" => "Token not found");
+    }
+
+    // Pasarguard uses POST /api/users/reset
+    $url = rtrim($panel['url_panel'], '/') . '/api/users/reset';
+
+    $headers = array(
+        'accept: application/json'
+    );
+
+    $req = new CurlRequest($url);
+    $req->setHeaders($headers);
+    $req->setBearerToken($Check_token['access_token']);
+    $response = $req->post(array());
+
+    return $response;
+}
+
+function pg_bulk_expire_users($location, $data)
+{
+    // data should contain: usernames (array), expire (timestamp or 0)
+    $panel = select("marzban_panel", "*", "name_panel", $location, "select");
+    $Check_token = pg_token_panel($panel['code_panel']);
+    if (!empty($Check_token['error'])) {
+        return array("error" => $Check_token['error']);
+    }
+    if (!isset($Check_token['access_token'])) {
+        return array("error" => "Token not found");
+    }
+
+    // Pasarguard uses POST /api/users/bulk/expire
+    $url = rtrim($panel['url_panel'], '/') . '/api/users/bulk/expire';
+
+    // Prepare request data
+    $request_data = array();
+    if (isset($data['usernames']) && is_array($data['usernames'])) {
+        $request_data['usernames'] = $data['usernames'];
+    }
+    if (isset($data['expire'])) {
+        if ($data['expire'] == 0) {
+            $request_data['expire'] = 0;
+        } elseif (is_numeric($data['expire'])) {
+            $request_data['expire'] = date('c', $data['expire']);
+        } else {
+            $request_data['expire'] = $data['expire'];
+        }
+    }
+
+    $headers = array(
+        'Content-Type: application/json',
+        'accept: application/json'
+    );
+
+    $req = new CurlRequest($url);
+    $req->setHeaders($headers);
+    $req->setBearerToken($Check_token['access_token']);
+    $response = $req->post(json_encode($request_data));
+
+    return $response;
+}
+
+function pg_bulk_data_limit($location, $data)
+{
+    // data should contain: usernames (array), data_limit (bytes)
+    $panel = select("marzban_panel", "*", "name_panel", $location, "select");
+    $Check_token = pg_token_panel($panel['code_panel']);
+    if (!empty($Check_token['error'])) {
+        return array("error" => $Check_token['error']);
+    }
+    if (!isset($Check_token['access_token'])) {
+        return array("error" => "Token not found");
+    }
+
+    // Pasarguard uses POST /api/users/bulk/data_limit
+    $url = rtrim($panel['url_panel'], '/') . '/api/users/bulk/data_limit';
+
+    $request_data = array();
+    if (isset($data['usernames']) && is_array($data['usernames'])) {
+        $request_data['usernames'] = $data['usernames'];
+    }
+    if (isset($data['data_limit'])) {
+        $request_data['data_limit'] = $data['data_limit'];
+    }
+
+    $headers = array(
+        'Content-Type: application/json',
+        'accept: application/json'
+    );
+
+    $req = new CurlRequest($url);
+    $req->setHeaders($headers);
+    $req->setBearerToken($Check_token['access_token']);
+    $response = $req->post(json_encode($request_data));
+
+    return $response;
+}
+
+function pg_bulk_proxy_settings($location, $data)
+{
+    // data should contain: usernames (array), proxy_settings (object)
+    $panel = select("marzban_panel", "*", "name_panel", $location, "select");
+    $Check_token = pg_token_panel($panel['code_panel']);
+    if (!empty($Check_token['error'])) {
+        return array("error" => $Check_token['error']);
+    }
+    if (!isset($Check_token['access_token'])) {
+        return array("error" => "Token not found");
+    }
+
+    // Pasarguard uses POST /api/users/bulk/proxy_settings
+    $url = rtrim($panel['url_panel'], '/') . '/api/users/bulk/proxy_settings';
+
+    $request_data = array();
+    if (isset($data['usernames']) && is_array($data['usernames'])) {
+        $request_data['usernames'] = $data['usernames'];
+    }
+    if (isset($data['proxy_settings'])) {
+        $request_data['proxy_settings'] = $data['proxy_settings'];
+    }
+
+    $headers = array(
+        'Content-Type: application/json',
+        'accept: application/json'
+    );
+
+    $req = new CurlRequest($url);
+    $req->setHeaders($headers);
+    $req->setBearerToken($Check_token['access_token']);
+    $response = $req->post(json_encode($request_data));
+
+    return $response;
+}
+
 

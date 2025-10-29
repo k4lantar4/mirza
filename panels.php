@@ -962,13 +962,33 @@ class ManagePanel
                 $sub_last_user_agent = null;
 
                 if ($new_marzban && isset($UsernameData['subscription_url'])) {
-                    $links_raw = outputlunk($UsernameData['subscription_url']);
-                    if (isBase64($links_raw)) {
-                        $links_raw = base64_decode($links_raw);
+                    // For Pasarguard, subscription_url might be direct URL (not base64-wrapped like Marzban)
+                    // Check if it's already a valid URL that starts with http/https
+                    if (preg_match('/^https?:\/\//', $UsernameData['subscription_url'])) {
+                        // Direct URL - try to fetch it to get links
+                        $links_raw = outputlunk($UsernameData['subscription_url']);
+                        if ($links_raw && !isBase64($links_raw)) {
+                            // Direct content (not base64)
+                            $links = explode("\n", trim($links_raw));
+                        } elseif ($links_raw && isBase64($links_raw)) {
+                            // Base64 encoded
+                            $links_raw = base64_decode($links_raw);
+                            $links = explode("\n", trim($links_raw));
+                        } else {
+                            // If fetch failed, use subscription_url as single link
+                            $links = array($UsernameData['subscription_url']);
+                        }
+                    } else {
+                        // Not a full URL - try Marzban-style base64 decode
+                        $links_raw = outputlunk($UsernameData['subscription_url']);
+                        if (isBase64($links_raw)) {
+                            $links_raw = base64_decode($links_raw);
+                        }
+                        $links = explode("\n", trim($links_raw));
                     }
-                    $links = explode("\n", trim($links_raw));
 
-                    // Try to get sub_update info (if available)
+                    // Try to get sub_update info (if available - Marzban style)
+                    // Note: Pasarguard has its own /api/user/{username}/sub_update endpoint but we use Marzban's for now
                     $sublist_update = get_list_update($name_panel, $username);
                     if (!empty($sublist_update['error'])) {
                         // Ignore error, continue without sub_update info
@@ -1716,6 +1736,19 @@ class ManagePanel
             return;
         }
         if ($Get_Data_Panel['type'] == "marzban") {
+            if ($DataUserOut['status'] == "active") {
+                $status = "disabled";
+            } else {
+                $status = "active";
+            }
+            $configs = array("status" => $status);
+            $ManagePanel->Modifyuser($username, $name_panel, $configs);
+            $Output = array(
+                'status' => 'successful',
+                'msg' => null
+            );
+        } elseif ($Get_Data_Panel['type'] == "pasarguard") {
+            // Pasarguard uses same status toggle as Marzban
             if ($DataUserOut['status'] == "active") {
                 $status = "disabled";
             } else {

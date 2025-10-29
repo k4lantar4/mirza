@@ -449,15 +449,58 @@ switch ($data['actions'] ?? '') {
                 $servies[] = $service;
             }
             $datainbound = json_encode($servies);
+        } elseif ($panel['type'] == "pasarguard") {
+            require_once __DIR__ . '/../pasarguard.php';
+            $DataUserOut = pg_get_user($data['input'], $panel['name_panel']);
+            if (!empty($DataUserOut['error']))
+                sendJsonResponse(false, $DataUserOut['error'], [], 200);
+            if (!empty($DataUserOut['status']) && $DataUserOut['status'] != 200)
+                sendJsonResponse(false, $DataUserOut['status'], [], 200);
+            $DataUserOut = json_decode($DataUserOut['body'], true);
+            if ((isset($DataUserOut['detail']) && $DataUserOut['detail']) || !isset($DataUserOut['username'])) {
+                sendJsonResponse(false, "User Not Found", [], 200);
+            }
+
+            // Extract group_ids from user response (Pasarguard uses group_ids, not inbounds)
+            if (isset($DataUserOut['group_ids']) && is_array($DataUserOut['group_ids']) && !empty($DataUserOut['group_ids'])) {
+                // Save group_ids as JSON array to product.inbounds
+                $datainbound = json_encode($DataUserOut['group_ids']);
+            } else {
+                // If user has no groups, return empty array
+                $datainbound = json_encode(array());
+            }
+
+            // Also update proxies if available (for consistency with other panels)
+            if (isset($DataUserOut['proxy_settings']) && !empty($DataUserOut['proxy_settings'])) {
+                $proxy_output = json_encode($DataUserOut['proxy_settings']);
+                $stmt = $pdo->prepare("UPDATE product SET proxies = :proxies WHERE id = :id_product");
+                $stmt->bindParam(':proxies', $proxy_output);
+                $stmt->bindParam(':id_product', $data['id']);
+                $stmt->execute();
+            }
+
+            // Save group_ids to product.inbounds (Pasarguard stores group_ids in inbounds column for products)
+            $stmt = $pdo->prepare("UPDATE product SET inbounds = :inbounds WHERE id = :id_product ");
+            $stmt->bindParam(':inbounds', $datainbound);
+            $stmt->bindParam(':id_product', $data['id']);
+            $stmt->execute();
         } elseif ($panel['type'] == "ibsng" || $panel['type'] == "mikrotik") {
             $datainbound = $data['input'];
+            $stmt = $pdo->prepare("UPDATE product SET inbounds = :inbounds WHERE id = :id_product ");
+            $stmt->bindParam(':inbounds', $datainbound);
+            $stmt->bindParam(':id_product', $data['id']);
+            $stmt->execute();
         } else {
             sendJsonResponse(false, "panel_not_support_options", [], 200);
         }
-        $stmt = $pdo->prepare("UPDATE product SET inbounds = :inbounds WHERE id = :id_product ");
-        $stmt->bindParam(':inbounds', $datainbound);
-        $stmt->bindParam(':id_product', $data['id']);
-        $stmt->execute();
+
+        // For all other panel types (except pasarguard, ibsng, mikrotik which already executed), update inbounds
+        if ($panel['type'] != "pasarguard" && $panel['type'] != "ibsng" && $panel['type'] != "mikrotik") {
+            $stmt = $pdo->prepare("UPDATE product SET inbounds = :inbounds WHERE id = :id_product ");
+            $stmt->bindParam(':inbounds', $datainbound);
+            $stmt->bindParam(':id_product', $data['id']);
+            $stmt->execute();
+        }
         sendJsonResponse(true, "successfully", [], 200);
     case 'remove_inbounds':
         validateMethod('POST', $method);
