@@ -1025,3 +1025,19 @@
 [29-Oct-2025 18:05:56 Asia/Tehran] PHP Warning:  Trying to access array offset on false in /home/bb/public_html/panels.php on line 864
 [29-Oct-2025 18:05:56 Asia/Tehran] PHP Warning:  Trying to access array offset on false in /home/bb/public_html/panels.php on line 889
 [29-Oct-2025 18:05:56 Asia/Tehran] PHP Warning:  Trying to access array offset on false in /home/bb/public_html/panels.php on line 916
+[29-Oct-2025 15:51:37 UTC] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 15:51:37 UTC] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 15:51:38 UTC] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 15:51:38 UTC] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 15:51:38 UTC] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 15:51:38 UTC] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 15:51:39 UTC] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 15:51:39 UTC] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 15:51:43 UTC] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 15:51:43 UTC] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 16:17:25 UTC] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 16:17:25 UTC] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 16:17:26 UTC] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 16:17:26 UTC] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 16:17:27 UTC] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 16:17:27 UTC] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}

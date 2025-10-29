@@ -796,8 +796,8 @@ switch ($data['actions']) {
             ));
             $dataoutput['msg'] = json_encode($dataoutput['msg']);
 
-            $texterros = "⭕️ خطای ساخت اشتراک 
-✍️ دلیل خطا : 
+            $texterros = "⭕️ خطای ساخت اشتراک
+✍️ دلیل خطا :
 {$dataoutput['msg']}
 آیدی کابر : {$user_info['id']}
 نام کاربری کاربر : @{$user_info['username']}
@@ -816,9 +816,29 @@ switch ($data['actions']) {
         $output_config_link = $panel['sublink'] == "onsublink" ? $dataoutput['subscription_url'] : "";
         if ($panel['config'] == "onconfig" && is_array($dataoutput['configs'])) {
             foreach ($dataoutput['configs'] as $link) {
-                $config .= "\n" . $link;
+                $link = trim($link);
+                if (!empty($link)) {
+                    $config .= "\n" . $link;
+                }
             }
         }
+
+        // Format config links - each link in separate <code> tag for easy copy in Telegram
+        $formatConfigLinks = function($links_text) {
+            if (empty(trim($links_text))) return "";
+            $lines = explode("\n", trim($links_text));
+            $formatted = "";
+            foreach ($lines as $line) {
+                $line = trim($line);
+                if (!empty($line)) {
+                    $formatted .= "<code>" . htmlspecialchars($line, ENT_QUOTES, 'UTF-8') . "</code>\n";
+                }
+            }
+            return trim($formatted);
+        };
+
+        $formatted_config = $formatConfigLinks($config);
+        $formatted_subscription = $formatConfigLinks($output_config_link);
         error_log(json_encode($datatextbotget));
         $datatextbot['textafterpay'] = $panel['type'] == "Manualsale" ? $datatextbot['textmanual'] : $datatextbot['textafterpay'];
         $datatextbot['textafterpay'] = $panel['type'] == "WGDashboard" ? $datatextbot['text_wgdashboard'] :  $datatextbot['textafterpay'];
@@ -830,9 +850,9 @@ switch ($data['actions']) {
         $textcreatuser = str_replace('{location}', $panel['name_panel'], $textcreatuser);
         $textcreatuser = str_replace('{day}', $product['Service_time'], $textcreatuser);
         $textcreatuser = str_replace('{volume}', $product['Volume_constraint'], $textcreatuser);
-        $textcreatuser = str_replace('{config}', "<code>{$output_config_link}</code>", $textcreatuser);
-        $textcreatuser = str_replace('{links}', $config, $textcreatuser);
-        $textcreatuser = str_replace('{links2}', $output_config_link, $textcreatuser);
+        $textcreatuser = str_replace('{config}', $formatted_subscription, $textcreatuser);
+        $textcreatuser = str_replace('{links}', $formatted_config, $textcreatuser);
+        $textcreatuser = str_replace('{links2}', $formatted_subscription, $textcreatuser);
         sendMessageService($panel, $dataoutput['configs'], $output_config_link, $user_info['username'], null, $textcreatuser, $randomString, $user_info['id'], $image = '../images.jpg');
         if (intval($product['price_product']) != 0) {
             $Balance_prim = $user_info['Balance'] - $product['price_product'];
@@ -866,11 +886,11 @@ switch ($data['actions']) {
                     update("user", "Balance", $Balance_prim, "id", $user_info['affiliates']);
                     $result = number_format($result);
                     $dateacc = date('Y/m/d H:i:s');
-                    $textadd = "🎁  پرداخت پورسانت 
-            
+                    $textadd = "🎁  پرداخت پورسانت
+
             مبلغ $result تومان به حساب شما از طرف  زیر مجموعه تان به کیف پول شما واریز گردید";
                     $textreportport = "
-    مبلغ $result به کاربر {$user_info['affiliates']} برای پورسانت از کاربر {$user_info['id']} واریز گردید 
+    مبلغ $result به کاربر {$user_info['affiliates']} برای پورسانت از کاربر {$user_info['id']} واریز گردید
     تایم : $dateacc";
                     if (strlen($setting['Channel_Report']) > 0) {
                         telegram('sendmessage', [
@@ -894,11 +914,11 @@ switch ($data['actions']) {
                     update("user", "Balance", $Balance_prim, "id", $user_info['affiliates']);
                     $result = number_format($result);
                     $dateacc = date('Y/m/d H:i:s');
-                    $textadd = "🎁  پرداخت پورسانت 
-        
+                    $textadd = "🎁  پرداخت پورسانت
+
         مبلغ $result تومان به حساب شما از طرف  زیر مجموعه تان به کیف پول شما واریز گردید";
                     $textreportport = "
-مبلغ $result به کاربر {$user_info['affiliates']} برای پورسانت از کاربر {$user_info['id']} واریز گردید 
+مبلغ $result به کاربر {$user_info['affiliates']} برای پورسانت از کاربر {$user_info['id']} واریز گردید
 تایم : $dateacc";
                     if (strlen($setting['Channel_Report']) > 0) {
                         telegram('sendmessage', [
@@ -932,7 +952,7 @@ switch ($data['actions']) {
         ]);
         $timejalali = jdate('Y/m/d H:i:s');
         $text_report = "📣 جزئیات ساخت اکانت در مینی اپ ثبت شد .
-        
+
 $textonebuy
 ▫️آیدی عددی کاربر : <code>{$user_info['id']}</code>
 ▫️نام کاربری کاربر :@{$user_info['username']}

@@ -1256,3 +1256,39 @@ Stack trace:
 [29-Oct-2025 18:15:02 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
 [29-Oct-2025 18:30:02 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
 [29-Oct-2025 18:30:02 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 15:30:01 UTC] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 15:30:01 UTC] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 15:30:01 UTC] {"ok":false,"error_code":400,"description":"Bad Request: message thread not found"}
+[29-Oct-2025 15:30:01 UTC] {"ok":false,"error_code":400,"description":"Bad Request: message thread not found"}
+[29-Oct-2025 19:01:01 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 19:01:01 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 15:31:01 UTC] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 15:31:01 UTC] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 19:01:01 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 19:01:01 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 19:01:01 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 19:01:01 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 19:01:01 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 19:01:01 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 19:01:04 Asia/Tehran] {"error":"Failed to connect to 91.107.133.232 port 2010 after 25 ms: Connection refused"}
+[29-Oct-2025 19:01:04 Asia/Tehran] {"error":"Failed to connect to 91.107.133.232 port 2010 after 25 ms: Connection refused"}
+[29-Oct-2025 19:01:04 Asia/Tehran] {"error":"Failed to connect to 91.107.133.232 port 2010 after 25 ms: Connection refused"}
+[29-Oct-2025 19:01:04 Asia/Tehran] {"error":"Failed to connect to 91.107.133.232 port 2010 after 25 ms: Connection refused"}
+[29-Oct-2025 19:01:04 Asia/Tehran] {"error":"Failed to connect to 91.107.133.232 port 2010 after 25 ms: Connection refused"}
+[29-Oct-2025 19:01:04 Asia/Tehran] {"error":"Failed to connect to 91.107.133.232 port 2010 after 25 ms: Connection refused"}
+[29-Oct-2025 19:02:02 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 19:02:02 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 15:33:02 UTC] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 15:33:02 UTC] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 19:05:01 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 19:05:01 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 19:15:02 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 19:15:02 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 19:15:02 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 19:15:02 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 19:15:02 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 19:15:02 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 19:15:02 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 19:15:02 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 19:30:01 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 19:30:01 Asia/Tehran] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}

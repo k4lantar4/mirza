@@ -448,7 +448,7 @@ if ($user['step'] == "createusertest" || preg_match('/locationtest_(.*)/', $data
         sendmessage($from_id, $textbotlang['users']['usertest']['errorcreat'], $keyboard, 'html');
         $texterros = "
 ⭕️ یک کاربر قصد دریافت اکانت  تست داشت که ساخت کانفیگ با خطا مواجه شده و به کاربر کانفیگ داده نشد
-✍️ دلیل خطا : 
+✍️ دلیل خطا :
 {$dataoutput['msg']}
 آیدی کابر : $from_id
 نام کاربری کاربر : @$username
@@ -777,7 +777,7 @@ if ($text == $text_bot_var['btn_keyboard']['buy'] && $setting['active_step_note'
     }
     $customtimevalueprice = $setting['pricetime'];
     savedata("save", "volume", $text);
-    $textcustom = "⌛️ زمان سرویس خود را انتخاب نمایید 
+    $textcustom = "⌛️ زمان سرویس خود را انتخاب نمایید
 📌 تعرفه هر روز  : $customtimevalueprice  تومان
 ⚠️ حداقل زمان $maintime روز  و حداکثر $maxtime روز  می توانید تهیه کنید";
     sendmessage($from_id, $textcustom, $backuser, 'html');
@@ -915,7 +915,7 @@ if ($text == $text_bot_var['btn_keyboard']['buy'] && $setting['active_step_note'
 💶 قیمت:  {price} تومان
 👥 حجم اکانت: {Volume} گیگ
 💵 موجودی کیف پول شما : {userBalance}
-          
+
 💰 سفارش شما آماده پرداخت است";
     $textin = strtr($textpishfactor, $replacements);
     if (intval($datapish['Volume_constraint']) == 0) {
@@ -1061,7 +1061,7 @@ if ($text == $text_bot_var['btn_keyboard']['buy'] && $setting['active_step_note'
         $dataoutput['msg'] = json_encode($dataoutput['msg']);
         sendmessage($from_id, $textbotlang['users']['sell']['ErrorConfig'], $keyboard, 'HTML');
         $texterros = "⭕️ خطای ساخت اشتراک  در ربات نماینده
-✍️ دلیل خطا : 
+✍️ دلیل خطا :
 {$dataoutput['msg']}
 آیدی کابر : $from_id
 نام کاربری کاربر : @$username
@@ -1287,12 +1287,12 @@ $textonebuy
     $format_price_cart = number_format($PaymentReport['price']);
     $textsendrasid = "
 ⭕️ یک پرداخت جدید انجام شده است .
-افزایش موجودی            
+افزایش موجودی
 👤 شناسه کاربر:  <a href = \"tg://user?id=$from_id\">$from_id</a>
 🛒 کد پیگیری پرداخت: {$PaymentReport['id_order']}
 ⚜️ نام کاربری: @$username
 💸 مبلغ پرداختی: $format_price_cart تومان
-                
+
 توضیحات: $caption $text
 ✍️ در صورت درست بودن رسید پرداخت را تایید نمایید.";
     foreach ($admin_ids as $id_admin) {
@@ -1451,8 +1451,8 @@ $textonebuy
         $textinfo = "وضعیت سرویس : <b>$status_var</b>
     نام کاربری سرویس : {$DataUserOut['username']}
     📎 کد پیگیری سرویس : {$nameloc['id_invoice']}
-    
-    📌 اطلاعات سرویس : 
+
+    📌 اطلاعات سرویس :
     {$userinfo['contentrecord']}";
         Editmessagetext($from_id, $message_id, $textinfo, $keyboardsetting);
         return;
@@ -1479,11 +1479,11 @@ $textonebuy
 📥 حجم مصرفی : $usedTrafficGb
 💢 حجم باقی مانده : $RemainingVolume ($Percent%)
 
-📅 فعال تا تاریخ : $expirationDate ($day) 
+📅 فعال تا تاریخ : $expirationDate ($day)
 
 
-لینک اتصال : 
-    
+لینک اتصال :
+
 <code>$config</code>
 
 <code>$output</code>
@@ -1495,7 +1495,7 @@ $textonebuy
 🌍 موقعیت سرویس :{$nameloc['Service_location']}
 🖇 کد سرویس:{$nameloc['id_invoice']}
 
-        
+
 🔋 حجم سرویس : $LastTraffic
 📥 حجم مصرفی : $usedTrafficGb
 💢 حجم باقی مانده : $RemainingVolume ($Percent%)
@@ -1507,8 +1507,8 @@ $textonebuy
 🔄 اخرین زمان آپدیت لینک اشتراک  : $lastupdate
 #️⃣ کلاینت متصل شده :<code>{$DataUserOut['sub_last_user_agent']}</code>
 
-لینک اتصال : 
-    
+لینک اتصال :
+
 $config
 $output
 ";
@@ -1525,10 +1525,10 @@ $output
 📅 فعال تا تاریخ : $expirationDate ($day)
 
 📶 اخرین زمان اتصال شما : $lastonline
-        
 
-لینک اتصال : 
-    
+
+لینک اتصال :
+
 <code>$config</code>
 
 <code>$output</code>
@@ -1623,7 +1623,7 @@ $output
         return;
     }
     $customtimevalueprice = $setting['pricetime'];
-    $textcustom = "⌛️ زمان سرویس خود را انتخاب نمایید 
+    $textcustom = "⌛️ زمان سرویس خود را انتخاب نمایید
     📌 تعرفه هر روز  : $customtimevalueprice  تومان
     ⚠️ حداقل زمان $maintime روز  و حداکثر $maxtime روز  می توانید تهیه کنید";
     sendmessage($from_id, $textcustom, $backuser, 'html');
@@ -1675,7 +1675,7 @@ $output
         );
     }
     $textextend = "📜 فاکتور تمدید شما برای نام کاربری {$nameloc['username']} ایجاد شد.
-        
+
 💸 مبلغ تمدید :{$datapish['price_product']}
 ⏱ مدت زمان تمدید : {$datapish['Service_time']} روز
 🔋 حجم تمدید :{$datapish['Volume_constraint']} گیگ
@@ -1832,7 +1832,7 @@ $output
     $balanceformatsell = number_format($userbalance = json_decode(file_get_contents("data/$from_id/$from_id.json"), true)['Balance']);
     $balanceformatsellbefore = number_format($user['Balance'], 0);
     $textextend = "✅ تمدید برای سرویس شما با موفقیت صورت گرفت
- 
+
 ▫️نام سرویس : {$nameloc['username']}
 ▫️نام محصول : {$datafactor['name_product']}
 ▫️مبلغ تمدید $priceproductformat تومان
@@ -1840,7 +1840,7 @@ $output
     sendmessage($from_id, $textextend, $keyboardextendfnished, 'HTML');
     $timejalali = jdate('Y/m/d H:i:s');
     $text_report = "📣 جزئیات تمدید اکانت در ربات نماینده ثبت شد .
-    
+
 ▫️آیدی عددی کاربر : <code>$from_id</code>
 ▫️آیدی عددی نماینده : <code>{$userbot['id']}</code>
 ▫️نام کاربری ربات نماینده :@{$dataBase['username']}
@@ -1913,7 +1913,7 @@ $output
         $output_config_link = $config;
     }
     $textconfig = "✅ کانفیگ شما با موفقیت بروزرسانی گردید.
-اشتراک شما : 
+اشتراک شما :
 <code>$output_config_link</code>";
     $bakinfos = json_encode([
         'inline_keyboard' => [

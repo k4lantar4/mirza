@@ -433,7 +433,7 @@ function DirectPayment($order_id, $image = 'images.jpg')
             sendmessage($Balance_id['id'], "💎  کاربر عزیز بدلیل ساخته نشدن سرویس مبلغ $balance تومان به کیف پول شما اضافه گردید.", $keyboard, 'HTML');
             $texterros = "
 ⭕️ خطا در ساخت کانفیگ
-✍️ دلیل خطا : 
+✍️ دلیل خطا :
 {$dataoutput['msg']}
 آیدی کابر : {$Balance_id['id']}
 نام کاربری کاربر : @{$Balance_id['username']}
@@ -459,10 +459,30 @@ function DirectPayment($order_id, $image = 'images.jpg')
         $config = "";
         if ($marzban_list_get['config'] == "onconfig" && is_array($dataoutput['configs'])) {
             foreach ($dataoutput['configs'] as $link) {
-                $config .= "\n" . $link;
+                $link = trim($link);
+                if (!empty($link)) {
+                    $config .= "\n" . $link;
+                }
             }
         }
         $output_config_link = $marzban_list_get['sublink'] == "onsublink" ? $dataoutput['subscription_url'] : "";
+
+        // Format config links - each link in separate <code> tag for easy copy in Telegram
+        $formatConfigLinks = function($links_text) {
+            if (empty(trim($links_text))) return "";
+            $lines = explode("\n", trim($links_text));
+            $formatted = "";
+            foreach ($lines as $line) {
+                $line = trim($line);
+                if (!empty($line)) {
+                    $formatted .= "<code>" . htmlspecialchars($line, ENT_QUOTES, 'UTF-8') . "</code>\n";
+                }
+            }
+            return trim($formatted);
+        };
+
+        $formatted_config = $formatConfigLinks($config);
+        $formatted_subscription = $formatConfigLinks($output_config_link);
         $datatextbot['textafterpay'] = $marzban_list_get['type'] == "Manualsale" ? $datatextbot['textmanual'] : $datatextbot['textafterpay'];
         $datatextbot['textafterpay'] = $marzban_list_get['type'] == "WGDashboard" ? $datatextbot['text_wgdashboard'] : $datatextbot['textafterpay'];
         $datatextbot['textafterpay'] = $marzban_list_get['type'] == "ibsng" || $marzban_list_get['type'] == "mikrotik" ? $datatextbot['textafterpayibsng'] : $datatextbot['textafterpay'];
@@ -473,9 +493,9 @@ function DirectPayment($order_id, $image = 'images.jpg')
         $textcreatuser = str_replace('{location}', $marzban_list_get['name_panel'], $textcreatuser);
         $textcreatuser = str_replace('{day}', $get_invoice['Service_time'], $textcreatuser);
         $textcreatuser = str_replace('{volume}', $get_invoice['Volume'], $textcreatuser);
-        $textcreatuser = str_replace('{config}', "<code>{$output_config_link}</code>", $textcreatuser);
-        $textcreatuser = str_replace('{links}', $config, $textcreatuser);
-        $textcreatuser = str_replace('{links2}', "{$output_config_link}", $textcreatuser);
+        $textcreatuser = str_replace('{config}', $formatted_subscription, $textcreatuser);
+        $textcreatuser = str_replace('{links}', $formatted_config, $textcreatuser);
+        $textcreatuser = str_replace('{links2}', $formatted_subscription, $textcreatuser);
         if ($marzban_list_get['type'] == "Manualsale" || $marzban_list_get['type'] == "ibsng" || $marzban_list_get['type'] == "mikrotik") {
             $textcreatuser = str_replace('{password}', $dataoutput['subscription_url'], $textcreatuser);
             update("invoice", "user_info", $dataoutput['subscription_url'], "id_invoice", $get_invoice['id_invoice']);
@@ -519,11 +539,11 @@ function DirectPayment($order_id, $image = 'images.jpg')
                     $dateacc = date('Y/m/d H:i:s');
                     update("user", "Balance", $Balance_prim, "id", $Balance_id['affiliates']);
                     $result = number_format($result);
-                    $textadd = "🎁  پرداخت پورسانت 
-        
+                    $textadd = "🎁  پرداخت پورسانت
+
         مبلغ $result تومان به حساب شما از طرف  زیر مجموعه تان به کیف پول شما واریز گردید";
                     $textreportport = "
-مبلغ $result به کاربر {$Balance_id['affiliates']} برای پورسانت از کاربر {$Balance_id['id']} واریز گردید 
+مبلغ $result به کاربر {$Balance_id['affiliates']} برای پورسانت از کاربر {$Balance_id['id']} واریز گردید
 تایم : $dateacc";
                     if (strlen($setting['Channel_Report']) > 0) {
                         telegram('sendmessage', [
@@ -548,11 +568,11 @@ function DirectPayment($order_id, $image = 'images.jpg')
                 $dateacc = date('Y/m/d H:i:s');
                 update("user", "Balance", $Balance_prim, "id", $Balance_id['affiliates']);
                 $result = number_format($result);
-                $textadd = "🎁  پرداخت پورسانت 
-        
+                $textadd = "🎁  پرداخت پورسانت
+
         مبلغ $result تومان به حساب شما از طرف  زیر مجموعه تان به کیف پول شما واریز گردید";
                 $textreportport = "
-مبلغ $result به کاربر {$Balance_id['affiliates']} برای پورسانت از کاربر {$Balance_id['id']} واریز گردید 
+مبلغ $result به کاربر {$Balance_id['affiliates']} برای پورسانت از کاربر {$Balance_id['id']} واریز گردید
 تایم : $dateacc";
                 if (strlen($setting['Channel_Report']) > 0) {
                     telegram('sendmessage', [
@@ -628,7 +648,7 @@ $textonebuy
         if ($Payment_report['Payment_Method'] == "cart to cart" or $Payment_report['Payment_Method'] == "arze digital offline") {
             update("invoice", "Status", "active", "id_invoice", $get_invoice['id_invoice']);
             $textconfrom = "✅ پرداخت تایید شده
- 🛍خرید سرویس 
+ 🛍خرید سرویس
  ▫️نام کاربری کانفیگ :$username_ac
 ▫️لوکیشن سرویس : {$get_invoice['Service_location']}
 👤 شناسه کاربر: <code>{$Balance_id['id']}</code>
@@ -748,7 +768,7 @@ $textonebuy
         }
         $priceproductformat = number_format($prodcut['price_product']);
         $textextend = "✅ تمدید برای سرویس شما با موفقیت صورت گرفت
- 
+
 ▫️نام سرویس : $usernamepanel
 ▫️نام محصول : {$prodcut['name_product']}
 ▫️مبلغ تمدید $priceproductformat تومان
@@ -761,7 +781,7 @@ $textonebuy
         }
         $timejalali = jdate('Y/m/d H:i:s');
         $text_report = "📣 جزئیات تمدید اکانت در ربات شما ثبت شد .
-    
+
 ▫️آیدی عددی کاربر : <code>{$Balance_id['id']}</code>
 ▫️نام کاربری کاربر : @{$Balance_id['username']}
 ▫️نام کاربری کانفیگ :$usernamepanel
@@ -858,7 +878,7 @@ $textonebuy
             update("user", "score", $scorenew, "id", $Balance_id['id']);
         }
         $textvolume = "✅ افزایش حجم برای سرویس شما با موفقیت صورت گرفت
- 
+
 ▫️نام سرویس  : {$steppay[0]}
 ▫️حجم اضافه : $volume گیگ
 
@@ -880,8 +900,8 @@ $textonebuy
         }
         update("invoice", "Status", "active", "id_invoice", $nameloc['id_invoice']);
         $text_report = "⭕️ یک کاربر حجم اضافه خریده است
-        
-اطلاعات کاربر : 
+
+اطلاعات کاربر :
 🪪 آیدی عددی : {$Balance_id['id']}
 🛍 حجم خریداری شده  : $volumes گیگ
 💰 مبلغ پرداختی : {$Payment_report['price']} تومان
@@ -958,7 +978,7 @@ $textonebuy
             update("user", "score", $scorenew, "id", $Balance_id['id']);
         }
         $textextratime = "✅ افزایش زمان برای سرویس شما با موفقیت صورت گرفت
- 
+
 ▫️نام سرویس : {$steppay[0]}
 ▫️زمان اضافه : $tmieextra روز
 
@@ -980,8 +1000,8 @@ $textonebuy
         }
         update("invoice", "Status", "active", "id_invoice", $nameloc['id_invoice']);
         $text_report = "⭕️ یک کاربر زمان اضافه خریده است
-        
-اطلاعات کاربر : 
+
+اطلاعات کاربر :
 🪪 آیدی عددی : {$Balance_id['id']}
 🛍 زمان خریداری شده  : $volumes روز
 💰 مبلغ پرداختی : {$Payment_report['price']} تومان
@@ -1011,7 +1031,7 @@ $textonebuy
             Editmessagetext($from_id, $message_id, $textconfrom, $Confirm_pay);
         }
         sendmessage($Payment_report['id_user'], "💎 کاربر گرامی مبلغ {$Payment_report['price']} تومان به کیف پول شما واریز گردید با تشکراز پرداخت شما.
-                
+
 🛒 کد پیگیری شما: {$Payment_report['id_order']}", null, 'HTML');
     }
 }

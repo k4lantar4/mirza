@@ -6876,9 +6876,29 @@ if ($datain == "settimecornremove" && $adminrulecheck['rule'] == "administrator"
     $config = "";
     if ($marzban_list_get['config'] == "onconfig" && is_array($DataUserOut['configs'])) {
         foreach ($DataUserOut['configs'] as $link) {
-            $config .= "\n" . $link;
+            $link = trim($link);
+            if (!empty($link)) {
+                $config .= "\n" . $link;
+            }
         }
     }
+
+    // Format config links - each link in separate <code> tag for easy copy in Telegram
+    $formatConfigLinks = function($links_text) {
+        if (empty(trim($links_text))) return "";
+        $lines = explode("\n", trim($links_text));
+        $formatted = "";
+        foreach ($lines as $line) {
+            $line = trim($line);
+            if (!empty($line)) {
+                $formatted .= "<code>" . htmlspecialchars($line, ENT_QUOTES, 'UTF-8') . "</code>\n";
+            }
+        }
+        return trim($formatted);
+    };
+
+    $formatted_config = $formatConfigLinks($config);
+    $formatted_subscription = $formatConfigLinks($output_config_link);
     $Shoppinginfo = json_encode([
         'inline_keyboard' => [
             [
@@ -6898,9 +6918,9 @@ if ($datain == "settimecornremove" && $adminrulecheck['rule'] == "administrator"
     $textcreatuser = str_replace('{location}', $marzban_list_get['name_panel'], $textcreatuser);
     $textcreatuser = str_replace('{day}', $info_product['Service_time'], $textcreatuser);
     $textcreatuser = str_replace('{volume}', $info_product['Volume_constraint'], $textcreatuser);
-    $textcreatuser = str_replace('{config}', "<code>{$output_config_link}</code>", $textcreatuser);
-    $textcreatuser = str_replace('{links}', $config, $textcreatuser);
-    $textcreatuser = str_replace('{links2}', $output_config_link, $textcreatuser);
+    $textcreatuser = str_replace('{config}', $formatted_subscription, $textcreatuser);
+    $textcreatuser = str_replace('{links}', $formatted_config, $textcreatuser);
+    $textcreatuser = str_replace('{links2}', $formatted_subscription, $textcreatuser);
     if (intval($info_product['Volume_constraint']) == 0) {
         $textcreatuser = str_replace('گیگابایت', "", $textcreatuser);
     }
@@ -7323,9 +7343,29 @@ if ($datain == "settimecornremove" && $adminrulecheck['rule'] == "administrator"
         $config = "";
         if ($marzban_list_get['config'] == "onconfig" && is_array($dataoutput['configs'])) {
             foreach ($dataoutput['configs'] as $link) {
-                $config .= "\n" . $link;
+                $link = trim($link);
+                if (!empty($link)) {
+                    $config .= "\n" . $link;
+                }
             }
         }
+
+        // Format config links - each link in separate <code> tag for easy copy in Telegram
+        $formatConfigLinks = function($links_text) {
+            if (empty(trim($links_text))) return "";
+            $lines = explode("\n", trim($links_text));
+            $formatted = "";
+            foreach ($lines as $line) {
+                $line = trim($line);
+                if (!empty($line)) {
+                    $formatted .= "<code>" . htmlspecialchars($line, ENT_QUOTES, 'UTF-8') . "</code>\n";
+                }
+            }
+            return trim($formatted);
+        };
+
+        $formatted_config = $formatConfigLinks($config);
+        $formatted_subscription = $formatConfigLinks($output_config_link);
         $datatextbot['textafterpay'] = $panel['type'] == "Manualsale" ? $datatextbot['textmanual'] : $datatextbot['textafterpay'];
         $datatextbot['textafterpay'] = $panel['type'] == "WGDashboard" ? $datatextbot['text_wgdashboard'] : $datatextbot['textafterpay'];
         $datatextbot['textafterpay'] = $panel['type'] == "ibsng" || $panel['type'] == "mikrotik" ? $datatextbot['textafterpayibsng'] : $datatextbot['textafterpay'];
@@ -7336,9 +7376,9 @@ if ($datain == "settimecornremove" && $adminrulecheck['rule'] == "administrator"
         $textcreatuser = str_replace('{location}', $panel['name_panel'], $textcreatuser);
         $textcreatuser = str_replace('{day}', $text, $textcreatuser);
         $textcreatuser = str_replace('{volume}', $user['Processing_value_tow'], $textcreatuser);
-        $textcreatuser = str_replace('{config}', $output_config_link, $textcreatuser);
-        $textcreatuser = str_replace('{links}', $config, $textcreatuser);
-        $textcreatuser = str_replace('{links2}', $output_config_link, $textcreatuser);
+        $textcreatuser = str_replace('{config}', $formatted_subscription, $textcreatuser);
+        $textcreatuser = str_replace('{links}', $formatted_config, $textcreatuser);
+        $textcreatuser = str_replace('{links2}', $formatted_subscription, $textcreatuser);
         if ($panel['type'] == "Manualsale" || $panel['type'] == "ibsng" || $panel['type'] == "mikrotik") {
             $textcreatuser = str_replace('{password}', $dataoutput['subscription_url'], $textcreatuser);
             update("invoice", "user_info", $dataoutput['subscription_url'], "id_invoice", $randomString);
