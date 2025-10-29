@@ -86,19 +86,93 @@ function generateUUID()
 }
 function tronratee()
 {
-    $file = file_get_contents('https://api.com/b.php', true);
-    $file = json_decode($file, true);
-    return $file;
+    global $domainhosts;
+
+    // ---------- ساخت آدرس ----------
+    // اگر کاربر scheme نداد (بدون https://)، خودکار اضافه می‌شود
+    $fallback = 'api.com/b.php';
+    $host = (isset($domainhosts) && is_string($domainhosts) && trim($domainhosts) !== '')
+        ? trim($domainhosts)
+        : $fallback;
+
+    if (!preg_match('#^https?://#i', $host)) {
+        $host = 'https://' . $host;
+    }
+
+    // حذف اسلش انتهایی و ساخت مسیر نهایی
+    $host = rtrim($host, '/');
+    $url  = $host . '/apiprice.php';
+
+    // ---------- HTTP helper (cURL + retry) ----------
+    $httpGetJson = static function (string $url, int $timeout = 5, int $retries = 1): ?array {
+        $attempt = 0;
+        do {
+            $attempt++;
+            $ch = curl_init();
+            curl_setopt_array($ch, [
+                CURLOPT_URL            => $url,
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_FOLLOWLOCATION => true,
+                CURLOPT_CONNECTTIMEOUT => $timeout,
+                CURLOPT_TIMEOUT        => $timeout,
+                CURLOPT_USERAGENT      => 'tronratee/2.2 (+https-client)',
+                CURLOPT_SSL_VERIFYPEER => true,
+                CURLOPT_SSL_VERIFYHOST => 2,
+                CURLOPT_IPRESOLVE      => defined('CURL_IPRESOLVE_V4') ? CURL_IPRESOLVE_V4 : 0,
+                CURLOPT_HTTPHEADER     => ['Accept: application/json'],
+            ]);
+            $resp  = curl_exec($ch);
+            $errno = curl_errno($ch);
+            $http  = (int)curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            curl_close($ch);
+
+            if ($errno === 0 && $http >= 200 && $http < 300 && is_string($resp) && $resp !== '') {
+                $data = json_decode($resp, true);
+                if (is_array($data)) {
+                    return $data;
+                }
+                error_log('tronratee: Invalid JSON from ' . $url);
+            } else {
+                error_log(sprintf(
+                    'tronratee: HTTP GET failed (try %d/%d): %s | http=%d curl_errno=%d',
+                    $attempt, $retries + 1, $url, $http, $errno
+                ));
+            }
+
+            if ($attempt <= $retries) {
+                usleep(150 * 1000); // کمی تأخیر بین تلاش‌ها
+            }
+        } while ($attempt <= $retries);
+
+        return null;
+    };
+
+    // ---------- دریافت داده ----------
+    $data = $httpGetJson($url, 5, 1);
+    if (!is_array($data)) {
+        error_log('tronratee: Failed to fetch data from ' . $url);
+        return ['ok' => false, 'result' => []];
+    }
+
+    // ---------- استخراج مقادیر ----------
+    // مثال: {"usd":108286,"tron":34662,"ton":232056}
+    $USD = isset($data['usd'])  && is_numeric($data['usd'])  ? (float)$data['usd']  : 0.0;
+    $TRX = isset($data['tron']) && is_numeric($data['tron']) ? (float)$data['tron'] : 0.0;
+    $Ton = isset($data['ton'])  && is_numeric($data['ton'])  ? (float)$data['ton']  : 0.0;
+
+    // ---------- نتیجه ----------
+    $result = [
+        'USD' => $USD,
+        'TRX' => $TRX,
+        'Ton' => $Ton,
+    ];
+
+    return ['ok' => true, 'result' => $result];
 }
 function nowPayments($payment, $price_amount, $order_id, $order_description)
 {
     global $domainhosts;
-    $paySettings = select("PaySetting", "*", "NamePay", "marchent_tronseller", "select");
-    if (!$paySettings || !isset($paySettings['ValuePay'])) {
-        error_log("NowPayments API key not found in database");
-        return ['error' => 'Payment gateway not configured'];
-    }
-    $apinowpayments = $paySettings['ValuePay'];
+    $apinowpayments = select("PaySetting", "*", "NamePay", "marchent_tronseller", "select")['ValuePay'];
     $curl = curl_init();
     curl_setopt_array($curl, array(
         CURLOPT_URL => 'https://api.nowpayments.io/v1/' . $payment,
@@ -127,12 +201,7 @@ function nowPayments($payment, $price_amount, $order_id, $order_description)
 }
 function StatusPayment($paymentid)
 {
-    $paySettings = select("PaySetting", "*", "NamePay", "marchent_tronseller", "select");
-    if (!$paySettings || !isset($paySettings['ValuePay'])) {
-        error_log("NowPayments API key not found in database");
-        return ['error' => 'Payment gateway not configured'];
-    }
-    $apinowpayments = $paySettings['ValuePay'];
+    $apinowpayments = select("PaySetting", "*", "NamePay", "marchent_tronseller", "select")['ValuePay'];
     $curl = curl_init();
     curl_setopt_array($curl, array(
         CURLOPT_URL => 'https://api.nowpayments.io/v1/payment/' . $paymentid,
@@ -213,22 +282,21 @@ function trnado($order_id, $price)
     curl_close($curl);
     return json_decode($response, true);
 }
-if (!function_exists('formatBytes')) {
-    function formatBytes($bytes, $precision = 2): string
-    {
-        $base = log($bytes, 1024);
-        $power = $bytes > 0 ? floor($base) : 0;
-        $suffixes = ['بایت', 'کیلوبایت', 'مگابایت', 'گیگابایت', 'ترابایت'];
-        return round(pow(1024, $base - $power), $precision) . ' ' . $suffixes[$power];
-    }
+function formatBytes($bytes, $precision = 2): string
+{
+    $base = log($bytes, 1024);
+    $power = $bytes > 0 ? floor($base) : 0;
+    $suffixes = ['بایت', 'کیلوبایت', 'مگابایت', 'گیگابایت', 'ترابایت'];
+    return round(pow(1024, $base - $power), $precision) . ' ' . $suffixes[$power];
 }
 function generateUsername($from_id, $Metode, $username, $randomString, $text, $namecustome, $usernamecustom)
 {
     $setting = select("setting", "*", null, null, "select");
     $user = select("user", "*", "id", $from_id, "select");
     if ($user == false) {
+        $user = array();
         $user = array(
-            'number_username' => 0,
+            'number_username' => '',
         );
     }
     if ($Metode == "آیدی عددی + حروف و عدد رندوم") {
@@ -237,14 +305,12 @@ function generateUsername($from_id, $Metode, $username, $randomString, $text, $n
         if ($username == "NOT_USERNAME") {
             if (preg_match('/^\w{3,32}$/', $namecustome)) {
                 $username = $namecustome;
-            } else {
-                $username = "user";
             }
         }
         return $username . "_" . $user['number_username'];
-    } elseif ($Metode == "نام کاربری دلخواه") {
+    } elseif ($Metode == "نام کاربری دلخواه")
         return $text;
-    } elseif ($Metode == "نام کاربری دلخواه + عدد رندوم") {
+    elseif ($Metode == "نام کاربری دلخواه + عدد رندوم") {
         $random_number = rand(1000000, 9999999);
         return $text . "_" . $random_number;
     } elseif ($Metode == "متن دلخواه + عدد رندوم") {
@@ -259,10 +325,6 @@ function generateUsername($from_id, $Metode, $username, $randomString, $text, $n
         }
         return $usernamecustom . "_" . $user['number_username'];
     }
-
-    // FIX: Added default return value for unknown methods
-    error_log("Unknown username generation method: " . $Metode);
-    return $from_id . "_" . $randomString;
 }
 function outputlunk($text)
 {
@@ -276,19 +338,19 @@ function outputlunk($text)
     $userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36';
     curl_setopt($ch, CURLOPT_USERAGENT, $userAgent);
     $response = curl_exec($ch);
-    $error = curl_error($ch);
-    curl_close($ch);
-
     if ($response === false) {
-        error_log("outputlunk error: " . $error);
+        $error = curl_error($ch);
         return null;
+    } else {
+        return $response;
     }
-    return $response;
+
+    curl_close($ch);
 }
 function outputlunksub($url)
 {
     $ch = curl_init();
-    // REMOVED DEBUG: var_dump($url); - This breaks webhook responses!
+    var_dump($url);
     curl_setopt($ch, CURLOPT_URL, "$url/info");
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     $userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36';
@@ -297,16 +359,17 @@ function outputlunksub($url)
     curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 
+
     $headers = array();
     $headers[] = 'Accept: application/json';
     curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 
     $result = curl_exec($ch);
     if (curl_errno($ch)) {
-        error_log('outputlunksub error: ' . curl_error($ch));
+        echo 'Error:' . curl_error($ch);
     }
-    curl_close($ch);
     return $result;
+    curl_close($ch);
 }
 function DirectPayment($order_id, $image = 'images.jpg')
 {
@@ -327,19 +390,10 @@ function DirectPayment($order_id, $image = 'images.jpg')
     update("user", "Processing_value_tow", "0", "id", $Balance_id['id']);
     update("user", "Processing_value_four", "0", "id", $Balance_id['id']);
     if ($steppay[0] == "getconfigafterpay") {
-        $stmt = $pdo->prepare("SELECT * FROM invoice WHERE username = :username AND Status = 'unpaid' LIMIT 1");
-        $stmt->bindParam(':username', $steppay[1], PDO::PARAM_STR);
+        $stmt = $pdo->prepare("SELECT * FROM invoice WHERE username = '{$steppay[1]}' AND Status = 'unpaid' LIMIT 1");
         $stmt->execute();
         $get_invoice = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        if (!$get_invoice) {
-            error_log("Invoice not found for username: " . $steppay[1]);
-            return;
-        }
-
-        $stmt = $pdo->prepare("SELECT * FROM product WHERE name_product = :name_product AND (Location = :location OR Location = '/all')");
-        $stmt->bindParam(':name_product', $get_invoice['name_product'], PDO::PARAM_STR);
-        $stmt->bindParam(':location', $get_invoice['Service_location'], PDO::PARAM_STR);
+        $stmt = $pdo->prepare("SELECT * FROM product WHERE name_product = '{$get_invoice['name_product']}' AND (Location = '{$get_invoice['Service_location']}'  or Location = '/all')");
         $stmt->execute();
         $info_product = $stmt->fetch(PDO::FETCH_ASSOC);
         if ($get_invoice['name_product'] == "🛍 حجم دلخواه" || $get_invoice['name_product'] == "⚙️ سرویس دلخواه") {
@@ -350,9 +404,7 @@ function DirectPayment($order_id, $image = 'images.jpg')
             $info_product['Service_time'] = $get_invoice['Service_time'];
             $info_product['price_product'] = $get_invoice['price_product'];
         } else {
-            $stmt = $pdo->prepare("SELECT * FROM product WHERE name_product = :name_product AND (Location = :location OR Location = '/all')");
-            $stmt->bindParam(':name_product', $get_invoice['name_product'], PDO::PARAM_STR);
-            $stmt->bindParam(':location', $get_invoice['Service_location'], PDO::PARAM_STR);
+            $stmt = $pdo->prepare("SELECT * FROM product WHERE name_product = '{$get_invoice['name_product']}' AND (Location = '{$get_invoice['Service_location']}'  or Location = '/all')");
             $stmt->execute();
             $info_product = $stmt->fetch(PDO::FETCH_ASSOC);
         }
@@ -381,7 +433,7 @@ function DirectPayment($order_id, $image = 'images.jpg')
             sendmessage($Balance_id['id'], "💎  کاربر عزیز بدلیل ساخته نشدن سرویس مبلغ $balance تومان به کیف پول شما اضافه گردید.", $keyboard, 'HTML');
             $texterros = "
 ⭕️ خطا در ساخت کانفیگ
-✍️ دلیل خطا :
+✍️ دلیل خطا : 
 {$dataoutput['msg']}
 آیدی کابر : {$Balance_id['id']}
 نام کاربری کاربر : @{$Balance_id['username']}
@@ -467,11 +519,11 @@ function DirectPayment($order_id, $image = 'images.jpg')
                     $dateacc = date('Y/m/d H:i:s');
                     update("user", "Balance", $Balance_prim, "id", $Balance_id['affiliates']);
                     $result = number_format($result);
-                    $textadd = "🎁  پرداخت پورسانت
-
+                    $textadd = "🎁  پرداخت پورسانت 
+        
         مبلغ $result تومان به حساب شما از طرف  زیر مجموعه تان به کیف پول شما واریز گردید";
                     $textreportport = "
-مبلغ $result به کاربر {$Balance_id['affiliates']} برای پورسانت از کاربر {$Balance_id['id']} واریز گردید
+مبلغ $result به کاربر {$Balance_id['affiliates']} برای پورسانت از کاربر {$Balance_id['id']} واریز گردید 
 تایم : $dateacc";
                     if (strlen($setting['Channel_Report']) > 0) {
                         telegram('sendmessage', [
@@ -496,11 +548,11 @@ function DirectPayment($order_id, $image = 'images.jpg')
                 $dateacc = date('Y/m/d H:i:s');
                 update("user", "Balance", $Balance_prim, "id", $Balance_id['affiliates']);
                 $result = number_format($result);
-                $textadd = "🎁  پرداخت پورسانت
-
+                $textadd = "🎁  پرداخت پورسانت 
+        
         مبلغ $result تومان به حساب شما از طرف  زیر مجموعه تان به کیف پول شما واریز گردید";
                 $textreportport = "
-مبلغ $result به کاربر {$Balance_id['affiliates']} برای پورسانت از کاربر {$Balance_id['id']} واریز گردید
+مبلغ $result به کاربر {$Balance_id['affiliates']} برای پورسانت از کاربر {$Balance_id['id']} واریز گردید 
 تایم : $dateacc";
                 if (strlen($setting['Channel_Report']) > 0) {
                     telegram('sendmessage', [
@@ -529,13 +581,6 @@ function DirectPayment($order_id, $image = 'images.jpg')
         $balanceformatsell = number_format($balanceformatsell, 0);
         $balancebefore = number_format($Balance_id['Balance'], 0);
         $timejalali = jdate('Y/m/d H:i:s');
-        // Check if $countinvoice is defined, if not query it
-        if (!isset($countinvoice)) {
-            $stmt = $pdo->prepare("SELECT COUNT(*) as count FROM invoice WHERE name_product != 'سرویس تست' AND id_user = :id_user AND Status != 'Unpaid'");
-            $stmt->bindParam(':id_user', $Balance_id['id']);
-            $stmt->execute();
-            $countinvoice = $stmt->fetch(PDO::FETCH_ASSOC)['count'];
-        }
         $textonebuy = "";
         if ($countinvoice == 1) {
             $textonebuy = "📌 خرید اول کاربر";
@@ -583,7 +628,7 @@ $textonebuy
         if ($Payment_report['Payment_Method'] == "cart to cart" or $Payment_report['Payment_Method'] == "arze digital offline") {
             update("invoice", "Status", "active", "id_invoice", $get_invoice['id_invoice']);
             $textconfrom = "✅ پرداخت تایید شده
- 🛍خرید سرویس
+ 🛍خرید سرویس 
  ▫️نام کاربری کانفیگ :$username_ac
 ▫️لوکیشن سرویس : {$get_invoice['Service_location']}
 👤 شناسه کاربر: <code>{$Balance_id['id']}</code>
@@ -623,10 +668,7 @@ $textonebuy
             $prodcut['Service_time'] = $service_other['Service_time'];
             $prodcut['Volume_constraint'] = $service_other['volumebuy'];
         } else {
-            $stmt = $pdo->prepare("SELECT * FROM product WHERE (Location = :location OR Location = '/all') AND agent = :agent AND code_product = :code_product");
-            $stmt->bindParam(':location', $nameloc['Service_location'], PDO::PARAM_STR);
-            $stmt->bindParam(':agent', $Balance_id['agent'], PDO::PARAM_STR);
-            $stmt->bindParam(':code_product', $codeproduct, PDO::PARAM_STR);
+            $stmt = $pdo->prepare("SELECT * FROM product WHERE (Location = '{$nameloc['Service_location']}' OR Location = '/all') AND agent= '{$Balance_id['agent']}' AND code_product = '$codeproduct'");
             $stmt->execute();
             $prodcut = $stmt->fetch(PDO::FETCH_ASSOC);
         }
@@ -695,9 +737,7 @@ $textonebuy
         if ($Balance_id['agent'] == "f") {
             $valurcashbackextend = select("shopSetting", "*", "Namevalue", "chashbackextend", "select")['value'];
         } else {
-            // FIX TYPO: 'agenr' should be 'agent'
-            $cashback_data = json_decode(select("shopSetting", "*", "Namevalue", "chashbackextend_agent", "select")['value'], true);
-            $valurcashbackextend = isset($cashback_data[$Balance_id['agent']]) ? $cashback_data[$Balance_id['agent']] : 0;
+            $valurcashbackextend = json_decode(select("shopSetting", "*", "Namevalue", "chashbackextend_agent", "select")['value'], true)[$Balance_id['agenr']];
         }
         if (intval($valurcashbackextend) != 0) {
             $result = ($prodcut['price_product'] * $valurcashbackextend) / 100;
@@ -708,7 +748,7 @@ $textonebuy
         }
         $priceproductformat = number_format($prodcut['price_product']);
         $textextend = "✅ تمدید برای سرویس شما با موفقیت صورت گرفت
-
+ 
 ▫️نام سرویس : $usernamepanel
 ▫️نام محصول : {$prodcut['name_product']}
 ▫️مبلغ تمدید $priceproductformat تومان
@@ -721,7 +761,7 @@ $textonebuy
         }
         $timejalali = jdate('Y/m/d H:i:s');
         $text_report = "📣 جزئیات تمدید اکانت در ربات شما ثبت شد .
-
+    
 ▫️آیدی عددی کاربر : <code>{$Balance_id['id']}</code>
 ▫️نام کاربری کاربر : @{$Balance_id['username']}
 ▫️نام کاربری کانفیگ :$usernamepanel
@@ -818,7 +858,7 @@ $textonebuy
             update("user", "score", $scorenew, "id", $Balance_id['id']);
         }
         $textvolume = "✅ افزایش حجم برای سرویس شما با موفقیت صورت گرفت
-
+ 
 ▫️نام سرویس  : {$steppay[0]}
 ▫️حجم اضافه : $volume گیگ
 
@@ -840,8 +880,8 @@ $textonebuy
         }
         update("invoice", "Status", "active", "id_invoice", $nameloc['id_invoice']);
         $text_report = "⭕️ یک کاربر حجم اضافه خریده است
-
-اطلاعات کاربر :
+        
+اطلاعات کاربر : 
 🪪 آیدی عددی : {$Balance_id['id']}
 🛍 حجم خریداری شده  : $volumes گیگ
 💰 مبلغ پرداختی : {$Payment_report['price']} تومان
@@ -918,7 +958,7 @@ $textonebuy
             update("user", "score", $scorenew, "id", $Balance_id['id']);
         }
         $textextratime = "✅ افزایش زمان برای سرویس شما با موفقیت صورت گرفت
-
+ 
 ▫️نام سرویس : {$steppay[0]}
 ▫️زمان اضافه : $tmieextra روز
 
@@ -940,8 +980,8 @@ $textonebuy
         }
         update("invoice", "Status", "active", "id_invoice", $nameloc['id_invoice']);
         $text_report = "⭕️ یک کاربر زمان اضافه خریده است
-
-اطلاعات کاربر :
+        
+اطلاعات کاربر : 
 🪪 آیدی عددی : {$Balance_id['id']}
 🛍 زمان خریداری شده  : $volumes روز
 💰 مبلغ پرداختی : {$Payment_report['price']} تومان
@@ -971,7 +1011,7 @@ $textonebuy
             Editmessagetext($from_id, $message_id, $textconfrom, $Confirm_pay);
         }
         sendmessage($Payment_report['id_user'], "💎 کاربر گرامی مبلغ {$Payment_report['price']} تومان به کیف پول شما واریز گردید با تشکراز پرداخت شما.
-
+                
 🛒 کد پیگیری شما: {$Payment_report['id_order']}", null, 'HTML');
     }
 }
@@ -1570,45 +1610,4 @@ function createPayaqayepardakht($price, $order_id)
     $response = curl_exec($curl);
     curl_close($curl);
     return json_decode($response, true);
-}
-
-/**
- * Ensure table uses UTF8MB4 character set and collation
- * @param string $tableName The name of the table to convert
- * @return bool True if conversion was successful or not needed
- */
-function ensureTableUtf8mb4($tableName) {
-    global $connect;
-
-    try {
-        // Check if table exists
-        $result = $connect->query("SHOW TABLES LIKE '$tableName'");
-        if ($result->num_rows == 0) {
-            return false; // Table doesn't exist
-        }
-
-        // Get table information
-        $tableInfo = $connect->query("SHOW TABLE STATUS LIKE '$tableName'");
-        if ($tableInfo && $row = $tableInfo->fetch_assoc()) {
-            $currentCollation = $row['Collation'] ?? '';
-
-            // Check if table already uses utf8mb4
-            if (!empty($currentCollation) && stripos($currentCollation, 'utf8mb4') !== false) {
-                return true; // Already using utf8mb4
-            }
-        }
-
-        // Convert table to utf8mb4
-        $convertResult = $connect->query("ALTER TABLE `$tableName` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
-
-        if (!$convertResult) {
-            error_log("Failed to convert table $tableName to utf8mb4: " . mysqli_error($connect));
-            return false;
-        }
-
-        return true;
-    } catch (Exception $e) {
-        error_log("Error in ensureTableUtf8mb4 for table $tableName: " . $e->getMessage());
-        return false;
-    }
 }

@@ -1,8 +1,8 @@
 <?php
 session_start();
-require_once __DIR__ . '/../config.php';
-require_once __DIR__ . '/../jdf.php';
-require_once __DIR__ . '/../function.php';
+require_once '../config.php';
+require_once '../jdf.php';
+require_once '../function.php';
 $query = $pdo->prepare("SELECT * FROM admin WHERE username=:username");
 $query->bindParam("username", $_SESSION["user"], PDO::PARAM_STR);
 $query->execute();
@@ -16,14 +16,6 @@ if( !isset($_SESSION["user"]) || !$result ){
 }
 
 
-$scriptName = $_SERVER['SCRIPT_NAME'] ?? '';
-$scriptDirectory = str_replace('\\', '/', dirname($scriptName));
-$applicationBasePath = str_replace('\\', '/', dirname($scriptDirectory));
-$applicationBasePath = rtrim($applicationBasePath, '/');
-if ($applicationBasePath === '/' || $applicationBasePath === '.' || $applicationBasePath === '\\') {
-    $applicationBasePath = '';
-}
-
 $keyboard = json_decode(file_get_contents("php://input"),true);
 $method = $_SERVER['REQUEST_METHOD'];
 if($method == "POST" && is_array($keyboard)){
@@ -32,11 +24,10 @@ if($method == "POST" && is_array($keyboard)){
     update("setting","keyboardmain",json_encode($keyboardmain),null,null);
 }else{
     $keyboardmain = '{"keyboard":[[{"text":"text_sell"},{"text":"text_extend"}],[{"text":"text_usertest"},{"text":"text_wheel_luck"}],[{"text":"text_Purchased_services"},{"text":"accountwallet"}],[{"text":"text_affiliates"},{"text":"text_Tariff_list"}],[{"text":"text_support"},{"text":"text_help"}]]}';
-    $action = filter_input(INPUT_GET, 'action');
-    if($action === "reaset"){
-        update("setting","keyboardmain",$keyboardmain,null,null);
-        header('Location: keyboard.php');
-        exit;
+    if($_GET['action'] == "reaset"){
+    update("setting","keyboardmain",$keyboardmain,null,null);
+    header('Location: keyboard.php');
+    return;
     }
 }
 ?>
@@ -47,9 +38,6 @@ if($method == "POST" && is_array($keyboard)){
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>پنل مدیریت ربات میرزا</title>
-    <script>
-      window.__MIRZA_API_ORIGIN = window.location.origin + <?php echo json_encode($applicationBasePath); ?>;
-    </script>
     <script type="module" crossorigin src="js/sort_keyboard.js"></script>
     <link rel="stylesheet" crossorigin href="css/sort_keyboard.css">
     <style>

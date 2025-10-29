@@ -12,7 +12,6 @@ require_once __DIR__ . '/WGDashboard.php';
 require_once __DIR__ . '/s_ui.php';
 require_once __DIR__ . '/ibsng.php';
 require_once __DIR__ . '/mikrotik.php';
-require_once __DIR__ . '/pasarguard.php';
 
 class ManagePanel
 {
@@ -370,37 +369,6 @@ class ManagePanel
                 $Output['subscription_url'] = $password;
                 $Output['configs'] = [];
             }
-        } elseif ($Get_Data_Panel['type'] == "pasarguard") {
-            $ConnectToPanel = pg_add_user($Get_Data_Panel['name_panel'], $data_limit, $usernameC, $expire, $note, $Get_Data_Product['data_limit_reset'], $Get_Data_Product['name_product']);
-            if (!empty($ConnectToPanel['error'])) {
-                return array(
-                    'status' => 'Unsuccessful',
-                    'msg' => $ConnectToPanel['error']
-                );
-            }
-            $data_Output = json_decode($ConnectToPanel['body'] ?? '{}', true);
-            if (!empty($data_Output['detail'])) {
-                $Output['status'] = 'Unsuccessful';
-                $Output['msg'] = $data_Output['detail'];
-            } else {
-                $subscription_url = $data_Output['subscription_url'] ?? ($data_Output['subscriptionUrl'] ?? null);
-                if ($subscription_url && !preg_match('/^(https?:\\/\\/)?([a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,}(:\\d+)?((\\/[^\\s\\/]+)+)?$/', $subscription_url)) {
-                    $subscription_url = $Get_Data_Panel['url_panel'] . "/" . ltrim($subscription_url, "/");
-                }
-                if ($inoice != false) {
-                    $subscription_url = "https://$domainhosts/sub/" . $inoice['id_invoice'];
-                }
-                $links = $data_Output['links'] ?? null;
-                if (!$links && $subscription_url) {
-                    $links = outputlunk($subscription_url);
-                    if (isBase64($links)) $links = base64_decode($links);
-                    $links = explode("\n", trim($links));
-                }
-                $Output['status'] = 'successful';
-                $Output['username'] = $data_Output['username'] ?? $usernameC;
-                $Output['subscription_url'] = $subscription_url ?? '';
-                $Output['configs'] = is_array($links) ? $links : ($links ? [$links] : []);
-            }
         } else {
             $Output['status'] = 'Unsuccessful';
             $Output['msg'] = 'Panel Not Found';
@@ -412,13 +380,7 @@ class ManagePanel
         $Output = array();
         global $pdo, $domainhosts, $new_marzban;
         $Get_Data_Panel = select("marzban_panel", "*", "name_panel", $name_panel, "select");
-        if (!$Get_Data_Panel || !is_array($Get_Data_Panel)) {
-            return array(
-                'status' => 'Unsuccessful',
-                'msg' => 'Panel Not Found'
-            );
-        }
-        if (isset($Get_Data_Panel['subvip']) && $Get_Data_Panel['subvip'] == "onsubvip") {
+        if ($Get_Data_Panel['subvip'] == "onsubvip") {
             $inoice = select("invoice", "*", "username", $username, "select");
         } else {
             $inoice = false;
@@ -462,15 +424,9 @@ class ManagePanel
                             'msg' => $sublist_update['status']
                         );
                     }
-                    $sublist_update_body = json_decode($sublist_update['body'], true);
-                    if (!empty($sublist_update_body['updates']) && is_array($sublist_update_body['updates'])) {
-                        $first_update = $sublist_update_body['updates'][0];
-                        $UsernameData['sub_updated_at'] = isset($first_update['created_at']) ? $first_update['created_at'] : null;
-                        $UsernameData['sub_last_user_agent'] = isset($first_update['user_agent']) ? $first_update['user_agent'] : null;
-                    } else {
-                        $UsernameData['sub_updated_at'] = isset($UsernameData['sub_updated_at']) ? $UsernameData['sub_updated_at'] : null;
-                        $UsernameData['sub_last_user_agent'] = isset($UsernameData['sub_last_user_agent']) ? $UsernameData['sub_last_user_agent'] : null;
-                    }
+                    $sublist_update = json_decode($sublist_update['body'], true)['updates'][0];
+                    $UsernameData['sub_updated_at'] = $sublist_update['created_at'];
+                    $UsernameData['sub_last_user_agent'] = $sublist_update['user_agent'];
                 } else {
                     $UsernameData['expire'] = $UsernameData['expire'];
                 }
@@ -478,7 +434,7 @@ class ManagePanel
                     $UsernameData['subscription_url'] = "https://$domainhosts/sub/" . $inoice['id_invoice'];
                 }
                 if ($new_marzban) {
-                    $UsernameData['proxies'] = isset($UsernameData['proxy_settings']) ? $UsernameData['proxy_settings'] : null;
+                    $UsernameData['proxies'] = $UsernameData['proxy_settings'];
                 }
                 $Output = array(
                     'status' => $UsernameData['status'],
@@ -620,7 +576,7 @@ class ManagePanel
             $links_user = explode("\n", trim($links_user));
             if ($inoice != false)
                 $linksub = "https://$domainhosts/sub/" . $inoice['id_invoice'];
-            $user_data['lastOnline'] = $user_data['lastOnline'] == 0 ? "offline" : (new DateTime('@' . ($user_data['lastOnline'] / 1000)))->format('Y-m-d H:i:s');
+            $user_data['lastOnline'] = $user_data['lastOnline'] == 0 ? "offline" : date('Y-m-d H:i:s', $user_data['lastOnline'] / 1000);
             $Output = array(
                 'status' => $user_data['enable'],
                 'username' => $user_data['email'],
@@ -647,29 +603,26 @@ class ManagePanel
                     'msg' => $UsernameData['message']
                 );
             } else {
-                $startDate = $UsernameData['start_date'] ?? null;
-                if ($startDate === null) {
+                if ($UsernameData['start_date'] == null) {
                     $date = 0;
                 } else {
-                    $start_date = strtotime($startDate);
-                    $package_days = isset($UsernameData['package_days']) ? intval($UsernameData['package_days']) : 0;
-                    $end_date = $start_date + ($package_days * 86400);
+                    $current_date = time();
+                    $start_date = strtotime($UsernameData['start_date']);
+                    $end_date = $start_date + ($UsernameData['package_days'] * 86400);
                     $date = strtotime(date("Y-m-d H:i:s", $end_date));
                 }
-                $usageLimit = isset($UsernameData['usage_limit_GB']) ? $UsernameData['usage_limit_GB'] * pow(1024, 3) : 0;
-                $currentUsage = isset($UsernameData['current_usage_GB']) ? $UsernameData['current_usage_GB'] * pow(1024, 3) : 0;
-                $uuid = $UsernameData['uuid'] ?? null;
-                $linksuburl = $uuid ? "{$Get_Data_Panel['linksubx']}/{$uuid}/" : $Get_Data_Panel['linksubx'];
-                $lastOnline = $UsernameData['last_online'] ?? null;
-                if ($lastOnline == "1-01-01 00:00:00") {
-                    $lastOnline = null;
+                $UsernameData['usage_limit_GB'] = $UsernameData['usage_limit_GB'] * pow(1024, 3);
+                $UsernameData['current_usage_GB'] = $UsernameData['current_usage_GB'] * pow(1024, 3);
+                $linksuburl = "{$Get_Data_Panel['linksubx']}/{$UsernameData['uuid']}/";
+                $linksubconfig = $linksuburl . "sub";
+                if ($UsernameData['last_online'] == "1-01-01 00:00:00") {
+                    $UsernameData['last_online'] = null;
                 }
-                $remainingTraffic = $usageLimit - $currentUsage;
-                if ($usageLimit > 0 && $remainingTraffic <= 0) {
+                if ($UsernameData['usage_limit_GB'] - $UsernameData['current_usage_GB'] <= 0) {
                     $status = "limited";
-                } elseif ($date != 0 && ($date - time()) <= 0) {
+                } elseif ($date - time() <= 0 and $date != 0) {
                     $status = "expired";
-                } elseif ($startDate === null) {
+                } elseif ($UsernameData['start_date'] == null) {
                     $status = "on_hold";
                 } else {
                     $status = "active";
@@ -679,11 +632,11 @@ class ManagePanel
                 }
                 $Output = array(
                     'status' => $status,
-                    'username' => $UsernameData['name'] ?? ($UsernameData['email'] ?? $username),
-                    'data_limit' => $usageLimit,
+                    'username' => $UsernameData['name'],
+                    'data_limit' => $UsernameData['usage_limit_GB'],
                     'expire' => $date,
-                    'online_at' => $lastOnline,
-                    'used_traffic' => $currentUsage,
+                    'online_at' => $UsernameData['last_online'],
+                    'used_traffic' => $UsernameData['current_usage_GB'],
                     'links' => [],
                     'subscription_url' => $linksuburl,
                     'sub_updated_at' => null,
@@ -917,64 +870,6 @@ class ManagePanel
                     'sub_last_user_agent' => null,
                 );
             }
-        } elseif ($Get_Data_Panel['type'] == "pasarguard") {
-            if (isset($Get_Data_Panel['subvip']) && $Get_Data_Panel['subvip'] == "onsubvip") {
-                $inoice = select("invoice", "*", "username", $username, "select");
-            } else {
-                $inoice = false;
-            }
-            $resp = pg_get_user($username, $Get_Data_Panel['name_panel']);
-            if (!empty($resp['error'])) {
-                return array(
-                    'status' => 'Unsuccessful',
-                    'msg' => $resp['error']
-                );
-            } elseif (!empty($resp['status']) && $resp['status'] == 500) {
-                return array(
-                    'status' => 'Unsuccessful',
-                    'msg' => $resp['status']
-                );
-            }
-            $data = json_decode($resp['body'] ?? '{}', true);
-            if (!is_array($data) || isset($data['detail'])) {
-                return array(
-                    'status' => 'Unsuccessful',
-                    'msg' => $data['detail'] ?? 'Unsuccessful'
-                );
-            }
-            $subscription_url = $data['subscription_url'] ?? ($data['subscriptionUrl'] ?? '');
-            if ($subscription_url && !preg_match('/^(https?:\\/\\/)?([a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,}(:\\d+)?((\\/[^\\s\\/]+)+)?$/', $subscription_url)) {
-                $subscription_url = $Get_Data_Panel['url_panel'] . "/" . ltrim($subscription_url, "/");
-            }
-            if ($inoice != false) {
-                $subscription_url = "https://$domainhosts/sub/" . $inoice['id_invoice'];
-            }
-            $links_raw = $data['links'] ?? null;
-            if (!$links_raw && $subscription_url) {
-                $links_raw = outputlunk($subscription_url);
-                if (isBase64($links_raw)) $links_raw = base64_decode($links_raw);
-                $links = explode("\n", trim($links_raw));
-            } else {
-                $links = is_array($links_raw) ? $links_raw : ($links_raw ? [$links_raw] : []);
-            }
-            $expire = $data['expire'] ?? ($data['expire_at'] ?? 0);
-            if (is_string($expire) && preg_match('/\n|T/', $expire)) {
-                $ts = strtotime($expire);
-                if ($ts !== false) $expire = $ts;
-            }
-            $Output = array(
-                'status' => $data['status'] ?? 'active',
-                'username' => $data['username'] ?? $username,
-                'data_limit' => $data['data_limit'] ?? ($data['quota'] ?? 0),
-                'expire' => intval($expire),
-                'online_at' => $data['online_at'] ?? null,
-                'used_traffic' => $data['used_traffic'] ?? ($data['used'] ?? 0),
-                'links' => $links,
-                'subscription_url' => $subscription_url,
-                'sub_updated_at' => $data['sub_updated_at'] ?? null,
-                'sub_last_user_agent' => $data['sub_last_user_agent'] ?? null,
-                'uuid' => $data['uuid'] ?? null
-            );
         } else {
             $Output = array(
                 'status' => 'Unsuccessful',
@@ -1078,22 +973,6 @@ class ManagePanel
                     'status' => 'successful',
                     'configs' => [outputlunk($Get_Data_Panel['linksubx'] . "/{$subId}")],
                     'subscription_url' => $Get_Data_Panel['linksubx'] . "/{$subId}",
-                );
-            }
-        } elseif ($Get_Data_Panel['type'] == "pasarguard") {
-            $revoke_sub = pg_revoke_sub($username, $name_panel);
-            if (!empty($revoke_sub['error'])) {
-                $Output = array(
-                    'status' => 'Unsuccessful',
-                    'msg' => $revoke_sub['error']
-                );
-            } else {
-                $config = new ManagePanel();
-                $Data_User = $config->DataUser($name_panel, $username);
-                $Output = array(
-                    'status' => 'successful',
-                    'configs' => $Data_User['links'],
-                    'subscription_url' => $Data_User['subscription_url']
                 );
             }
         } elseif ($Get_Data_Panel['type'] == "hiddify") {
@@ -1325,19 +1204,6 @@ class ManagePanel
                 $Output = array(
                     'status' => 'Unsuccessful',
                     'msg' => $UsernameData['msg']
-                );
-            } else {
-                $Output = array(
-                    'status' => 'successful',
-                    'username' => $username,
-                );
-            }
-        } elseif ($Get_Data_Panel['type'] == "pasarguard") {
-            $UsernameData = pg_remove_user($Get_Data_Panel['name_panel'], $username);
-            if (!empty($UsernameData['error']) || (!empty($UsernameData['status']) && $UsernameData['status'] != 200)) {
-                $Output = array(
-                    'status' => 'Unsuccessful',
-                    'msg' => $UsernameData['error'] ?? $UsernameData['status']
                 );
             } else {
                 $Output = array(
@@ -1620,25 +1486,6 @@ class ManagePanel
                 'status' => true,
                 'data' => $modify
             );
-        } elseif ($Get_Data_Panel['type'] == "pasarguard") {
-            $modify = pg_modify_user($name_panel, $username, $config);
-            if (!empty($modify['error']) || (!empty($modify['status']) && $modify['status'] == 500)) {
-                return array(
-                    'status' => false,
-                    'msg' => $modify['error'] ?? ('error code : ' . $modify['status'])
-                );
-            }
-            $modifycheck = json_decode($modify['body'] ?? '{}', true);
-            if (!empty($modifycheck['detail'])) {
-                return array(
-                    'status' => false,
-                    'msg' => $modifycheck['detail']
-                );
-            }
-            return array(
-                'status' => true,
-                'data' => $modify
-            );
         }
     }
     function Change_status($username, $name_panel)
@@ -1877,30 +1724,6 @@ class ManagePanel
             return array(
                 'status' => true
             );
-        } elseif ($panel['type'] == "pasarguard") {
-            $reset = pg_reset_usage($username, $panel['name_panel']);
-            if (!empty($reset['status']) && $reset['status'] != 200) {
-                return array(
-                    'status' => false,
-                    'msg' => 'error code : ' . $reset['status']
-                );
-            } elseif (!empty($reset['error'])) {
-                return array(
-                    'status' => false,
-                    'msg' => 'error  : ' . $reset['error']
-                );
-            }
-            $reset = json_decode($reset['body'] ?? '{}', true);
-            if (!empty($reset['detail'])) {
-                return array(
-                    'status' => false,
-                    'msg' => $reset['detail']
-                );
-            }
-            return array(
-                'status' => true,
-                'msg' => 'successful'
-            );
         }
     }
     function extend($Method_extend, $new_limit, $time_day, $username, $code_product, $name_panel)
@@ -1936,7 +1759,7 @@ class ManagePanel
         $time_new = $time_day == 0 ? 0 : time() + $time_day * 86400;
         $time_old = $time_old == 0 ? time() : $time_old;
         $time_new_add = $time_day == 0 ? 0 : $time_old + ($time_day * 86400);
-        //inboud and proxies
+        //inboud and proxies 
         $inbound_id = isset($panel['inboundid']) ? $panel['inboundid'] : 1;
         $inbounds = is_string($panel['inbounds']) ? json_decode($panel['inbounds']) : "{}";
         $inbounds = $product['inbounds'] != null ? json_decode($product['inbounds']) : $inbounds;

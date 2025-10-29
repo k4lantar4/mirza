@@ -22,7 +22,7 @@ class CurlRequest {
     public function setBearerToken($token) {
         $this->authToken = $token;
     }
-
+    
     public function api_key($token) {
         $this->api_key = $token;
     }
@@ -58,7 +58,7 @@ class CurlRequest {
             curl_setopt($ch, CURLOPT_HTTPHEADER, $finalHeaders);
         }
         if ($this->cookie) {
-         curl_setopt($ch, CURLOPT_COOKIEFILE, $this->cookie);
+         curl_setopt($ch, CURLOPT_COOKIEFILE, $this->cookie);   
         }
         if ($data) {
             if (is_array($data)) {
@@ -71,11 +71,7 @@ class CurlRequest {
         if (curl_errno($ch)) {
             $error = curl_error($ch);
             curl_close($ch);
-            return [
-                'status' => null,
-                'body' => null,
-                'error' => $error,
-            ];
+            return ['error' => $error];
         }
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
@@ -88,10 +84,6 @@ class CurlRequest {
 
     public function get() {
         return $this->execute("GET");
-    }
-
-    public function getWithBody($data) {
-        return $this->execute("GET", $data);
     }
 
     public function post($data) {

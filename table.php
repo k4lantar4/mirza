@@ -1,160 +1,12 @@
 <?php
-/**
- * Mirza Pro - Database Management System
- * Web-based database setup and migration system
- */
-
-// Check if we're in web installation mode
-$web_install_mode = defined('WEB_INSTALL') && WEB_INSTALL === true;
-
-if (!$web_install_mode) {
-    require_once 'function.php';
-    require_once 'config.php';
-    require_once 'botapi.php';
-}
-
+require_once 'function.php';
+require_once 'config.php';
+require_once 'botapi.php';
 global $connect;
-
-// Database migration system
-class DatabaseMigrator {
-    private $pdo;
-    private $connect;
-    private $migrations = [];
-
-    public function __construct($pdo, $connect = null) {
-        $this->pdo = $pdo;
-        $this->connect = $connect;
-        $this->loadMigrations();
-    }
-
-    private function loadMigrations() {
-        $this->migrations = [
-            '1.0.0' => 'initial_setup',
-            '1.1.0' => 'add_webpanel_tables',
-            '1.2.0' => 'add_lottery_system',
-            '1.3.0' => 'add_notification_system',
-            '1.4.0' => 'add_backup_system'
-        ];
-    }
-
-    public function runMigrations() {
-        $this->createMigrationTable();
-        $current_version = $this->getCurrentVersion();
-
-        foreach ($this->migrations as $version => $migration) {
-            if (version_compare($version, $current_version, '>')) {
-                $this->runMigration($version, $migration);
-                $this->updateVersion($version);
-            }
-        }
-    }
-
-    private function createMigrationTable() {
-        $sql = "CREATE TABLE IF NOT EXISTS migrations (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            version VARCHAR(20) NOT NULL,
-            migration_name VARCHAR(100) NOT NULL,
-            executed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            UNIQUE KEY unique_version (version)
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
-
-        $this->pdo->exec($sql);
-    }
-
-    private function getCurrentVersion() {
-        try {
-            $stmt = $this->pdo->query("SELECT version FROM migrations ORDER BY executed_at DESC LIMIT 1");
-            $result = $stmt->fetch(PDO::FETCH_ASSOC);
-            return $result ? $result['version'] : '0.0.0';
-        } catch (PDOException $e) {
-            return '0.0.0';
-        }
-    }
-
-    private function runMigration($version, $migration_name) {
-        switch ($migration_name) {
-            case 'initial_setup':
-                $this->runInitialSetup();
-                break;
-            case 'add_webpanel_tables':
-                $this->addWebpanelTables();
-                break;
-            case 'add_lottery_system':
-                $this->addLotterySystem();
-                break;
-            case 'add_notification_system':
-                $this->addNotificationSystem();
-                break;
-            case 'add_backup_system':
-                $this->addBackupSystem();
-                break;
-        }
-    }
-
-    private function updateVersion($version) {
-        $stmt = $this->pdo->prepare("INSERT INTO migrations (version, migration_name) VALUES (?, ?)");
-        $stmt->execute([$version, $this->migrations[$version]]);
-    }
-
-    private function runInitialSetup() {
-        // This will be handled by the existing table creation code
-    }
-
-    private function addWebpanelTables() {
-        // Add webpanel-specific tables if needed
-    }
-
-    private function addLotterySystem() {
-        // Add lottery system tables
-    }
-
-    private function addNotificationSystem() {
-        // Add notification system tables
-    }
-
-    private function addBackupSystem() {
-        // Add backup system tables
-    }
-}
-
-// Initialize migrator if PDO is available
-$migrator = null;
-if (isset($pdo) && $pdo instanceof PDO) {
-    $migrator = new DatabaseMigrator($pdo, $connect ?? null);
-}
-
-// Web-based database setup function
-function setupDatabaseWeb($pdo, $connect = null) {
-    define('WEB_INSTALL', true);
-
-    try {
-        // Run migrations
-        $migrator = new DatabaseMigrator($pdo, $connect);
-        $migrator->runMigrations();
-
-        // Run initial table setup
-        setupInitialTables($pdo, $connect);
-
-        return ['success' => true, 'message' => 'Database setup completed successfully'];
-    } catch (Exception $e) {
-        return ['success' => false, 'message' => 'Database setup failed: ' . $e->getMessage()];
-    }
-}
-
-// Initial table setup function
-function setupInitialTables($pdo, $connect = null) {
-    // Use existing table creation logic but with better error handling
-    $tables_created = 0;
-    $errors = [];
-
-    // Table creation will be handled by the existing code below
-    // This function serves as a wrapper for web installation
-    return ['tables_created' => $tables_created, 'errors' => $errors];
-}
 //-----------------------------------------------------------------
 try {
 
-    $tableName = 'user';
+    $tableName = '`user`';
     $stmt = $pdo->prepare("SELECT 1 FROM information_schema.tables WHERE table_name = :tableName");
     $stmt->bindParam(':tableName', $tableName);
     $stmt->execute();
@@ -187,7 +39,6 @@ try {
             cardpayment VARCHAR(100) NOT NULL,
             codeInvitation VARCHAR(100) NULL,
             pricediscount VARCHAR(100) NULL   DEFAULT '0',
-            hide_mini_app_instruction VARCHAR(20) NULL   DEFAULT '0',
             maxbuyagent VARCHAR(100) NULL   DEFAULT '0',
             joinchannel VARCHAR(100) NULL   DEFAULT '0',
             checkstatus VARCHAR(50) NULL   DEFAULT '0',
@@ -196,7 +47,7 @@ try {
             limitchangeloc VARCHAR(50) NULL   DEFAULT '0',
             status_cron VARCHAR(20)  NULL DEFAULT '1',
             expire VARCHAR(100) NULL ,
-            token VARCHAR(100) NULL
+            token VARCHAR(100) NULL 
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci");
         $stmt->execute();
     } else {
@@ -226,7 +77,6 @@ try {
         addFieldToTable($tableName, 'pagenumber', '');
         addFieldToTable($tableName, 'codeInvitation', null);
         addFieldToTable($tableName, 'pricediscount', "0");
-        addFieldToTable($tableName, 'hide_mini_app_instruction', '0', "VARCHAR(20)");
     }
 } catch (PDOException $e) {
     file_put_contents('error_log user', $e->getMessage());
@@ -562,20 +412,10 @@ try {
         addFieldToTable("marzban_panel", "status", "active", "VARCHAR(50)");
         addFieldToTable("marzban_panel", "sublink", "onsublink", "VARCHAR(50)");
         addFieldToTable("marzban_panel", "config", "offconfig", "VARCHAR(50)");
-        $max_stmt = $connect->query("SELECT MAX(CAST(SUBSTRING(code_panel, 3) AS UNSIGNED)) as max_num FROM marzban_panel WHERE code_panel LIKE '7e%'");
-        $max_row = $max_stmt->fetch_assoc();
-        $next_num = $max_row['max_num'] ? (int)$max_row['max_num'] + 1 : 15;
-        $stmt = $connect->query("SELECT id FROM marzban_panel WHERE code_panel IS NULL OR code_panel = ''");
-        while ($row = $stmt->fetch_assoc()) {
-            $code = '7e' . $next_num;
-            $connect->query("UPDATE marzban_panel SET code_panel = '$code' WHERE id = " . $row['id']);
-            $next_num++;
-        }
     }
 } catch (Exception $e) {
     file_put_contents('error_log', $e->getMessage());
 }
-
 //-----------------------------------------------------------------
 try {
 
@@ -690,6 +530,22 @@ try {
             $result = $connect->query("ALTER TABLE invoice ADD Status VARCHAR(100)");
         }
     }
+$checkTestInvoice = $connect->query("SELECT COUNT(*) FROM invoice WHERE id_invoice = '1'");
+        $invoiceCount = mysqli_fetch_array($checkTestInvoice)[0];
+        
+        if ($invoiceCount == 0) {
+            $result = $connect->query("INSERT INTO `invoice` 
+                (`id_invoice`, `id_user`, `name_product`, `price_product`, `Status`, `notifctions`) 
+                VALUES ('1', '12345', 'سرویس تست', '0', 'Paid', '0')");
+            
+            if ($result) {
+                echo "✅ رکورد تستی invoice ایجاد شد\n";
+            } else {
+                echo "⚠️ خطا در ایجاد رکورد تستی: " . mysqli_error($connect) . "\n";
+            }
+        } else {
+            echo "✅ رکورد تستی invoice از قبل وجود دارد\n";
+        }
 } catch (Exception $e) {
     file_put_contents('error_log', $e->getMessage());
 }
@@ -702,23 +558,21 @@ try {
     if (!$table_exists) {
         $result = $connect->query("CREATE TABLE Payment_report (
         id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-        id_user varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-        id_order varchar(2000) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-        time varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL,
-        at_updated varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL,
-        price varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL,
-        dec_not_confirmed TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL,
-        Payment_Method varchar(400) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL,
-        payment_Status varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL,
-        bottype varchar(300) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL,
+        id_user varchar(200),
+        id_order varchar(2000),
+        time varchar(200)  NULL,
+        at_updated varchar(200)  NULL,
+        price varchar(200) NULL,
+        dec_not_confirmed TEXT NULL,
+        Payment_Method varchar(400) NULL,
+        payment_Status varchar(100) NULL,
+        bottype varchar(300) NULL,
         message_id INT NULL,
-        id_invoice varchar(1000) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL)
-        ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+        id_invoice varchar(1000) NULL)");
         if (!$result) {
             echo "table Payment_report" . mysqli_error($connect);
         }
     } else {
-        ensureTableUtf8mb4('Payment_report');
         addFieldToTable("Payment_report", "message_id", null, "INT");
         $Check_filde = $connect->query("SHOW COLUMNS FROM Payment_report LIKE 'Payment_Method'");
         if (mysqli_num_rows($Check_filde) != 1) {
@@ -806,7 +660,7 @@ try {
 2- در صورتی که اطلاعیه ای در مورد قطعی در کانال گذاشته نشده به اکانت پشتیبانی پیام دهید
 3- سرویس ها را از طریق پیامک ارسال نکنید برای ارسال پیامک می توانید از طریق ایمیل ارسال کنید.
     ";
-    $text_dec_fq = "
+    $text_dec_fq = " 
  💡 سوالات متداول ⁉️
 
 1️⃣ فیلترشکن شما آیپی ثابته؟ میتونم برای صرافی های ارز دیجیتال استفاده کنم؟
@@ -846,7 +700,7 @@ try {
 ✅ امکان بازگشت وجه در صورت حل نشدن مشکل از سمت ما وجود دارد.
 
 💡 در صورتی که جواب سوالتون رو نگرفتید میتونید به «پشتیبانی» مراجعه کنید.";
-    $text_channel = "
+    $text_channel = "   
         ⚠️ کاربر گرامی؛ شما عضو چنل ما نیستید
 از طریق دکمه زیر وارد کانال شده و عضو شوید
 پس از عضویت دکمه بررسی عضویت را کلیک کنید";
@@ -858,7 +712,7 @@ try {
 👥 حجم اکانت: {Volume} گیگ
 🗒 یادداشت محصول : {note}
 💵 موجودی کیف پول شما : {userBalance}
-
+          
 💰 سفارش شما آماده پرداخت است";
     $textafterpay = "✅ سرویس با موفقیت ایجاد شد
 
@@ -911,18 +765,18 @@ try {
 لینک اتصال:
 {config}
 🧑‍🦯 شما میتوانید شیوه اتصال را  با فشردن دکمه زیر و انتخاب سیستم عامل خود را دریافت کنید";
-    $textconfigtest = "با سلام خدمت شما کاربر گرامی
+    $textconfigtest = "با سلام خدمت شما کاربر گرامی 
 سرویس تست شما با نام کاربری {username} به پایان رسیده است
 امیدواریم تجربه‌ی خوبی از آسودگی و سرعت سرویستون داشته باشین. در صورتی که از سرویس‌ تست خودتون راضی بودین، میتونید سرویس اختصاصی خودتون رو تهیه کنید و از داشتن اینترنت آزاد با نهایت کیفیت لذت ببرید😉🔥
 🛍 برای تهیه سرویس با کیفیت می توانید از دکمه زیر استفاده نمایید";
     $textcart = "برای افزایش موجودی، مبلغ <code>{price}</code>  تومان  را به شماره‌ی حساب زیر واریز کنید 👇🏻
-
-        ====================
+        
+        ==================== 
         <code>{card_number}</code>
         {name_card}
         ====================
 
-❌ این تراکنش به مدت یک ساعت اعتبار دارد پس از آن امکان پرداخت این تراکنش امکان ندارد.
+❌ این تراکنش به مدت یک ساعت اعتبار دارد پس از آن امکان پرداخت این تراکنش امکان ندارد.        
 ‼مبلغ باید همان مبلغی که در بالا ذکر شده واریز نمایید.
 ‼️امکان برداشت وجه از کیف پول نیست.
 ‼️مسئولیت واریز اشتباهی با شماست.
@@ -931,11 +785,11 @@ try {
     $textcartauto = "برای تایید فوری لطفا دقیقاً مبلغ زیر واریز شود. در غیر این صورت تایید پرداخت شما ممکن است با تاخیر مواجه شود.⚠️
             برای افزایش موجودی، مبلغ <code>{price}</code>  ریال  را به شماره‌ی حساب زیر واریز کنید 👇🏻
 
-        ====================
+        ==================== 
         <code>{card_number}</code>
         {name_card}
         ====================
-
+        
 💰دقیقا مبلغی را که در بالا ذکر شده واریز نمایید تا بصورت آنی تایید شود.
 ‼️امکان برداشت وجه از کیف پول نیست.
 🔝لزومی به ارسال رسید نیست، اما در صورتی که بعد از گذشت مدتی واریز شما تایید نشد، عکس رسید خود را ارسال کنید.";
@@ -1345,21 +1199,10 @@ try {
         $result = $connect->query("CREATE TABLE card_number (
         cardnumber varchar(500) PRIMARY KEY,
         namecard  varchar(1000)  NOT NULL)
-        CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
+        ");
         if (!$result) {
             echo "table x_ui" . mysqli_error($connect);
         }
-    }
-    $columnInfo = $connect->query("SHOW FULL COLUMNS FROM card_number LIKE 'namecard'");
-    if ($columnInfo) {
-        $column = $columnInfo->fetch_assoc();
-        $currentCollation = $column['Collation'] ?? '';
-        if (empty($currentCollation) || stripos($currentCollation, 'utf8mb4') === false) {
-            $connect->query("ALTER TABLE card_number CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
-            $connect->query("ALTER TABLE card_number MODIFY cardnumber varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci PRIMARY KEY");
-            $connect->query("ALTER TABLE card_number MODIFY namecard varchar(1000) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL");
-        }
-        $columnInfo->free();
     }
 } catch (Exception $e) {
     file_put_contents('error_log card_number', $e->getMessage());
@@ -1370,18 +1213,15 @@ try {
 
     if (!$table_exists) {
         $result = $connect->query("CREATE TABLE Requestagent (
-        id varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci PRIMARY KEY,
-        username  varchar(500)  CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-        time  varchar(500)  CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-        Description  varchar(500)  CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-        status  varchar(500)  CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-        type  varchar(500)  CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL)
-        ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+        id varchar(500) PRIMARY KEY,
+        username  varchar(500)  NOT NULL,
+        time  varchar(500)  NOT NULL,
+        Description  varchar(500)  NOT NULL,
+        status  varchar(500)  NOT NULL,
+        type  varchar(500)  NOT NULL)");
         if (!$result) {
             echo "table Requestagent" . mysqli_error($connect);
         }
-    } else {
-        ensureTableUtf8mb4('Requestagent');
     }
 } catch (Exception $e) {
     file_put_contents('error_log Requestagent', $e->getMessage());

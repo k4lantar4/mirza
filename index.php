@@ -116,9 +116,6 @@ if ($user == false) {
     );
 }
 $admin_ids = select("admin", "id_admin", null, null, "FETCH_COLUMN");
-if (!is_array($admin_ids)) {
-    $admin_ids = [];
-}
 $helpdata = select("help", "*");
 $datatextbotget = select("textbot", "*", null, null, "fetchAll");
 $id_invoice = select("invoice", "id_invoice", null, null, "FETCH_COLUMN");
@@ -158,46 +155,42 @@ if ($setting['statusnamecustom'] == 'onnamecustom')
     $statusnote = true;
 if ($setting['statusnoteforf'] == "0" && $user['agent'] == "f")
     $statusnote = false;
-if (!function_exists('createForumTopicIfMissing')) {
-    function createForumTopicIfMissing($currentId, $reportKey, $topicName, $channelId)
-    {
-        $numericId = intval($currentId);
-        if ($numericId !== 0) {
-            return;
-        }
-
-        $channelId = trim((string)$channelId);
-        if ($channelId === '' || $channelId === '0') {
-            return;
-        }
-
-        $response = telegram('createForumTopic', [
-            'chat_id' => $channelId,
-            'name' => $topicName
-        ]);
-
-        if (!is_array($response) || empty($response['ok'])) {
-            $context = is_array($response) ? json_encode($response) : 'empty response';
-            error_log("Failed to create forum topic {$reportKey}: {$context}");
-
-            if (is_array($response) && isset($response['error_code']) && in_array($response['error_code'], [400, 403], true)) {
-                update("topicid", "idreport", -1, "report", $reportKey);
-            }
-
-            return;
-        }
-
-        $threadId = $response['result']['message_thread_id'] ?? null;
-        if ($threadId !== null) {
-            update("topicid", "idreport", $threadId, "report", $reportKey);
-        }
+if (intval($porsantreport) == 0) {
+    $createForumTopic = telegram('createForumTopic', [
+        'chat_id' => $setting['Channel_Report'],
+        'name' => $textbotlang['Admin']['affiliates']['titletopic']
+    ]);
+    if ($createForumTopic['result']['message_thread_id'] != null) {
+        update("topicid", "idreport", $createForumTopic['result']['message_thread_id'], "report", "porsantreport");
     }
 }
-
-//createForumTopicIfMissing($porsantreport, 'porsantreport', $textbotlang['Admin']['affiliates']['titletopic'], $setting['Channel_Report']);
-//createForumTopicIfMissing($reportnight, 'reportnight', $textbotlang['Admin']['report']['reportnight'], $setting['Channel_Report']);
-//createForumTopicIfMissing($reportcron, 'reportcron', $textbotlang['Admin']['report']['reportcron'], $setting['Channel_Report']);
-//createForumTopicIfMissing($reportbackup, 'backupfile', "🤖 بکاپ ربات نماینده", $setting['Channel_Report']);
+if (intval($reportnight) == 0) {
+    $createForumTopic = telegram('createForumTopic', [
+        'chat_id' => $setting['Channel_Report'],
+        'name' => $textbotlang['Admin']['report']['reportnight']
+    ]);
+    if ($createForumTopic['result']['message_thread_id'] != null) {
+        update("topicid", "idreport", $createForumTopic['result']['message_thread_id'], "report", "reportnight");
+    }
+}
+if (intval($reportcron) == 0) {
+    $createForumTopic = telegram('createForumTopic', [
+        'chat_id' => $setting['Channel_Report'],
+        'name' => $textbotlang['Admin']['report']['reportcron']
+    ]);
+    if ($createForumTopic['result']['message_thread_id'] != null) {
+        update("topicid", "idreport", $createForumTopic['result']['message_thread_id'], "report", "reportcron");
+    }
+}
+if (intval($reportbackup) == 0) {
+    $createForumTopic = telegram('createForumTopic', [
+        'chat_id' => $setting['Channel_Report'],
+        'name' => "🤖 بکاپ ربات نماینده"
+    ]);
+    if ($createForumTopic['result']['message_thread_id'] != null) {
+        update("topicid", "idreport", $createForumTopic['result']['message_thread_id'], "report", "backupfile");
+    }
+}
 foreach ($datatextbotget as $row) {
     $datatxtbot[] = array(
         'id_text' => $row['id_text'],
@@ -405,12 +398,6 @@ if ($user['joinchannel'] != "active") {
             if (count($channels) == 0) {
                 deletemessage($from_id, $message_id);
                 sendmessage($from_id, $datatextbot['text_start'], $keyboard, 'html');
-                telegram('answerCallbackQuery', [
-                    'callback_query_id' => $callback_query_id,
-                    'text' => $textbotlang['users']['channel']['confirmed'],
-                    'show_alert' => false,
-                    'cache_time' => 5,
-                ]);
                 return;
             }
             $keyboardchannel = [
@@ -432,12 +419,6 @@ if ($user['joinchannel'] != "active") {
             $keyboardchannel['inline_keyboard'][] = [['text' => $textbotlang['users']['channel']['confirmjoin'], 'callback_data' => "confirmchannel"]];
             $keyboardchannel = json_encode($keyboardchannel);
             Editmessagetext($from_id, $message_id, $datatextbot['text_channel'], $keyboardchannel);
-            telegram('answerCallbackQuery', [
-                'callback_query_id' => $callback_query_id,
-                'text' => $textbotlang['users']['channel']['notconfirmed'],
-                'show_alert' => true,
-                'cache_time' => 5,
-            ]);
             $partsaffiliates = explode("_", $user['Processing_value_four']);
             if ($partsaffiliates[0] == "affiliates") {
                 $affiliatesid = $partsaffiliates[1];
@@ -1295,7 +1276,7 @@ $textconnect
     step('home', $from_id);
     return;
 } elseif (preg_match('/subscriptionurl_(\w+)/', $datain, $dataget) || strpos($text, "/sub ") !== false) {
-    if (!empty($text) && $text[0] == "/") {
+    if ($text[0] == "/") {
         $id_invoice = explode(' ', $text)[1];
         $nameloc = select("invoice", "*", "username", $id_invoice, "select");
         if ($nameloc['id_user'] != $from_id) {
@@ -1369,7 +1350,7 @@ $textconnect
     }
     sendmessage($from_id, "📌 سرویس با موفقیت حذف شد", null, 'html');
 } elseif (preg_match('/config_(\w+)/', $datain, $dataget) || strpos($text, "/link ") !== false) {
-    if (!empty($text) && $text[0] == "/") {
+    if ($text[0] == "/") {
         $id_invoice = explode(' ', $text)[1];
         $nameloc = select("invoice", "*", "username", $id_invoice, "select");
         if ($nameloc['id_user'] != $from_id) {
@@ -4336,17 +4317,11 @@ $textinvite
         ]
     ];
     $dataoutput = $ManagePanel->createUser($marzban_list_get['name_panel'], $info_product['code_product'], $username_ac, $datac);
-    if (!isset($dataoutput['username']) || $dataoutput['username'] === null || $dataoutput['username'] === '') {
-        $errorMessage = $dataoutput['msg'] ?? 'unknown error';
-        if (is_array($errorMessage) || is_object($errorMessage)) {
-            $errorMessage = json_encode($errorMessage, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-        } else {
-            $errorMessage = (string) $errorMessage;
-        }
-        $dataoutput['msg'] = $errorMessage;
+    if ($dataoutput['username'] == null) {
+        $dataoutput['msg'] = json_encode($dataoutput['msg']);
         sendmessage($from_id, $textbotlang['users']['sell']['ErrorConfig'], $keyboard, 'HTML');
-        $texterros = "⭕️ خطای ساخت اشتراک
-✍️ دلیل خطا :
+        $texterros = "⭕️ خطای ساخت اشتراک 
+✍️ دلیل خطا : 
 {$dataoutput['msg']}
 آیدی کابر : $from_id
 نام کاربری کاربر : @$username
@@ -5090,23 +5065,9 @@ $textonebuy
             sendmessage($from_id, "❌ حداقل مبلغ واریزی این روش پرداخت باید $mainbalance و حداکثر $maxbalance تومان باشد", null, 'HTML');
             return;
         }
-        $cardQuery = mysqli_query($connect, "SELECT * FROM card_number  ORDER BY RAND() LIMIT 1");
-        if ($cardQuery === false) {
-            error_log('Failed to fetch card_number data: ' . mysqli_error($connect));
-            sendmessage($from_id, "❌ خطای داخلی در بازیابی کارت بانکی رخ داد. لطفاً بعداً تلاش کنید.", null, 'HTML');
-            return;
-        }
-
-        $card_info = mysqli_fetch_assoc($cardQuery);
-        if (!$card_info || empty($card_info['cardnumber']) || empty($card_info['namecard'])) {
-            sendmessage($from_id, "❌ کارت بانکی فعالی برای این روش پرداخت یافت نشد. لطفاً بعداً تلاش کنید یا با پشتیبانی تماس بگیرید.", null, 'HTML');
-            mysqli_free_result($cardQuery);
-            return;
-        }
-
+        $card_info = mysqli_fetch_assoc(mysqli_query($connect, "SELECT * FROM card_number  ORDER BY RAND() LIMIT 1"));
         $card_number = $card_info['cardnumber'];
         $PaySettingname = $card_info['namecard'];
-        mysqli_free_result($cardQuery);
         $price_copy = $user['Processing_value'];
         if ($PaySetting == "onautoconfirm") {
             $random_number = rand(0, 2000);
@@ -5181,7 +5142,7 @@ $textonebuy
             'reply_markup' => $sendresidcart,
             'parse_mode' => "html",
         ]);
-        updatePaymentMessageId($message_id, $randomString);
+        update("Payment_report","message_id",intval($message_id['result']['message_id']),"id_order",$randomString);
     } elseif ($datain == "aqayepardakht") {
         if ($user['Processing_value'] < 5000) {
             sendmessage($from_id, $textbotlang['users']['Balance']['zarinpal'], null, 'HTML');
@@ -5253,7 +5214,7 @@ $textonebuy
             }
         }
         $message_id = sendmessage($from_id, $textnowpayments, $paymentkeyboard, 'HTML');
-        updatePaymentMessageId($message_id, $randomString);
+        update("Payment_report","message_id",intval($message_id['result']['message_id']),"id_order",$randomString);
     } elseif ($datain == "zarinpal") {
         if ($user['Processing_value'] < 5000) {
             sendmessage($from_id, $textbotlang['users']['Balance']['zarinpal'], null, 'HTML');
@@ -5328,16 +5289,11 @@ $textonebuy
             }
         }
         $message_id = sendmessage($from_id, $textnowpayments, $paymentkeyboard, 'HTML');
-        updatePaymentMessageId($message_id, $randomString);
+        update("Payment_report","message_id",intval($message_id['result']['message_id']),"id_order",$randomString);
     } elseif ($datain == "plisio") {
-        $rates = requireTronRates(['TRX', 'USD']);
-        if ($rates === null) {
-            sendmessage($from_id, $textbotlang['users']['Balance']['errorLinkPayment'], $keyboard, 'HTML');
-            step('home', $from_id);
-            return;
-        }
-        $trx = $rates['TRX'];
-        $usd = $rates['USD'];
+        $price_rate = tronratee();
+        $trx = $price_rate['result']['TRX'];
+        $usd = $price_rate['result']['USD'];
         $trxprice = $user['Processing_value'] / $trx;
         $usdprice = $user['Processing_value'] / $usd;
         if ($usdprice <= 1) {
@@ -5424,16 +5380,11 @@ $textonebuy
             }
         }
         $message_id = sendmessage($from_id, $textnowpayments, $paymentkeyboard, 'HTML');
-        updatePaymentMessageId($message_id, $randomString);
+        update("Payment_report","message_id",intval($message_id['result']['message_id']),"id_order",$randomString);
     } elseif ($datain == "nowpayment") {
-        $rates = requireTronRates(['TRX', 'USD']);
-        if ($rates === null) {
-            sendmessage($from_id, $textbotlang['users']['Balance']['errorLinkPayment'], $keyboard, 'HTML');
-            step('home', $from_id);
-            return;
-        }
-        $trx = $rates['TRX'];
-        $usd = $rates['USD'];
+        $price_rate = tronratee();
+        $trx = $price_rate['result']['TRX'];
+        $usd = $price_rate['result']['USD'];
         $trxprice = $user['Processing_value'] / $trx;
         $usdprice = $user['Processing_value'] / $usd;
         $mainbalanceplisio = select("PaySetting", "ValuePay", "NamePay", "minbalancenowpayment", "select")['ValuePay'];
@@ -5520,16 +5471,11 @@ $textonebuy
             }
         }
         $message_id = sendmessage($from_id, $textnowpayments, $paymentkeyboard, 'HTML');
-        updatePaymentMessageId($message_id, $randomString);
+        update("Payment_report","message_id",intval($message_id['result']['message_id']),"id_order",$randomString);
     } elseif ($datain == "iranpay1") {
-        $rates = requireTronRates(['TRX', 'USD']);
-        if ($rates === null) {
-            sendmessage($from_id, $textbotlang['users']['Balance']['errorLinkPayment'], $keyboard, 'HTML');
-            step('home', $from_id);
-            return;
-        }
-        $trx = $rates['TRX'];
-        $usd = $rates['USD'];
+        $price_rate = tronratee();
+        $trx = $price_rate['result']['TRX'];
+        $usd = $price_rate['result']['USD'];
         $trxprice = round($user['Processing_value'] / $trx, 2);
         $usdprice = $user['Processing_value'] / $usd;
         $mainbalanceplisio = select("PaySetting", "ValuePay", "NamePay", "minbalanceiranpay1", "select")['ValuePay'];
@@ -5605,16 +5551,11 @@ $textonebuy
             }
         }
         $message_id = sendmessage($from_id, $textnowpayments, $paymentkeyboard, 'HTML');
-        updatePaymentMessageId($message_id, $randomString);
+        update("Payment_report","message_id",intval($message_id['result']['message_id']),"id_order",$randomString);
     } elseif ($datain == "iranpay2") {
-        $rates = requireTronRates(['TRX', 'USD']);
-        if ($rates === null) {
-            sendmessage($from_id, $textbotlang['users']['Balance']['errorLinkPayment'], $keyboard, 'HTML');
-            step('home', $from_id);
-            return;
-        }
-        $trx = $rates['TRX'];
-        $usd = $rates['USD'];
+        $price_rate = tronratee();
+        $trx = $price_rate['result']['TRX'];
+        $usd = $price_rate['result']['USD'];
         $trxprice = $user['Processing_value'] / $trx;
         $usdprice = $user['Processing_value'] / $usd;
         $mainbalanceplisio = select("PaySetting", "ValuePay", "NamePay", "minbalanceiranpay2", "select")['ValuePay'];
@@ -5688,7 +5629,7 @@ $textonebuy
             }
         }
         $message_id = sendmessage($from_id, $textnowpayments, $paymentkeyboard, 'HTML');
-        updatePaymentMessageId($message_id, $randomString);
+        update("Payment_report","message_id",intval($message_id['result']['message_id']),"id_order",$randomString);
     } elseif ($datain == "iranpay3") {
         $dateacc = date('Y/m/d');
         $query = "SELECT SUM(price) as price FROM Payment_report WHERE  Payment_Method = 'Currency Rial 1' AND  time LIKE '%$dateacc%'";
@@ -5701,14 +5642,9 @@ $textonebuy
 ‼️درحال حاظر از روش پرداخت دیگری استفاده کنید", null, 'HTML');
             return;
         }
-        $rates = requireTronRates(['TRX', 'USD']);
-        if ($rates === null) {
-            sendmessage($from_id, $textbotlang['users']['Balance']['errorLinkPayment'], $keyboard, 'HTML');
-            step('home', $from_id);
-            return;
-        }
-        $trx = $rates['TRX'];
-        $usd = $rates['USD'];
+        $price_rate = tronratee();
+        $trx = $price_rate['result']['TRX'];
+        $usd = $price_rate['result']['USD'];
         $trxprice = $user['Processing_value'] / $trx;
         $usdprice = $user['Processing_value'] / $usd;
         $mainbalanceplisio = select("PaySetting", "ValuePay", "NamePay", "minbalanceiranpay", "select")['ValuePay'];
@@ -5786,14 +5722,9 @@ $textonebuy
         step("getvoocherx", $from_id);
         savedata("clear", "id_payment", $randomString);
     } elseif ($datain == "digitaltron") {
-        $rates = requireTronRates(['TRX', 'USD']);
-        if ($rates === null) {
-            sendmessage($from_id, $textbotlang['users']['Balance']['errorLinkPayment'], $keyboard, 'HTML');
-            step('home', $from_id);
-            return;
-        }
-        $trx = $rates['TRX'];
-        $usd = $rates['USD'];
+        $price_rate = tronratee();
+        $trx = $price_rate['result']['TRX'];
+        $usd = $price_rate['result']['USD'];
         $trxprice = round($user['Processing_value'] / $trx, 2);
         $usdprice = round($user['Processing_value'] / $usd, 2);
         if ($trxprice <= 1) {
@@ -5844,8 +5775,8 @@ $textonebuy
 🔹 هر تراکنش یک ساعت معتبر است و بعد از دریافت پیام منقضی شدن تراکنش به هیچ عنوان مبلغی به کیف پول ارسال نکنید
 
 ✅ در صورت مشکل میتوانید با پشتیبانی در ارتباط باشید";
-        $gethelp = getPaySettingValue('helpofflinearze');
-        if ($gethelp !== null && $gethelp != 2) {
+        $gethelp = select("PaySetting", "ValuePay", "NamePay", "helpofflinearze", "select")['ValuePay'];
+        if ($gethelp != 2) {
             $data = json_decode($gethelp, true);
             if ($data['type'] == "text") {
                 sendmessage($from_id, $data['text'], null, 'HTML');
@@ -5856,18 +5787,13 @@ $textonebuy
             }
         }
         $message_id =sendmessage($from_id, $textnowpayments, $paymentkeyboard, 'HTML');
-        updatePaymentMessageId($message_id, $randomString);
+        update("Payment_report","message_id",intval($message_id['result']['message_id']),"id_order",$randomString);
     } elseif ($datain == "startelegrams") {
-        $rates = requireTronRates(['USD', 'Ton']);
-        if ($rates === null) {
-            sendmessage($from_id, $textbotlang['users']['Balance']['errorLinkPayment'], $keyboard, 'HTML');
-            step('home', $from_id);
-            return;
-        }
-        $usd = $rates['USD'];
-        $ton = $rates['Ton'];
+        $price_rate = tronratee();
+        $usd = $price_rate['result']['USD'];
+        $ton = $price_rate['result']['Ton'];
         $usdprice = round($user['Processing_value'] / $usd, 2);
-        $starAmount = $usd * 0.016;
+        $starAmount = $ton * 0.004456;
         $starAmount = intval($user['Processing_value'] / $starAmount);
         $mainbalance = select("PaySetting", "ValuePay", "NamePay", "minbalancestar", "select")['ValuePay'];
         $maxbalance = select("PaySetting", "ValuePay", "NamePay", "maxbalancestar", "select")['ValuePay'];
@@ -5952,7 +5878,7 @@ $textonebuy
             }
         }
         $message_id = sendmessage($from_id, $textstar, $paymentkeyboard, 'HTML');
-        updatePaymentMessageId($message_id, $randomString);
+        update("Payment_report","message_id",intval($message_id['result']['message_id']),"id_order",$randomString);
     }
 }
 if (preg_match('/Confirmpay_user_(\w+)_(\w+)/', $datain, $dataget)) {
@@ -6860,61 +6786,14 @@ $text_porsant
     $status = "waiting";
     $type = "None";
     $current_time = time();
-    $description = $text;
-    $requestAgentInserted = false;
-    try {
-        $stmt->execute([
-            ':id' => $from_id,
-            ':username' => $username,
-            ':time' => $current_time,
-            ':description' => $description,
-            ':status' => $status,
-            ':type' => $type,
-        ]);
-        $requestAgentInserted = true;
-    } catch (PDOException $e) {
-        if (strpos($e->getMessage(), 'Incorrect string value') !== false) {
-            $tableConverted = ensureTableUtf8mb4('Requestagent');
-            if ($tableConverted) {
-                try {
-                    $stmt->execute([
-                        ':id' => $from_id,
-                        ':username' => $username,
-                        ':time' => $current_time,
-                        ':description' => $description,
-                        ':status' => $status,
-                        ':type' => $type,
-                    ]);
-                    $requestAgentInserted = true;
-                } catch (PDOException $retryException) {
-                    error_log('Retry after charset conversion failed: ' . $retryException->getMessage());
-                }
-            }
-
-            if (!$requestAgentInserted) {
-                $sanitisedDescription = preg_replace('/[\x{10000}-\x{10FFFF}]/u', '', $description);
-                if ($sanitisedDescription !== $description) {
-                    $stmt->execute([
-                        ':id' => $from_id,
-                        ':username' => $username,
-                        ':time' => $current_time,
-                        ':description' => $sanitisedDescription,
-                        ':status' => $status,
-                        ':type' => $type,
-                    ]);
-                    $requestAgentInserted = true;
-                } else {
-                    throw $e;
-                }
-            }
-        } else {
-            throw $e;
-        }
-    }
-
-    if (!$requestAgentInserted) {
-        throw new RuntimeException('Failed to persist agent request description.');
-    }
+    $stmt->execute([
+        ':id' => $from_id,
+        ':username' => $username,
+        ':time' => $current_time,
+        ':description' => $text,
+        ':status' => $status,
+        ':type' => $type,
+    ]);
     $textrequestagent = sprintf($textbotlang['users']['agenttext']['agent-request'], $from_id, $username, $first_name, $text);
     $keyboardmanage = json_encode([
         'inline_keyboard' => [
@@ -6953,47 +6832,40 @@ $text_porsant
     $stmt = $pdo->prepare("SELECT * FROM wheel_list  WHERE id_user = '$from_id' ORDER BY time DESC LIMIT 1");
     $stmt->execute();
     $USER = $stmt->fetch(PDO::FETCH_ASSOC);
-    $timelast = isset($USER['time']) ? strtotime($USER['time']) : false;
-    if ($USER && $timelast !== false && (time() - $timelast) <= 86400) {
+    $timelast = strtotime($USER['time']);
+    if (time() - $timelast <= 86400 and $stmt->rowCount() != 0) {
         sendmessage($from_id, $textbotlang['users']['wheel_luck']['already-participated'], null, 'HTML');
         return;
     }
     if (intval($setting['Dice']) == 1) {
-        $diceResponse = telegram('sendDice', [
+        $whell = telegram('sendDice', [
             'chat_id' => $from_id,
             'emoji' => "🎲",
         ]);
-        sleep((int)4.5);
+        sleep(4.5);
     } else {
-        $diceResponse = telegram('sendDice', [
+        $whell = telegram('sendDice', [
             'chat_id' => $from_id,
             'emoji' => "🎰",
         ]);
         sleep(2);
     }
-    if (!is_array($diceResponse) || empty($diceResponse['ok']) || !isset($diceResponse['result']['dice']['value'])) {
-        $errorContext = is_array($diceResponse) ? json_encode($diceResponse) : (is_string($diceResponse) ? $diceResponse : 'empty response');
-        error_log('Failed to receive dice value for wheel_luck: ' . $errorContext);
-        sendmessage($from_id, $textbotlang['users']['wheel_luck']['error'] ?? '❌ خطایی در دریافت نتیجه بازی رخ داد. لطفاً بعداً مجدداً تلاش کنید.', null, 'HTML');
-        return;
-    }
-    $diceValue = (int) $diceResponse['result']['dice']['value'];
     $dateacc = date('Y/m/d H:i:s');
     $stmt = $pdo->prepare("SELECT * FROM wheel_list  WHERE id_user = '$from_id' ORDER BY time DESC LIMIT 1");
     $stmt->execute();
     $USER = $stmt->fetch(PDO::FETCH_ASSOC);
-    $timelast = isset($USER['time']) ? strtotime($USER['time']) : false;
-    if ($USER && $timelast !== false && (time() - $timelast) <= 86400) {
+    $timelast = strtotime($USER['time']);
+    if (time() - $timelast <= 86400 and $stmt->rowCount() != 0) {
         sendmessage($from_id, $textbotlang['users']['wheel_luck']['already-participated'], null, 'HTML');
         return;
     }
     $status = false;
     if (intval($setting['Dice']) == 1) {
-        if ($diceValue === 6) {
+        if (intval($whell['result']['dice']['value']) == 6) {
             $status = true;
         }
     } else {
-        if (in_array($diceValue, [1, 43, 64, 22], true)) {
+        if (in_array(intval($whell['result']['dice']['value']), [1, 43, 64, 22])) {
             $status = true;
         }
     }
@@ -7018,25 +6890,15 @@ $text_porsant
     $stmt = $pdo->prepare("INSERT IGNORE INTO wheel_list (id_user,first_name,wheel_code,time,price) VALUES (:id_user,:first_name,:wheel_code,:time,:price)");
     $stmt->bindParam(':id_user', $from_id);
     $stmt->bindParam(':first_name', $first_name);
-    $stmt->bindParam(':wheel_code', $diceValue);
+    $stmt->bindParam(':wheel_code', $whell['result']['dice']['value']);
     $stmt->bindParam(':time', $dateacc);
     $stmt->bindParam(':price', $pricelast);
     $stmt->execute();
 } elseif ($text == "/tron") {
-    $rates = requireTronRates(['TRX']);
-    if ($rates === null) {
-        sendmessage($from_id, "❌ دریافت قیمت در حال حاضر امکان پذیر نیست. لطفاً بعداً تلاش کنید.", null, 'HTML');
-        return;
-    }
-    $price = $rates['TRX'];
+    $price = tronratee()['result']['TRX'];
     sendmessage($from_id, sprintf($textbotlang['users']['pricearze']['tron-price'], $price), null, 'HTML');
 } elseif ($text == "/usd") {
-    $rates = requireTronRates(['USD']);
-    if ($rates === null) {
-        sendmessage($from_id, "❌ دریافت قیمت در حال حاضر امکان پذیر نیست. لطفاً بعداً تلاش کنید.", null, 'HTML');
-        return;
-    }
-    $price = $rates['USD'];
+    $price = tronratee()['result']['USD'];
     sendmessage($from_id, sprintf($textbotlang['users']['pricearze']['tether-price'], $price), null, 'HTML');
 } elseif ($text == $datatextbot['text_extend'] or $datain == "extendbtn") {
     $stmt = $pdo->prepare("SELECT * FROM invoice WHERE id_user = :id_user AND (status = 'active' OR status = 'end_of_time'  OR status = 'end_of_volume' OR status = 'sendedwarn' OR Status = 'send_on_hold')");

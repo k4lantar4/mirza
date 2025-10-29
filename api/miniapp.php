@@ -153,45 +153,24 @@ switch ($data['actions']) {
         $username = $data['username'];
         $stmt = $pdo->prepare("SELECT * FROM invoice WHERE id_user = :user_id AND (status = 'active' OR status = 'end_of_time'  OR status = 'end_of_volume' OR status = 'sendedwarn' OR Status = 'send_on_hold') AND username = :username");
         $stmt->bindValue(':user_id', $user_id, PDO::PARAM_INT);
-        $stmt->bindValue(':username', $username, PDO::PARAM_STR);
+        $stmt->bindValue(':username', $username, PDO::PARAM_INT);
         $stmt->execute();
         $invoice = $stmt->fetch(PDO::FETCH_ASSOC);
         if ($invoice) {
             $panel = select("marzban_panel", "*", "name_panel", $invoice['Service_location'], "select");
-            if (!$panel) {
-                http_response_code(404);
-                echo json_encode([
-                    'status' => false,
-                    'msg' => "Panel Not Found",
-                    'obj' => []
-                ]);
-                return;
-            }
             $DataUserOut = $ManagePanel->DataUser($invoice['Service_location'], $invoice['username']);
-            if (!is_array($DataUserOut) || !array_key_exists('data_limit', $DataUserOut) || !array_key_exists('used_traffic', $DataUserOut)) {
-                http_response_code(502);
-                echo json_encode([
-                    'status' => false,
-                    'msg' => isset($DataUserOut['msg']) ? $DataUserOut['msg'] : "Service data unavailable",
-                    'obj' => []
-                ]);
-                return;
-            }
-            $data_limit_bytes = is_numeric($DataUserOut['data_limit']) ? (float)$DataUserOut['data_limit'] : 0;
-            $used_traffic_bytes = is_numeric($DataUserOut['used_traffic']) ? (float)$DataUserOut['used_traffic'] : 0;
-            $remaining_traffic_bytes = max($data_limit_bytes - $used_traffic_bytes, 0);
-            $data_limit = $data_limit_bytes / pow(1024, 3);
-            $used_Traffic = $used_traffic_bytes / pow(1024, 3);
-            $remaining_traffic = $remaining_traffic_bytes / pow(1024, 3);
+            $data_limit = $DataUserOut['data_limit'] / pow(1024, 3);
+            $used_Traffic = $DataUserOut['used_traffic'] / pow(1024, 3);
+            $remaining_traffic = ($DataUserOut['data_limit'] - $DataUserOut['used_traffic']) / pow(1024, 3);
             $config = [];
             if (in_array($panel['type'], ['marzban', 'marzneshin', 'alireza_single', 'x-ui_single', 'hiddify', 'eylanpanel'])) {
-                if ($panel['sublink'] == "onsublink" && !empty($DataUserOut['subscription_url'])) {
+                if ($panel['sublink'] == "onsublink") {
                     $config[] = [
                         'type' => "link",
                         'value' => $DataUserOut['subscription_url']
                     ];
                 }
-                if ($panel['config'] == "onconfig" && !empty($DataUserOut['links'])) {
+                if ($panel['config'] == "onconfig") {
                     $config[] = [
                         'type' => "config",
                         'value' => $DataUserOut['links']
@@ -200,16 +179,16 @@ switch ($data['actions']) {
             } elseif ($panel['type'] == "WGDashboard") {
                 $config[] = [
                     'type' => "file",
-                    'value' => $DataUserOut['subscription_url'] ?? '',
+                    'value' => $DataUserOut['subscription_url'],
                     'filename' => $panel['inboundid'] . "_" . $invoice['id_user'] . "_" . $invoice['id_invoice'] . ".config"
                 ];
             } elseif (in_array($panel['type'], ['mikrotik', 'ibsng'])) {
                 $config[] = [
                     'type' => "password",
-                    'value' => $DataUserOut['password'] ?? ''
+                    'value' => $DataUserOut['password']
                 ];
             }
-            if (isset($DataUserOut['sub_updated_at']) && $DataUserOut['sub_updated_at']  !== null) {
+            if ($DataUserOut['sub_updated_at']  !== null) {
                 $sub_updated = $DataUserOut['sub_updated_at'];
                 $dateTime = new DateTime($sub_updated, new DateTimeZone('UTC'));
                 $dateTime->setTimezone(new DateTimeZone('Asia/Tehran'));
@@ -217,9 +196,9 @@ switch ($data['actions']) {
             } else {
                 $lastupdate = null;
             }
-            if (($DataUserOut['online_at'] ?? null) == "online") {
+            if ($DataUserOut['online_at'] == "online") {
                 $lastonline = 'آنلاین';
-            } elseif (($DataUserOut['online_at'] ?? null) == "offline") {
+            } elseif ($DataUserOut['online_at'] == "offline") {
                 $lastonline = 'آفلاین';
             } else {
                 if (isset($DataUserOut['online_at']) && $DataUserOut['online_at'] !== null) {
@@ -229,15 +208,13 @@ switch ($data['actions']) {
                     $lastonline = "متصل نشده";
                 }
             }
-            $expireTimestamp = isset($DataUserOut['expire']) && is_numeric($DataUserOut['expire']) ? (int)$DataUserOut['expire'] : 0;
-            $expirationDate = $expireTimestamp ? jdate('Y/m/d', $expireTimestamp) : 'نامحدود';
-            $usernameOutput = $DataUserOut['username'] ?? $invoice['username'];
+            $expirationDate = $DataUserOut['expire'] ? jdate('Y/m/d', $DataUserOut['expire']) : 'نامحدود';
             echo json_encode([
                 'status' => true,
                 'msg' => "Successful",
                 'obj' => array(
                     'status' => $DataUserOut['status'],
-                    'username' => $usernameOutput,
+                    'username' => $DataUserOut['username'],
                     'product_name' => $invoice['name_product'],
                     'total_traffic_gb' => round($data_limit, 2),
                     'used_traffic_gb' => round($used_Traffic, 2),
@@ -394,7 +371,7 @@ switch ($data['actions']) {
             $stmt->execute();
             $category_list = [];
             $panel = select("marzban_panel", "*", "code_panel", $data['id_panel'], "select");
-            if (empty($panel)) {
+            if ($panel == false) {
                 echo json_encode(array(
                     'status' => false,
                     'msg' => "panel not fonud!(invalid id_panel)"
@@ -447,7 +424,7 @@ switch ($data['actions']) {
             }
             $category_time_list = [];
             $panel = select("marzban_panel", "*", "code_panel", $data['id_panel'], "select");
-            if (empty($panel)) {
+            if ($panel == false) {
                 echo json_encode(array(
                     'status' => false,
                     'msg' => "panel not fonud!(invalid id_panel)"
@@ -580,37 +557,20 @@ switch ($data['actions']) {
         $user_info = select("user", "*", "token", $tokencheck, "select");
         if ($user_info) {
             $panel = select("marzban_panel", "*", "code_panel", $data['id_panel'], "select");
-            if (empty($panel)) {
+            if ($panel == false) {
                 echo json_encode(array(
                     'status' => false,
                     'msg' => "panel not fonud!(invalid id_panel)"
                 ));
                 return;
             }
-            $category_remark = null;
-            $category_remarks = "";
-            $selected_category_id = isset($data['category_id']) ? $data['category_id'] : null;
-            if (!empty($data['category_id'])) {
-                $category_remark = select("category", "*", "id", $data['category_id'], "select");
-                if (!is_array($category_remark) || !isset($category_remark['remark'])) {
-                    echo json_encode([
-                        'status' => false,
-                        'msg' => "category not found!(invalid category_id)",
-                    ]);
-                    return;
-                }
-                $category_remarks = "AND category = '{$category_remark['remark']}'";
-                $selected_category_id = $category_remark['id'];
-            }
+            $category_remark = select("category", "*", "id", $data['category_id'], "select");
+            $category_remarks = $category_remark == false ? "" : "AND category = '{$category_remark['remark']}'";
             $time_range_day = $data['time_range_day'] == 0 ? "" : "AND Service_time = '{$data['time_range_day']}'";
             $stmt = $pdo->prepare("SELECT * FROM product WHERE (Location = '{$panel['name_panel']}' OR Location = '/all')AND agent= '{$user_info['agent']}' $category_remarks $time_range_day");
             $stmt->execute();
-            $product_list = [];
             while ($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
                 $hide_panel = json_decode($result['hide_panel'], true);
-                if (!is_array($hide_panel)) {
-                    $hide_panel = [];
-                }
                 if (in_array($panel['name_panel'], $hide_panel)) continue;
                 $stmts2 = $pdo->prepare("SELECT * FROM invoice WHERE Status != 'Unpaid' AND id_user = '{$user_info['id']}'");
                 $stmts2->execute();
@@ -627,7 +587,7 @@ switch ($data['actions']) {
                     'price' => $result['price_product'],
                     'traffic_gb' => $result['Volume_constraint'],
                     'time_days' => intval($result['Service_time']),
-                    'category_id' => $selected_category_id,
+                    'category_id' => $category_remark['id'],
                     'country_id' => $panel['code_panel'],
                     'time_range_id' => $result['Service_time']
 
@@ -657,7 +617,7 @@ switch ($data['actions']) {
         $user_info = select("user", "*", "token", $tokencheck, "select");
         if ($user_info) {
             $panel = select("marzban_panel", "*", "code_panel", $data['id_panel'], "select");
-            if (empty($panel)) {
+            if ($panel == false) {
                 echo json_encode(array(
                     'status' => false,
                     'msg' => "panel not fonud!(invalid id_panel)"
@@ -710,7 +670,7 @@ switch ($data['actions']) {
             return;
         }
         $panel = select("marzban_panel", "*", "code_panel", $data['country_id'], "select");
-        if (empty($panel)) {
+        if ($panel == false) {
             http_response_code(500);
             echo json_encode(array(
                 'status' => false,
@@ -770,7 +730,7 @@ switch ($data['actions']) {
                 return;
             }
         }
-        if (empty($product)) {
+        if ($product == false) {
             http_response_code(500);
             echo json_encode(array(
                 'status' => false,
