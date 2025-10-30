@@ -68,3 +68,20 @@ Stack trace:
 [29-Oct-2025 15:19:27 Asia/Tehran] PHP Warning:  Undefined array key "username_admin" in /home/bb/public_html/webpanel/index.php on line 66
 [29-Oct-2025 11:49:29 UTC] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
 [29-Oct-2025 11:49:29 UTC] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:39:58 UTC] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:39:58 UTC] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:40:02 UTC] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:40:02 UTC] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 22:10:02 Asia/Tehran] PHP Warning:  Undefined array key "username_admin" in /home/bb/public_html/webpanel/index.php on line 66
+[29-Oct-2025 18:40:07 UTC] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:40:07 UTC] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:40:09 UTC] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:40:09 UTC] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:44:07 UTC] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:44:07 UTC] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:44:08 UTC] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:44:08 UTC] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 22:14:08 Asia/Tehran] PHP Warning:  Undefined array key "username_admin" in /home/bb/public_html/webpanel/index.php on line 66
+[29-Oct-2025 18:44:11 UTC] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 18:44:11 UTC] {"ok":false,"error_code":400,"description":"Bad Request: user not found"}
+[29-Oct-2025 22:14:11 Asia/Tehran] PHP Warning:  Undefined array key "username_admin" in /home/bb/public_html/webpanel/index.php on line 66
