@@ -397,6 +397,16 @@ class ManagePanel
                 if (!preg_match('/^(https?:\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(:\d+)?((\/[^\s\/]+)+)?$/', $data_Output['subscription_url'])) {
                     $data_Output['subscription_url'] = $Get_Data_Panel['url_panel'] . "/" . ltrim($data_Output['subscription_url'], "/");
                 }
+
+                // Use linksubx if configured (similar to x-ui_single and alireza_single)
+                if (!empty($Get_Data_Panel['linksubx']) && isset($data_Output['subscription_url'])) {
+                    // Extract subscription token from subscription_url (part after /sub/)
+                    if (preg_match('/\/sub\/([^\/\?]+)/', $data_Output['subscription_url'], $matches)) {
+                        $subscription_token = $matches[1];
+                        $data_Output['subscription_url'] = rtrim($Get_Data_Panel['linksubx'], '/') . '/sub/' . $subscription_token;
+                    }
+                }
+
                 if ($new_marzban) {
                     $out_put_link = outputlunk($data_Output['subscription_url']);
                     if (isBase64($out_put_link)) {
@@ -1153,6 +1163,16 @@ class ManagePanel
                 if (!preg_match('/^(https?:\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(:\d+)?((\/[^\s\/]+)+)?$/', $Data_User['subscription_url'])) {
                     $Data_User['subscription_url'] = $Get_Data_Panel['url_panel'] . "/" . ltrim($Data_User['subscription_url'], "/");
                 }
+
+                // Use linksubx if configured (similar to x-ui_single and alireza_single)
+                if (!empty($Get_Data_Panel['linksubx']) && isset($Data_User['subscription_url'])) {
+                    // Extract subscription token from subscription_url (part after /sub/)
+                    if (preg_match('/\/sub\/([^\/\?]+)/', $Data_User['subscription_url'], $matches)) {
+                        $subscription_token = $matches[1];
+                        $Data_User['subscription_url'] = rtrim($Get_Data_Panel['linksubx'], '/') . '/sub/' . $subscription_token;
+                    }
+                }
+
                 $Output = array(
                     'status' => 'successful',
                     'configs' => $Data_User['links'],
