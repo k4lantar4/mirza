@@ -10,6 +10,12 @@ use Endroid\QrCode\Writer\PngWriter;
 #----------------[  admin section  ]------------------#
 
 $textadmin = ["panel", "/panel", "پنل مدیریت", "ادمین", "👨‍💼 پنل مدیریت"];
+if (!is_array($admin_idsmain)) {
+    $admin_idsmain = [];
+}
+if (!is_array($admin_ids)) {
+    $admin_ids = [];
+}
 if (!in_array($from_id, $admin_idsmain) and !in_array($from_id, $admin_ids)) {
     return;
 }

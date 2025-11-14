@@ -25,8 +25,17 @@ if (!checktelegramip())
 
 $textbotlang = json_decode(file_get_contents($Pathfiles . 'text.json'), true)['fa'];
 $dataBase = select("botsaz", "*", "bot_token", $ApiToken, "select");
+if ($dataBase == false) {
+    $dataBase = ['admin_ids' => '[]', 'setting' => '{}', 'id_user' => 0];
+}
 $admin_ids = json_decode($dataBase['admin_ids']);
+if (!is_array($admin_ids)) {
+    $admin_ids = [];
+}
 $setting = json_decode($dataBase['setting'], true);
+if (!is_array($setting)) {
+    $setting = [];
+}
 if (!empty($setting['channel'])) {
     $channel = channel_check("@" . $setting['channel']);
     if (count($channel) != 0) {
@@ -67,8 +76,10 @@ if (!is_dir('data')) {
 if (!in_array($from_id, $users_ids) && $settingmain['statusnewuser'] == "onnewuser" && $from_id != 0) {
 
     $newuser = sprintf($textbotlang['Admin']['ManageUser']['newuser'], $first_name, $username, "<a href = \"tg://user?id=$from_id\">$from_id</a>");
-    foreach ($admin_ids as $admin) {
-        sendmessage($admin, $newuser, null, 'HTML');
+    if (is_array($admin_ids)) {
+        foreach ($admin_ids as $admin) {
+            sendmessage($admin, $newuser, null, 'HTML');
+        }
     }
 }
 
@@ -95,20 +106,49 @@ if ($from_id != 0) {
     $stmt->execute();
 }
 $user = select("user", "*", "id", $from_id, "select");
-$user['Balance'] = json_decode(file_get_contents("data/$from_id/$from_id.json"), true)['Balance'];
+if ($user == false) {
+    $user = ['Balance' => 0, 'bottype' => $ApiToken, 'username' => $username, 'step' => 'none', 'Processing_value' => '{}', 'Processing_value_one' => '{}', 'Processing_value_tow' => '{}', 'Processing_value_four' => '{}', 'pagenumber' => 1, 'limit_usertest' => 0, 'number_username' => 0];
+}
+$balance_file = "data/$from_id/$from_id.json";
+if (file_exists($balance_file)) {
+    $balance_data = json_decode(file_get_contents($balance_file), true);
+    $user['Balance'] = isset($balance_data['Balance']) ? $balance_data['Balance'] : 0;
+} else {
+    $user['Balance'] = 0;
+}
 $usernameinvoice = select("invoice", "username", null, null, "FETCH_COLUMN");
-$buyreport = select("topicid", "idreport", "report", "buyreport", "select")['idreport'];
-$reportnight = select("topicid", "idreport", "report", "reportnight", "select")['idreport'];
-$reporttest = select("topicid", "idreport", "report", "reporttest", "select")['idreport'];
-$errorreport = select("topicid", "idreport", "report", "errorreport", "select")['idreport'];
-$porsantreport = select("topicid", "idreport", "report", "porsantreport", "select")['idreport'];
-$reportcron = select("topicid", "idreport", "report", "reportcron", "select")['idreport'];
-$otherservice = select("topicid", "idreport", "report", "otherservice", "select")['idreport'];
+if ($usernameinvoice == false) {
+    $usernameinvoice = [];
+}
+$buyreport_result = select("topicid", "idreport", "report", "buyreport", "select");
+$buyreport = ($buyreport_result && isset($buyreport_result['idreport'])) ? $buyreport_result['idreport'] : null;
+$reportnight_result = select("topicid", "idreport", "report", "reportnight", "select");
+$reportnight = ($reportnight_result && isset($reportnight_result['idreport'])) ? $reportnight_result['idreport'] : null;
+$reporttest_result = select("topicid", "idreport", "report", "reporttest", "select");
+$reporttest = ($reporttest_result && isset($reporttest_result['idreport'])) ? $reporttest_result['idreport'] : null;
+$errorreport_result = select("topicid", "idreport", "report", "errorreport", "select");
+$errorreport = ($errorreport_result && isset($errorreport_result['idreport'])) ? $errorreport_result['idreport'] : null;
+$porsantreport_result = select("topicid", "idreport", "report", "porsantreport", "select");
+$porsantreport = ($porsantreport_result && isset($porsantreport_result['idreport'])) ? $porsantreport_result['idreport'] : null;
+$reportcron_result = select("topicid", "idreport", "report", "reportcron", "select");
+$reportcron = ($reportcron_result && isset($reportcron_result['idreport'])) ? $reportcron_result['idreport'] : null;
+$otherservice_result = select("topicid", "idreport", "report", "otherservice", "select");
+$otherservice = ($otherservice_result && isset($otherservice_result['idreport'])) ? $otherservice_result['idreport'] : null;
 
-$paymentreports = select("topicid", "idreport", "report", "paymentreport", "select")['idreport'];
+$paymentreports_result = select("topicid", "idreport", "report", "paymentreport", "select");
+$paymentreports = ($paymentreports_result && isset($paymentreports_result['idreport'])) ? $paymentreports_result['idreport'] : null;
 $admin_idsmain = select("admin", "id_admin", null, null, "FETCH_COLUMN");
+if ($admin_idsmain == false) {
+    $admin_idsmain = [];
+}
 $id_invoice = select("invoice", "id_invoice", null, null, "FETCH_COLUMN");
+if ($id_invoice == false) {
+    $id_invoice = [];
+}
 $userbot = select("user", "*", "id", $dataBase['id_user'], "select");
+if ($userbot == false) {
+    $userbot = ['agent' => 'f', 'id' => 0, 'Balance' => 0, 'pricediscount' => '0', 'maxbuyagent' => '0'];
+}
 if ($user['bottype'] != $ApiToken) {
     update("user", "bottype", $ApiToken, "id", $from_id);
 }
@@ -622,7 +662,12 @@ if ($text == $text_bot_var['btn_keyboard']['buy'] && $setting['active_step_note'
         $marzban_list_get = $locationproduct;
         if ($productnotexits != 0 and $setting['show_product'] == false) {
             if ($settingmain['statuscategorygenral'] == "offcategorys") {
-                $statuscustomvolume = json_decode($locationproduct['customvolume'], true)[$userbot['agent']];
+                $customvolume_data = json_decode($locationproduct['customvolume'], true);
+                if (!is_array($customvolume_data) || !isset($customvolume_data[$userbot['agent']])) {
+                    $statuscustomvolume = "0";
+                } else {
+                    $statuscustomvolume = $customvolume_data[$userbot['agent']];
+                }
                 if ($statuscustomvolume == "1" && $locationproduct['type'] != "Manualsale") {
                     $statuscustom = true;
                 } else {
@@ -649,10 +694,8 @@ if ($text == $text_bot_var['btn_keyboard']['buy'] && $setting['active_step_note'
         } else {
             $marzban_list_get = $locationproduct;
             $eextraprice = $setting['pricevolume'];
-            $mainvolume = json_decode($marzban_list_get['mainvolume'], true);
-            $mainvolume = $mainvolume[$userbot['agent']];
-            $maxvolume = json_decode($marzban_list_get['maxvolume'], true);
-            $maxvolume = $maxvolume[$userbot['agent']];
+            $mainvolume = getJsonValue($marzban_list_get['mainvolume'], $userbot['agent'], 1);
+            $maxvolume = getJsonValue($marzban_list_get['maxvolume'], $userbot['agent'], 1000);
             $textcustom = "📌 حجم درخواستی خود را ارسال کنید.
         🔔قیمت هر گیگ حجم $eextraprice تومان می باشد.
         🔔 حداقل حجم $mainvolume گیگابایت و حداکثر $maxvolume گیگابایت می باشد.";
@@ -668,12 +711,18 @@ if ($text == $text_bot_var['btn_keyboard']['buy'] && $setting['active_step_note'
     sendmessage($from_id, "📌 موقعیت سرویس خود را انتخاب کنید", $list_marzban_panel_user, 'HTML');
 } elseif ($datain == "customvolumebuy") {
     $userdate = json_decode($user['Processing_value'], true);
+    if (!is_array($userdate) || !isset($userdate['name_panel'])) {
+        sendmessage($from_id, "❌ خطایی رخ داده است.", null, 'HTML');
+        return;
+    }
     $marzban_list_get = select("marzban_panel", "*", "name_panel", $userdate['name_panel'], "select");
+    if ($marzban_list_get == false) {
+        sendmessage($from_id, "❌ پنل یافت نشد.", null, 'HTML');
+        return;
+    }
     $eextraprice = $setting['pricevolume'];
-    $mainvolume = json_decode($marzban_list_get['mainvolume'], true);
-    $mainvolume = $mainvolume[$userbot['agent']];
-    $maxvolume = json_decode($marzban_list_get['maxvolume'], true);
-    $maxvolume = $maxvolume[$userbot['agent']];
+    $mainvolume = getJsonValue($marzban_list_get['mainvolume'], $userbot['agent'], 1);
+    $maxvolume = getJsonValue($marzban_list_get['maxvolume'], $userbot['agent'], 1000);
     $textcustom = "📌 حجم درخواستی خود را ارسال کنید.
 🔔قیمت هر گیگ حجم $eextraprice تومان می باشد.
 🔔 حداقل حجم $mainvolume گیگابایت و حداکثر $maxvolume گیگابایت می باشد.";
@@ -703,7 +752,12 @@ if ($text == $text_bot_var['btn_keyboard']['buy'] && $setting['active_step_note'
     $productnotexits = $stmt->rowCount();
     if ($productnotexits != 0 and $setting['show_product'] == false) {
         if ($settingmain['statuscategorygenral'] == "offcategorys") {
-            $statuscustomvolume = json_decode($locationproduct['customvolume'], true)[$userbot['agent']];
+            $customvolume_data = json_decode($locationproduct['customvolume'], true);
+            if (!is_array($customvolume_data) || !isset($customvolume_data[$userbot['agent']])) {
+                $statuscustomvolume = "0";
+            } else {
+                $statuscustomvolume = $customvolume_data[$userbot['agent']];
+            }
             if ($statuscustomvolume == "1" && $locationproduct['type'] != "Manualsale") {
                 $statuscustom = true;
             } else {
@@ -728,10 +782,8 @@ if ($text == $text_bot_var['btn_keyboard']['buy'] && $setting['active_step_note'
         deletemessage($from_id, $message_id);
         $marzban_list_get = $locationproduct;
         $eextraprice = $setting['pricevolume'];
-        $mainvolume = json_decode($marzban_list_get['mainvolume'], true);
-        $mainvolume = $mainvolume[$userbot['agent']];
-        $maxvolume = json_decode($marzban_list_get['maxvolume'], true);
-        $maxvolume = $maxvolume[$userbot['agent']];
+        $mainvolume = getJsonValue($marzban_list_get['mainvolume'], $userbot['agent'], 1);
+        $maxvolume = getJsonValue($marzban_list_get['maxvolume'], $userbot['agent'], 1000);
         $textcustom = "📌 حجم درخواستی خود را ارسال کنید.
     🔔قیمت هر گیگ حجم $eextraprice تومان می باشد.
     🔔 حداقل حجم $mainvolume گیگابایت و حداکثر $maxvolume گیگابایت می باشد.";
@@ -741,12 +793,30 @@ if ($text == $text_bot_var['btn_keyboard']['buy'] && $setting['active_step_note'
     }
 } elseif (preg_match('/^categorynames_(.*)/', $datain, $dataget)) {
     $categorynames = $dataget[1];
-    $categorynames = select("category", "remark", "id", $categorynames, "select")['remark'];
+    $category_result = select("category", "remark", "id", $categorynames, "select");
+    if ($category_result == false || !isset($category_result['remark'])) {
+        sendmessage($from_id, "❌ دسته‌بندی یافت نشد.", null, 'HTML');
+        return;
+    }
+    $categorynames = $category_result['remark'];
     $userdate = json_decode($user['Processing_value'], true);
-    $locationproduct = select("marzban_panel", "*", "name_panel", $userdate['name_panel'], "seelct");
+    if (!is_array($userdate) || !isset($userdate['name_panel'])) {
+        sendmessage($from_id, "❌ خطایی رخ داده است.", null, 'HTML');
+        return;
+    }
+    $locationproduct = select("marzban_panel", "*", "name_panel", $userdate['name_panel'], "select");
+    if ($locationproduct == false) {
+        sendmessage($from_id, "❌ پنل یافت نشد.", null, 'HTML');
+        return;
+    }
     $tableInfo = getProductTableInfo($userbot, $ApiToken);
     $query = "SELECT * FROM {$tableInfo['table']} WHERE (Location = '{$locationproduct['name_panel']}' OR Location = '/all') AND category = '$categorynames' AND {$tableInfo['filter']}";
-    $statuscustomvolume = json_decode($locationproduct['customvolume'], true)[$userbot['agent']];
+    $customvolume_data = json_decode($locationproduct['customvolume'], true);
+    if (!is_array($customvolume_data) || !isset($customvolume_data[$userbot['agent']])) {
+        $statuscustomvolume = "0";
+    } else {
+        $statuscustomvolume = $customvolume_data[$userbot['agent']];
+    }
     if ($statuscustomvolume == "1" && $locationproduct['type'] != "Manualsale") {
         $statuscustom = true;
     } else {
@@ -761,15 +831,19 @@ if ($text == $text_bot_var['btn_keyboard']['buy'] && $setting['active_step_note'
     Editmessagetext($from_id, $message_id, "🛍️ لطفاً سرویسی که می‌خواهید خریداری کنید را انتخاب کنید!", $prodcut, 'HTML');
 } elseif ($user['step'] == "gettimecustomvol") {
     $userdate = json_decode($user['Processing_value'], true);
+    if (!is_array($userdate) || !isset($userdate['name_panel'])) {
+        sendmessage($from_id, "❌ خطایی رخ داده است.", null, 'HTML');
+        return;
+    }
     $marzban_list_get = select("marzban_panel", "*", "name_panel", $userdate['name_panel'], "select");
-    $mainvolume = json_decode($marzban_list_get['mainvolume'], true);
-    $mainvolume = $mainvolume[$userbot['agent']];
-    $maxvolume = json_decode($marzban_list_get['maxvolume'], true);
-    $maxvolume = $maxvolume[$userbot['agent']];
-    $maintime = json_decode($marzban_list_get['maintime'], true);
-    $maintime = $maintime[$userbot['agent']];
-    $maxtime = json_decode($marzban_list_get['maxtime'], true);
-    $maxtime = $maxtime[$userbot['agent']];
+    if ($marzban_list_get == false) {
+        sendmessage($from_id, "❌ پنل یافت نشد.", null, 'HTML');
+        return;
+    }
+    $mainvolume = getJsonValue($marzban_list_get['mainvolume'], $userbot['agent'], 1);
+    $maxvolume = getJsonValue($marzban_list_get['maxvolume'], $userbot['agent'], 1000);
+    $maintime = getJsonValue($marzban_list_get['maintime'], $userbot['agent'], 1);
+    $maxtime = getJsonValue($marzban_list_get['maxtime'], $userbot['agent'], 365);
     if ($text > intval($maxvolume) || $text < intval($mainvolume)) {
         $texttime = "❌ حجم نامعتبر است.\n🔔 حداقل حجم $mainvolume گیگابایت و حداکثر $maxvolume گیگابایت می باشد";
         sendmessage($from_id, $texttime, $backuser, 'HTML');
@@ -798,10 +872,8 @@ if ($text == $text_bot_var['btn_keyboard']['buy'] && $setting['active_step_note'
             sendmessage($from_id, $textbotlang['Admin']['Product']['Invalidtime'], $backuser, 'HTML');
             return;
         }
-        $maintime = json_decode($marzban_list_get['maintime'], true);
-        $maintime = $maintime[$userbot['agent']];
-        $maxtime = json_decode($marzban_list_get['maxtime'], true);
-        $maxtime = $maxtime[$userbot['agent']];
+        $maintime = getJsonValue($marzban_list_get['maintime'], $userbot['agent'], 1);
+        $maxtime = getJsonValue($marzban_list_get['maxtime'], $userbot['agent'], 365);
         if (intval($text) > intval($maxtime) || intval($text) < intval($maintime)) {
             $texttime = "❌ زمان ارسال شده نامعتبر است . زمان باید بین $maintime روز تا $maxtime روز باشد";
             sendmessage($from_id, $texttime, $backuser, 'HTML');
@@ -823,10 +895,8 @@ if ($text == $text_bot_var['btn_keyboard']['buy'] && $setting['active_step_note'
             return;
         }
         $marzban_list_get = select("marzban_panel", "*", "name_panel", $userdate['name_panel'], "select");
-        $maintime = json_decode($marzban_list_get['maintime'], true);
-        $maintime = $maintime[$userbot['agent']];
-        $maxtime = json_decode($marzban_list_get['maxtime'], true);
-        $maxtime = $maxtime[$userbot['agent']];
+        $maintime = getJsonValue($marzban_list_get['maintime'], $userbot['agent'], 1);
+        $maxtime = getJsonValue($marzban_list_get['maxtime'], $userbot['agent'], 365);
         if (intval($text) > intval($maxtime) || intval($text) < intval($maintime)) {
             $texttime = "❌ زمان ارسال شده نامعتبر است . زمان باید بین $maintime روز تا $maxtime روز باشد";
             sendmessage($from_id, $texttime, $backuser, 'HTML');
@@ -1016,7 +1086,13 @@ if ($text == $text_bot_var['btn_keyboard']['buy'] && $setting['active_step_note'
     $category_value = isset($datafactor['category']) ? $datafactor['category'] : null;
     $stmt = $connect->prepare("INSERT IGNORE INTO invoice (id_user, id_invoice, username,time_sell, Service_location, name_product, price_product, Volume, Service_time,Status,bottype,note,notifctions,category) VALUES (?, ?, ?, ?, ?, ?, ?, ?,?,?,?,?,?,?)");
     $Status = "unpaid";
-    $stmt->bind_param("ssssssssssssss", $from_id, $randomString, $username_ac, $date, $marzban_list_get['name_panel'], $datafactor['name_product'], $datafactor['price_product'], $datafactor['Volume_constraint'], $datafactor['Service_time'], $Status, $ApiToken, $userdate['note'], $notifctions, $category_value);
+    $name_panel = $marzban_list_get['name_panel'];
+    $name_product = $datafactor['name_product'];
+    $price_product = $datafactor['price_product'];
+    $volume_constraint = $datafactor['Volume_constraint'];
+    $service_time = $datafactor['Service_time'];
+    $note_value = isset($userdate['note']) ? $userdate['note'] : '';
+    $stmt->bind_param("ssssssssssssss", $from_id, $randomString, $username_ac, $date, $name_panel, $name_product, $price_product, $volume_constraint, $service_time, $Status, $ApiToken, $note_value, $notifctions, $category_value);
     $stmt->execute();
     $stmt->close();
     if ($datafactor['price_product'] > $user['Balance'] && intval($datafactor['price_product']) != 0) {
@@ -1560,7 +1636,12 @@ $output
     $stmt->execute();
     $productnotexits = $stmt->rowCount();
     if ($productnotexits != 0 and $setting['show_product'] == false) {
-        $statuscustomvolume = json_decode($marzban_list_get['customvolume'], true)[$userbot['agent']];
+        $customvolume_data = json_decode($marzban_list_get['customvolume'], true);
+        if (!is_array($customvolume_data) || !isset($customvolume_data[$userbot['agent']])) {
+            $statuscustomvolume = "0";
+        } else {
+            $statuscustomvolume = $customvolume_data[$userbot['agent']];
+        }
         if ($statuscustomvolume == "1" && $marzban_list_get['type'] != "Manualsale") {
             $statuscustom = true;
         } else {
@@ -1571,10 +1652,8 @@ $output
         sendmessage($from_id, "🛍️ لطفاً سرویسی که می‌خواهید تمدید کنید را انتخاب کنید!", $prodcut, 'HTML');
     } else {
         $custompricevalue = $setting['pricevolume'];
-        $mainvolume = json_decode($marzban_list_get['mainvolume'], true);
-        $mainvolume = $mainvolume[$userbot['agent']];
-        $maxvolume = json_decode($marzban_list_get['maxvolume'], true);
-        $maxvolume = $maxvolume[$userbot['agent']];
+        $mainvolume = getJsonValue($marzban_list_get['mainvolume'], $userbot['agent'], 1);
+        $maxvolume = getJsonValue($marzban_list_get['maxvolume'], $userbot['agent'], 1000);
         $textcustom = "📌 حجم درخواستی خود را ارسال کنید.
 🔔قیمت هر گیگ حجم $custompricevalue تومان می باشد.
 🔔 حداقل حجم $mainvolume گیگابایت و حداکثر $maxvolume گیگابایت می باشد.";
@@ -1584,11 +1663,13 @@ $output
 } elseif ($datain == "customvolumeextend") {
     $userdate = json_decode($user['Processing_value'], true);
     $marzban_list_get = select("marzban_panel", "*", "name_panel", $userdate['name_panel'], "select");
+    if ($marzban_list_get == false) {
+        sendmessage($from_id, "❌ پنل یافت نشد.", null, 'HTML');
+        return;
+    }
     $custompricevalue = $setting['pricevolume'];
-    $mainvolume = json_decode($marzban_list_get['mainvolume'], true);
-    $mainvolume = $mainvolume[$userbot['agent']];
-    $maxvolume = json_decode($marzban_list_get['maxvolume'], true);
-    $maxvolume = $maxvolume[$userbot['agent']];
+    $mainvolume = getJsonValue($marzban_list_get['mainvolume'], $userbot['agent'], 1);
+    $maxvolume = getJsonValue($marzban_list_get['maxvolume'], $userbot['agent'], 1000);
     $textcustom = "📌 حجم درخواستی خود را ارسال کنید.
 🔔قیمت هر گیگ حجم $custompricevalue تومان می باشد.
 🔔 حداقل حجم $mainvolume گیگابایت و حداکثر $maxvolume گیگابایت می باشد.";
@@ -1598,15 +1679,19 @@ $output
     savedata("save", "volume", $text);
     $userdate = json_decode($user['Processing_value'], true);
     $nameloc = select("invoice", "*", "id_invoice", $userdate['id_invoice'], "select");
+    if ($nameloc == false) {
+        sendmessage($from_id, "❌ فاکتور یافت نشد.", null, 'HTML');
+        return;
+    }
     $marzban_list_get = select("marzban_panel", "*", "name_panel", $nameloc['Service_location'], "select");
-    $mainvolume = json_decode($marzban_list_get['mainvolume'], true);
-    $mainvolume = $mainvolume[$userbot['agent']];
-    $maxvolume = json_decode($marzban_list_get['maxvolume'], true);
-    $maxvolume = $maxvolume[$userbot['agent']];
-    $maintime = json_decode($marzban_list_get['maintime'], true);
-    $maintime = $maintime[$userbot['agent']];
-    $maxtime = json_decode($marzban_list_get['maxtime'], true);
-    $maxtime = $maxtime[$userbot['agent']];
+    if ($marzban_list_get == false) {
+        sendmessage($from_id, "❌ پنل یافت نشد.", null, 'HTML');
+        return;
+    }
+    $mainvolume = getJsonValue($marzban_list_get['mainvolume'], $userbot['agent'], 1);
+    $maxvolume = getJsonValue($marzban_list_get['maxvolume'], $userbot['agent'], 1000);
+    $maintime = getJsonValue($marzban_list_get['maintime'], $userbot['agent'], 1);
+    $maxtime = getJsonValue($marzban_list_get['maxtime'], $userbot['agent'], 365);
     if ($text > intval($maxvolume) || $text < intval($mainvolume)) {
         $texttime = "❌ حجم نامعتبر است.\n🔔 حداقل حجم $mainvolume گیگابایت و حداکثر $maxvolume گیگابایت می باشد";
         sendmessage($from_id, $texttime, $backuser, 'HTML');
@@ -1633,10 +1718,8 @@ $output
     $nameloc = select("invoice", "*", "id_invoice", $userdate['id_invoice'], "select");
     $marzban_list_get = select("marzban_panel", "*", "name_panel", $nameloc['Service_location'], "select");
     if ($user['step'] == "gettimecustomextend") {
-        $maintime = json_decode($marzban_list_get['maintime'], true);
-        $maintime = $maintime[$userbot['agent']];
-        $maxtime = json_decode($marzban_list_get['maxtime'], true);
-        $maxtime = $maxtime[$userbot['agent']];
+        $maintime = getJsonValue($marzban_list_get['maintime'], $userbot['agent'], 1);
+        $maxtime = getJsonValue($marzban_list_get['maxtime'], $userbot['agent'], 365);
         if (intval($text) > intval($maxtime) || intval($text) < intval($maintime)) {
             $texttime = "❌ زمان ارسال شده نامعتبر است . زمان باید بین $maintime روز تا $maxtime روز باشد";
             sendmessage($from_id, $texttime, $backuser, 'HTML');
@@ -1796,7 +1879,10 @@ $output
         'id_order' => $nameloc['id_invoice']
     ));
     $type = "extend_user";
-    $stmt->bind_param("sssssss", $from_id, $nameloc['username'], $value, $type, $dateacc, $datafactor['price_product'], json_encode($extend));
+    $username_extend = $nameloc['username'];
+    $price_product_extend = $datafactor['price_product'];
+    $extend_json = json_encode($extend);
+    $stmt->bind_param("sssssss", $from_id, $username_extend, $value, $type, $dateacc, $price_product_extend, $extend_json);
     $stmt->execute();
     $stmt->close();
     update("invoice", "Status", "active", "id_invoice", $id_invoice);

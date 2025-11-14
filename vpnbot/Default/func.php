@@ -70,3 +70,13 @@ function getProductByCode($code_product, $userbot, $ApiToken) {
     $tableInfo = getProductTableInfo($userbot, $ApiToken);
     return select($tableInfo['table'], "*", "code_product", $code_product, "select");
 }
+function getJsonValue($json_string, $key, $default = null) {
+    if (empty($json_string)) {
+        return $default;
+    }
+    $decoded = json_decode($json_string, true);
+    if (!is_array($decoded) || !isset($decoded[$key])) {
+        return $default;
+    }
+    return $decoded[$key];
+}
