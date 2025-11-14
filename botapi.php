@@ -8,33 +8,73 @@ function telegram($method, $datas = [],$token = null)
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_TIMEOUT, 10); 
-    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5); 
+    curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
     curl_setopt($ch, CURLOPT_POSTFIELDS, $datas);
     $res = curl_exec($ch);
-    $res = json_decode($res,true);
-    if(!$res['ok']){
-        if(json_encode($res) != null)error_log(json_encode($res));
+    $curl_error = curl_error($ch);
+    curl_close($ch);
+
+    if ($curl_error) {
+        error_log("Telegram API cURL error: " . $curl_error);
+        return ['ok' => false, 'error' => $curl_error];
     }
-    if (curl_error($ch)) {
-        return curl_error($ch);
-    } else {
-        return $res;
+
+    $res = json_decode($res, true);
+
+    if (!$res || !isset($res['ok'])) {
+        error_log("Telegram API invalid response: " . json_encode($res));
+        return ['ok' => false, 'error' => 'Invalid response'];
     }
+
+    // Only log unexpected errors (not user not found, bot blocked, etc.)
+    if (!$res['ok']) {
+        $error_code = $res['error_code'] ?? 0;
+        $description = $res['description'] ?? '';
+
+        // Expected errors that shouldn't be logged (to reduce log noise)
+        $expected_errors = [
+            'Bad Request: user not found',
+            'Bad Request: chat not found',
+            'Forbidden: bot was blocked by the user',
+            'Forbidden: user is deactivated',
+            'Bad Request: message to delete not found',
+            'Bad Request: message to edit not found'
+        ];
+
+        $is_expected = false;
+        foreach ($expected_errors as $expected) {
+            if (stripos($description, $expected) !== false) {
+                $is_expected = true;
+                break;
+            }
+        }
+
+        // Only log unexpected errors
+        if (!$is_expected) {
+            error_log("Telegram API error: " . json_encode($res));
+        }
+    }
+
+    return $res;
 }
-error_log(json_encode(telegram('verifyUser',[
-    'user_id' => 1789174391,
-    'custom_description' => "تایید شده توسط fbi"
-])));
 function sendmessage($chat_id,$text,$keyboard,$parse_mode,$bot_token = null){
     if(intval($chat_id) == 0)return ['ok' => false];
-    return telegram('sendmessage',[
+
+    // Validate chat_id is a valid integer
+    if (!is_numeric($chat_id) || $chat_id <= 0) {
+        return ['ok' => false, 'error_code' => 400, 'description' => 'Invalid chat_id'];
+    }
+
+    $result = telegram('sendmessage',[
         'chat_id' => $chat_id,
         'text' => $text,
         'reply_markup' => $keyboard,
         'parse_mode' => $parse_mode,
-        
+
         ],$bot_token);
+
+    return $result;
 }
 function sendDocument($chat_id, $documentPath, $caption) {
         return telegram('sendDocument',[
@@ -84,24 +124,24 @@ function Editmessagetext($chat_id, $message_id, $text, $keyboard,$parse_mode = '
 }
  function deletemessage($chat_id, $message_id){
   telegram('deletemessage', [
-'chat_id' => $chat_id, 
+'chat_id' => $chat_id,
 'message_id' => $message_id,
 ]);
  }
 function getFileddire($photoid){
   return telegram('getFile', [
-'file_id' => $photoid, 
+'file_id' => $photoid,
 ]);
  }
 function pinmessage($from_id,$message_id){
   return telegram('pinChatMessage', [
-'chat_id' => $from_id, 
-'message_id' => $message_id, 
+'chat_id' => $from_id,
+'message_id' => $message_id,
 ]);
  }
  function unpinmessage($from_id){
   return telegram('unpinAllChatMessages', [
-'chat_id' => $from_id, 
+'chat_id' => $from_id,
 ]);
  }
   function answerInlineQuery($inline_query_id,$results){
