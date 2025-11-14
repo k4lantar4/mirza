@@ -7377,7 +7377,7 @@ if ($datain == "settimecornremove" && $adminrulecheck['rule'] == "administrator"
         $textcreatuser = str_replace('{day}', $text, $textcreatuser);
         $textcreatuser = str_replace('{volume}', $user['Processing_value_tow'], $textcreatuser);
         $textcreatuser = str_replace('{config}', $formatted_subscription, $textcreatuser);
-        $textcreatuser = str_replace('{links}', $formatted_config, $textcreatuser);
+        $textcreatuser = str_replace('{links}', '', $textcreatuser);
         $textcreatuser = str_replace('{links2}', $formatted_subscription, $textcreatuser);
         if ($panel['type'] == "Manualsale" || $panel['type'] == "ibsng" || $panel['type'] == "mikrotik") {
             $textcreatuser = str_replace('{password}', $dataoutput['subscription_url'], $textcreatuser);
