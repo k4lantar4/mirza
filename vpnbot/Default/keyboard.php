@@ -1,8 +1,17 @@
 <?php
 
 $botinfo = select("botsaz", "*", "bot_token", $ApiToken, "select");
+if ($botinfo == false) {
+    $botinfo = ['id_user' => 0, 'hide_panel' => '{}', 'admin_ids' => '[]'];
+}
 $userbot = select("user", "*", "id", $botinfo['id_user'], "select");
+if ($userbot == false) {
+    $userbot = ['agent' => 'f'];
+}
 $hide_panel = json_decode($botinfo['hide_panel'], true);
+if (!is_array($hide_panel)) {
+    $hide_panel = [];
+}
 $text_bot_var =  json_decode(file_get_contents('text.json'), true);
 // keyboard bot
 $keyboarddate = array(
@@ -15,7 +24,14 @@ $keyboarddate = array(
 );
 $list_admin = select("botsaz", "*", "bot_token", $ApiToken, "select");
 $admin_idsmain = select("admin", "id_admin", null, null, "FETCH_COLUMN");
-if (!in_array($from_id, json_decode($list_admin['admin_ids'], true)) && !in_array($from_id, $admin_idsmain)) unset($keyboarddate['text_Admin']);
+if ($admin_idsmain == false) {
+    $admin_idsmain = [];
+}
+$admin_ids_decoded = $list_admin && isset($list_admin['admin_ids']) ? json_decode($list_admin['admin_ids'], true) : [];
+if (!is_array($admin_ids_decoded)) {
+    $admin_ids_decoded = [];
+}
+if (!in_array($from_id, $admin_ids_decoded) && !in_array($from_id, $admin_idsmain)) unset($keyboarddate['text_Admin']);
 $keyboard = ['keyboard' => [], 'resize_keyboard' => true];
 $tempArray = [];
 
@@ -45,8 +61,11 @@ $stmt = $pdo->prepare("SELECT * FROM marzban_panel WHERE TestAccount = 'ONTestAc
 $stmt->execute();
 $list_marzban_panel_usertest = ['inline_keyboard' => []];
 while ($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
-    if ($result['hide_user'] != null and in_array($from_id, json_decode($result['hide_user'], true))) continue;
-    if (in_array($result['name_panel'], $hide_panel)) continue;
+    if ($result['hide_user'] != null) {
+        $hide_user_decoded = json_decode($result['hide_user'], true);
+        if (is_array($hide_user_decoded) && in_array($from_id, $hide_user_decoded)) continue;
+    }
+    if (is_array($hide_panel) && in_array($result['name_panel'], $hide_panel)) continue;
     $list_marzban_panel_usertest['inline_keyboard'][] = [
         ['text' => $result['name_panel'], 'callback_data' => "locationtest_{$result['code_panel']}"]
     ];
@@ -142,8 +161,11 @@ $stmt = $pdo->prepare("SELECT * FROM marzban_panel WHERE status = 'active' AND (
 $stmt->execute();
 $list_marzban_panel_users = ['inline_keyboard' => []];
 while ($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
-    if ($result['hide_user'] != null and in_array($from_id, json_decode($result['hide_user'], true))) continue;
-    if (in_array($result['name_panel'], $hide_panel)) continue;
+    if ($result['hide_user'] != null) {
+        $hide_user_decoded = json_decode($result['hide_user'], true);
+        if (is_array($hide_user_decoded) && in_array($from_id, $hide_user_decoded)) continue;
+    }
+    if (is_array($hide_panel) && in_array($result['name_panel'], $hide_panel)) continue;
     $list_marzban_panel_users['inline_keyboard'][] = [
         ['text' => $result['name_panel'], 'callback_data' => "location_{$result['code_panel']}"]
     ];
@@ -170,17 +192,30 @@ function KeyboardProduct($location, $query, $pricediscount, $datakeyboard, $stat
 {
     global $pdo, $textbotlang;
     $product = ['inline_keyboard' => []];
-    $statusshowprice = select("shopSetting", "*", "Namevalue", "statusshowprice", "select")['value'];
+    $statusshowprice_result = select("shopSetting", "*", "Namevalue", "statusshowprice", "select");
+    $statusshowprice = ($statusshowprice_result && isset($statusshowprice_result['value'])) ? $statusshowprice_result['value'] : 'offshowprice';
     $stmt = $pdo->prepare($query);
     $stmt->execute();
     $valuetow = $valuetow != null ? "-$valuetow" : "";
     while ($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
+        if (!isset($result['code_product']) || !isset($result['name_product']) || !isset($result['price_product'])) {
+            continue;
+        }
         $productlist = json_decode(file_get_contents('product.json'), true);
         $productlist_name = json_decode(file_get_contents('product_name.json'), true);
+        if (!is_array($productlist)) {
+            $productlist = [];
+        }
+        if (!is_array($productlist_name)) {
+            $productlist_name = [];
+        }
         if (isset($productlist[$result['code_product']])) $result['price_product'] = $productlist[$result['code_product']];
         $result['name_product'] = empty($productlist_name[$result['code_product']]) ? $result['name_product'] : $productlist_name[$result['code_product']];
-        $hide_panel = json_decode($result['hide_panel'], true);
-        if (in_array($location, $hide_panel)) continue;
+        $hide_panel_result = isset($result['hide_panel']) ? json_decode($result['hide_panel'], true) : [];
+        if (!is_array($hide_panel_result)) {
+            $hide_panel_result = [];
+        }
+        if (in_array($location, $hide_panel_result)) continue;
         if (intval($pricediscount) != 0) {
             $resultper = ($result['price_product'] * $pricediscount) / 100;
             $result['price_product'] = $result['price_product'] - $resultper;
