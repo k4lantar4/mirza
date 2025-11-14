@@ -1,4 +1,11 @@
 .cursor
-bmad
-*log
-config.php
+.bmad*
+**/*log*
+./config.php
+.env
+*.png
+vpnbot/*
+*.jpg
+error*
+*.txt
+api/error_log
