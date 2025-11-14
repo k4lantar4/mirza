@@ -34,7 +34,7 @@ if ($text == "📞 تنظیم نام کاربری پشتیبانی") {
     $setting['support_username'] = $text;
     update("botsaz", "setting", json_encode($setting), "bot_token", $ApiToken);
 } elseif ($text == "🔋 قیمت حجم") {
-    sendmessage($from_id, "📌 قیمت هر گیگ حجم را ارسال نمایید. 
+    sendmessage($from_id, "📌 قیمت هر گیگ حجم را ارسال نمایید.
 قیمت پایه حجم. : {$setting['minpricevolume']} تومان
 قیمت فعلی حجم. : {$setting['pricevolume']} تومان", $backadmin, 'HTML');
     step("getpricvolumeadmin", $from_id);
@@ -111,12 +111,12 @@ if ($text == "📞 تنظیم نام کاربری پشتیبانی") {
     DirectPaymentbot($order_id);
     $Payment_report['price'] = number_format($Payment_report['price']);
     $text_report = "📣 نماینده رسیبد پرداخت کارت به کارت را تایید کرد.
-        
+
 اطلاعات :
 👤آیدی عددی  ادمین تایید کننده : $from_id
 💰 مبلغ پرداخت : {$Payment_report['price']}
 👤 ایدی عددی کاربر : <code>{$Payment_report['id_user']}</code>
-👤 نام کاربری کاربر : @{$Balance_id['username']} 
+👤 نام کاربری کاربر : @{$Balance_id['username']}
         کد پیگیری پرداحت : $order_id";
     if (strlen($settingmain['Channel_Report']) > 0) {
         telegram('sendmessage', [
@@ -169,7 +169,7 @@ if ($text == "📞 تنظیم نام کاربری پشتیبانی") {
     sendmessage($user['Processing_value'], $text_reject, null, 'HTML');
     step('home', $from_id);
     $text_report = "❌ یک ادمین رسید پرداخت کارت به کارت را رد کرد.
-        
+
 اطلاعات :
 👤آیدی عددی  ادمین تایید کننده : $from_id
 نام کاربری ادمین تایید کننده : @$username
@@ -318,7 +318,7 @@ if ($text == "📞 تنظیم نام کاربری پشتیبانی") {
 ⭕️ آیدی عددی کاربر :  <a href = \"tg://user?id=$id_user\">$id_user</a>
 ⭕️ زمان عضویت کاربر : $userjoin
 ⭕️ آخرین زمان  استفاده کاربر از ربات : $lastmessage
-⭕️ محدودیت اکانت تست :  {$user['limit_usertest']} 
+⭕️ محدودیت اکانت تست :  {$user['limit_usertest']}
 ⭕️  مجموع حجم خریداری شده فعال ( برای آمار دقیق حجم باید کرون روشن باشد): {$sumvolume['SUM(Volume)']}
 
 💎 گزارشات مالی
@@ -414,7 +414,7 @@ if ($text == "📞 تنظیم نام کاربری پشتیبانی") {
     $stmt2 = $pdo->query($sql2);
     $invoicesum = number_format($stmt2->fetch(PDO::FETCH_ASSOC)['total_price'], 0);
     $statisticsall = "
-📊 آمار کلی ربات  
+📊 آمار کلی ربات
 
 📌 تعداد کاربران : $statistics نفر
 📌 تعداد کاربرانی که خرید داشتند : $statisticsorder نفر
@@ -428,7 +428,11 @@ if ($text == "📞 تنظیم نام کاربری پشتیبانی") {
         file_put_contents('product.json', "{}");
     }
     $product = [];
-    $getdataproduct = mysqli_query($connect, "SELECT * FROM product WHERE agent = '{$userbot['agent']}'");
+    if ($userbot['agent'] == 'n2') {
+        $getdataproduct = mysqli_query($connect, "SELECT * FROM partner_product WHERE bot_token = '$ApiToken'");
+    } else {
+        $getdataproduct = mysqli_query($connect, "SELECT * FROM product WHERE agent = '{$userbot['agent']}'");
+    }
     while ($row = mysqli_fetch_assoc($getdataproduct)) {
         $panel = select("marzban_panel", "*", "name_panel", $row['Location'], "select");
         if (in_array($panel['name_panel'], $hide_panel))
@@ -451,10 +455,18 @@ if ($text == "📞 تنظیم نام کاربری پشتیبانی") {
     sendmessage($from_id, "از لیست زیر محصولی که می خواهید قیمت تنظیم نمایید را انتخاب کنید", $json_list_product_list_admin, 'HTML');
     step("selectproductprice", $from_id);
 } elseif ($user['step'] == "selectproductprice") {
-    $product = select("product", "*", "name_product", $text, "select");
-    if ($product == false) {
-        sendmessage($from_id, "❌ محصول انتخابی وجود ندارد.", null, 'HTML');
-        return;
+    if ($userbot['agent'] == 'n2') {
+        $product = select("partner_product", "*", "name_product", $text, "select");
+        if ($product == false || $product['bot_token'] != $ApiToken) {
+            sendmessage($from_id, "❌ محصول انتخابی وجود ندارد.", null, 'HTML');
+            return;
+        }
+    } else {
+        $product = select("product", "*", "name_product", $text, "select");
+        if ($product == false) {
+            sendmessage($from_id, "❌ محصول انتخابی وجود ندارد.", null, 'HTML');
+            return;
+        }
     }
     savedata("clear", "code_product", $product['code_product']);
     step("getpriceproduct", $from_id);
@@ -466,7 +478,15 @@ if ($text == "📞 تنظیم نام کاربری پشتیبانی") {
 قیمت پایه :{$product['price_product']}", $backadmin, 'HTML');
 } elseif ($user['step'] == "getpriceproduct") {
     $userdata = json_decode($user['Processing_value'], true);
-    $product = select("product", "*", "code_product", $userdata['code_product'], "select");
+    if ($userbot['agent'] == 'n2') {
+        $product = select("partner_product", "*", "code_product", $userdata['code_product'], "select");
+        if ($product == false || $product['bot_token'] != $ApiToken) {
+            sendmessage($from_id, "❌ محصول یافت نشد.", null, 'HTML');
+            return;
+        }
+    } else {
+        $product = select("product", "*", "code_product", $userdata['code_product'], "select");
+    }
     if (!ctype_digit($text)) {
         sendmessage($from_id, $textbotlang['Admin']['agent']['invalidvlue'], null, 'HTML');
         return;
@@ -635,7 +655,11 @@ if ($text == "📞 تنظیم نام کاربری پشتیبانی") {
         file_put_contents('product_name.json', "{}");
     }
     $product = [];
-    $getdataproduct = mysqli_query($connect, "SELECT * FROM product WHERE agent = '{$userbot['agent']}'");
+    if ($userbot['agent'] == 'n2') {
+        $getdataproduct = mysqli_query($connect, "SELECT * FROM partner_product WHERE bot_token = '$ApiToken'");
+    } else {
+        $getdataproduct = mysqli_query($connect, "SELECT * FROM product WHERE agent = '{$userbot['agent']}'");
+    }
     while ($row = mysqli_fetch_assoc($getdataproduct)) {
         $panel = select("marzban_panel", "*", "name_panel", $row['Location'], "select");
         if (in_array($panel['name_panel'], $hide_panel))
@@ -658,17 +682,33 @@ if ($text == "📞 تنظیم نام کاربری پشتیبانی") {
     sendmessage($from_id, "از لیست زیر محصولی که می خواهید نام تنظیم نمایید را انتخاب کنید", $json_list_product_list_admin, 'HTML');
     step("get_product_for_edit_name", $from_id);
 } elseif ($user['step'] == "get_product_for_edit_name") {
-    $product = select("product", "*", "name_product", $text, "select");
-    if ($product == false) {
-        sendmessage($from_id, "❌ محصول انتخابی وجود ندارد.", null, 'HTML');
-        return;
+    if ($userbot['agent'] == 'n2') {
+        $product = select("partner_product", "*", "name_product", $text, "select");
+        if ($product == false || $product['bot_token'] != $ApiToken) {
+            sendmessage($from_id, "❌ محصول انتخابی وجود ندارد.", null, 'HTML');
+            return;
+        }
+    } else {
+        $product = select("product", "*", "name_product", $text, "select");
+        if ($product == false) {
+            sendmessage($from_id, "❌ محصول انتخابی وجود ندارد.", null, 'HTML');
+            return;
+        }
     }
     savedata("clear", "code_product", $product['code_product']);
     step("get_new_name", $from_id);
     sendmessage($from_id, "📌  نام خود را ارسال کنید", $backadmin, 'HTML');
 } elseif ($user['step'] == "get_new_name") {
     $userdata = json_decode($user['Processing_value'], true);
-    $product = select("product", "*", "code_product", $userdata['code_product'], "select");
+    if ($userbot['agent'] == 'n2') {
+        $product = select("partner_product", "*", "code_product", $userdata['code_product'], "select");
+        if ($product == false || $product['bot_token'] != $ApiToken) {
+            sendmessage($from_id, "❌ محصول یافت نشد.", null, 'HTML');
+            return;
+        }
+    } else {
+        $product = select("product", "*", "code_product", $userdata['code_product'], "select");
+    }
     $productlist = json_decode(file_get_contents('product_name.json'), true);
     $productlist[$product['code_product']] = $text;
     file_put_contents('product_name.json', json_encode($productlist));

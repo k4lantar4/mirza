@@ -1,20 +1,5 @@
 <?php
 
-function readJsonFileIfExists($path, $default = [])
-{
-    if (!is_file($path)) {
-        return $default;
-    }
-
-    $content = file_get_contents($path);
-    if ($content === false || $content === '') {
-        return $default;
-    }
-
-    $decoded = json_decode($content, true);
-    return is_array($decoded) ? $decoded : $default;
-}
-
 function DirectPaymentbot($order_id,$image = 'images.jpg'){
     global $pdo,$ManagePanel,$textbotlang,$keyboardextendfnished,$keyboard,$Confirm_pay,$from_id,$message_id,$datatextbot;
     $setting = select("setting", "*");
@@ -44,7 +29,7 @@ function DirectPaymentbot($order_id,$image = 'images.jpg'){
         Editmessagetext($from_id, $message_id, $textconfrom, $Confirm_pay);
         }
         sendmessage($Payment_report['id_user'], "💎 کاربر گرامی مبلغ {$Payment_report['price']} تومان به کیف پول شما واریز گردید با تشکراز پرداخت شما.
-                
+
 🛒 کد پیگیری شما: {$Payment_report['id_order']}", null, 'HTML');
 }
 function channel_check($id_channel){
@@ -59,10 +44,29 @@ function channel_check($id_channel){
                 $channel_link[] = $id_channel;
             }
         }
-        
+
         if(count($channel_link) == 0){
             return [];
         }else{
             return $channel_link;
         }
+}
+function getProductTableInfo($userbot, $ApiToken) {
+    if ($userbot['agent'] == 'n2') {
+        return [
+            'table' => 'partner_product',
+            'filter' => "bot_token = '$ApiToken'",
+            'filter_param' => [':bot_token' => $ApiToken]
+        ];
+    } else {
+        return [
+            'table' => 'product',
+            'filter' => "agent = '{$userbot['agent']}'",
+            'filter_param' => [':agent' => $userbot['agent']]
+        ];
+    }
+}
+function getProductByCode($code_product, $userbot, $ApiToken) {
+    $tableInfo = getProductTableInfo($userbot, $ApiToken);
+    return select($tableInfo['table'], "*", "code_product", $code_product, "select");
 }

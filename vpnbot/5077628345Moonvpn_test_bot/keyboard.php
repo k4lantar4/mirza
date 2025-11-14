@@ -4,7 +4,7 @@ $botinfo = select("botsaz", "*", "bot_token", $ApiToken, "select");
 $userbot = select("user", "*", "id", $botinfo['id_user'], "select");
 $hide_panel = json_decode($botinfo['hide_panel'], true);
 $text_bot_var =  json_decode(file_get_contents('text.json'), true);
-// keyboard bot 
+// keyboard bot
 $keyboarddate = array(
     'text_sell' => $text_bot_var['btn_keyboard']['buy'],
     'text_usertest' => $text_bot_var['btn_keyboard']['test'],
@@ -39,7 +39,7 @@ $backuser = json_encode([
     'input_field_placeholder' => "برای بازگشت روی دکمه زیر کلیک کنید"
 ]);
 
-// keyboard list panel for test 
+// keyboard list panel for test
 
 $stmt = $pdo->prepare("SELECT * FROM marzban_panel WHERE TestAccount = 'ONTestAccount' AND (agent = '{$userbot['agent']}' OR agent = 'all')");
 $stmt->execute();
@@ -75,7 +75,7 @@ $keyboardadmin = json_encode([
         ],
         [
             ['text' => "📞 تنظیم نام کاربری پشتیبانی"],
-            ['text' => "📬 گزارش ربات"],
+            ['text' => "🆕 آپدیت ربات"],
         ],
         [
             ['text' => "📣 جوین اجباری"]
@@ -166,7 +166,7 @@ $KeyboardBalance = json_encode([
     ]
 ]);
 
-function KeyboardProduct($location, $query, $pricediscount, $datakeyboard, $statuscustom = false, $backuser = "backuser", $valuetow = null, $customvolume = "customsellvolume")
+function KeyboardProduct($location, $query, $pricediscount, $datakeyboard, $statuscustom = false, $backuser = "backuser", $valuetow = null, $customvolume = "customsellvolume", $bot_token = null, $agent = null)
 {
     global $pdo, $textbotlang;
     $product = ['inline_keyboard' => []];
@@ -175,8 +175,8 @@ function KeyboardProduct($location, $query, $pricediscount, $datakeyboard, $stat
     $stmt->execute();
     $valuetow = $valuetow != null ? "-$valuetow" : "";
     while ($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
-        $productlist = readJsonFileIfExists('product.json');
-        $productlist_name = readJsonFileIfExists('product_name.json');
+        $productlist = json_decode(file_get_contents('product.json'), true);
+        $productlist_name = json_decode(file_get_contents('product_name.json'), true);
         if (isset($productlist[$result['code_product']])) $result['price_product'] = $productlist[$result['code_product']];
         $result['name_product'] = empty($productlist_name[$result['code_product']]) ? $result['name_product'] : $productlist_name[$result['code_product']];
         $hide_panel = json_decode($result['hide_panel'], true);
@@ -197,17 +197,24 @@ function KeyboardProduct($location, $query, $pricediscount, $datakeyboard, $stat
     ];
     return json_encode($product);
 }
-function KeyboardCategory($location, $agent, $backuser = "backuser")
+function KeyboardCategory($location, $agent, $backuser = "backuser", $bot_token = null)
 {
     global $pdo, $textbotlang;
     $stmt = $pdo->prepare("SELECT * FROM category");
     $stmt->execute();
     $list_category = ['inline_keyboard' => [],];
     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-        $stmts = $pdo->prepare("SELECT * FROM product WHERE (Location = :location OR Location = '/all') AND category = :category AND agent = :agent");
-        $stmts->bindParam(':location', $location, PDO::PARAM_STR);
-        $stmts->bindParam(':category', $row['remark'], PDO::PARAM_STR);
-        $stmts->bindParam(':agent', $agent);
+        if ($agent == 'n2' && $bot_token !== null) {
+            $stmts = $pdo->prepare("SELECT * FROM partner_product WHERE (Location = :location OR Location = '/all') AND category = :category AND bot_token = :bot_token");
+            $stmts->bindParam(':location', $location, PDO::PARAM_STR);
+            $stmts->bindParam(':category', $row['remark'], PDO::PARAM_STR);
+            $stmts->bindParam(':bot_token', $bot_token, PDO::PARAM_STR);
+        } else {
+            $stmts = $pdo->prepare("SELECT * FROM product WHERE (Location = :location OR Location = '/all') AND category = :category AND agent = :agent");
+            $stmts->bindParam(':location', $location, PDO::PARAM_STR);
+            $stmts->bindParam(':category', $row['remark'], PDO::PARAM_STR);
+            $stmts->bindParam(':agent', $agent);
+        }
         $stmts->execute();
         if ($stmts->rowCount() == 0) continue;
         $list_category['inline_keyboard'][] = [['text' => $row['remark'], 'callback_data' => "categorynames_" . $row['id']]];
