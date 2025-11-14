@@ -4400,7 +4400,7 @@ $textinvite
     $textcreatuser = str_replace('{day}', $info_product['Service_time'], $textcreatuser);
     $textcreatuser = str_replace('{volume}', $info_product['Volume_constraint'], $textcreatuser);
     $textcreatuser = str_replace('{config}', $formatted_subscription, $textcreatuser);
-    $textcreatuser = str_replace('{links}', $formatted_config, $textcreatuser);
+    $textcreatuser = str_replace('{links}', '', $textcreatuser);
     $textcreatuser = str_replace('{links2}', $formatted_subscription, $textcreatuser);
     if (intval($info_product['Volume_constraint']) == 0) {
         $textcreatuser = str_replace('گیگابایت', "", $textcreatuser);
@@ -5019,7 +5019,7 @@ $textonebuy
         $textcreatuser = str_replace('{day}', $info_product['Service_time'], $textcreatuser);
         $textcreatuser = str_replace('{volume}', $info_product['Volume_constraint'], $textcreatuser);
         $textcreatuser = str_replace('{config}', $formatted_subscription, $textcreatuser);
-        $textcreatuser = str_replace('{links}', $formatted_config, $textcreatuser);
+        $textcreatuser = str_replace('{links}', '', $textcreatuser);
         $textcreatuser = str_replace('{links2}', $formatted_subscription, $textcreatuser);
         sendMessageService($marzban_list_get, $dataoutput['configs'], $output_config_link, $dataoutput['username'], $Shoppinginfo, $textcreatuser, $randomString);
     }

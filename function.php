@@ -1521,16 +1521,17 @@ function sendMessageService($panel_info, $config, $sub_link, $username_service, 
     if (!check_active_btn($setting['keyboardmain'], "text_help"))
         $reply_markup = null;
     $user_id = $user_id == null ? $from_id : $user_id;
-    $STATUS_SEND_MESSAGE_PHOTO = $panel_info['config'] == "onconfig" && count($config) != 1 ? false : true;
     $out_put_qrcode = "";
     if ($panel_info['type'] == "Manualsale" || $panel_info['type'] == "ibsng" || $panel_info['type'] == "mikrotik") {
     }
-    if ($panel_info['sublink'] == "onsublink" && $panel_info['config']) {
+    if ($panel_info['sublink'] == "onsublink") {
         $out_put_qrcode = $sub_link;
-    } elseif ($panel_info['sublink'] == "onsublink") {
-        $out_put_qrcode = $sub_link;
+        $STATUS_SEND_MESSAGE_PHOTO = true;
     } elseif ($panel_info['config'] == "onconfig") {
         $out_put_qrcode = $config[0];
+        $STATUS_SEND_MESSAGE_PHOTO = count($config) == 1 ? true : false;
+    } else {
+        $STATUS_SEND_MESSAGE_PHOTO = false;
     }
     if ($STATUS_SEND_MESSAGE_PHOTO) {
         $urlimage = "$user_id$invoice_id.png";

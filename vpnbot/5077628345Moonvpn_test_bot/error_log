@@ -2,3 +2,7 @@
 [20-Oct-2025 21:01:00 Asia/Tehran] PHP Warning:  Trying to access array offset on null in /home/bb/public_html/vpnbot/5077628345Moonvpn_test_bot/admin.php on line 434
 [21-Oct-2025 01:20:20 Asia/Tehran] {"status":200,"body":"{\"success\":false,\"msg\":\"Error getting traffics. (Inbound Not Found For Email: 5077628345_b199\\n)\",\"obj\":null}","error":"Error getting traffics. (Inbound Not Found For Email: 5077628345_b199\n)"}
 [21-Oct-2025 01:20:23 Asia/Tehran] {"status":200,"body":"{\"success\":false,\"msg\":\"Error getting traffics. (Inbound Not Found For Email: 5077628345_b199\\n)\",\"obj\":null}","error":"Error getting traffics. (Inbound Not Found For Email: 5077628345_b199\n)"}
+[11-Nov-2025 16:27:57 Asia/Tehran] PHP Warning:  Trying to access array offset on false in /home/bb/public_html/vpnbot/5077628345Moonvpn_test_bot/admin.php on line 434
+[11-Nov-2025 16:28:39 Asia/Tehran] PHP Warning:  Trying to access array offset on false in /home/bb/public_html/vpnbot/5077628345Moonvpn_test_bot/admin.php on line 641
+[11-Nov-2025 16:30:14 Asia/Tehran] PHP Warning:  Trying to access array offset on false in /home/bb/public_html/vpnbot/5077628345Moonvpn_test_bot/admin.php on line 641
+[14-Nov-2025 15:16:59 Asia/Tehran] PHP Warning:  Trying to access array offset on false in /home/bb/public_html/vpnbot/5077628345Moonvpn_test_bot/admin.php on line 434

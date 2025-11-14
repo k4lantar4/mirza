@@ -153,7 +153,7 @@ switch ($data['actions']) {
         $username = $data['username'];
         $stmt = $pdo->prepare("SELECT * FROM invoice WHERE id_user = :user_id AND (status = 'active' OR status = 'end_of_time'  OR status = 'end_of_volume' OR status = 'sendedwarn' OR Status = 'send_on_hold') AND username = :username");
         $stmt->bindValue(':user_id', $user_id, PDO::PARAM_INT);
-        $stmt->bindValue(':username', $username, PDO::PARAM_INT);
+        $stmt->bindValue(':username', $username, PDO::PARAM_STR);
         $stmt->execute();
         $invoice = $stmt->fetch(PDO::FETCH_ASSOC);
         if ($invoice) {
@@ -187,6 +187,9 @@ switch ($data['actions']) {
                     'type' => "password",
                     'value' => $DataUserOut['password']
                 ];
+            }
+            if (empty($config)) {
+                error_log("miniapp.php service: empty service_output; panel_type={$panel['type']} user_id={$user_id} username={$username}");
             }
             if ($DataUserOut['sub_updated_at']  !== null) {
                 $sub_updated = $DataUserOut['sub_updated_at'];
@@ -226,6 +229,7 @@ switch ($data['actions']) {
                 ),
             ]);
         } else {
+            error_log("miniapp.php service: invoice not found for user_id={$user_id}, username={$username}");
             http_response_code(404);
             echo json_encode([
                 'status' => false,
@@ -851,7 +855,7 @@ switch ($data['actions']) {
         $textcreatuser = str_replace('{day}', $product['Service_time'], $textcreatuser);
         $textcreatuser = str_replace('{volume}', $product['Volume_constraint'], $textcreatuser);
         $textcreatuser = str_replace('{config}', $formatted_subscription, $textcreatuser);
-        $textcreatuser = str_replace('{links}', $formatted_config, $textcreatuser);
+        $textcreatuser = str_replace('{links}', '', $textcreatuser);
         $textcreatuser = str_replace('{links2}', $formatted_subscription, $textcreatuser);
         sendMessageService($panel, $dataoutput['configs'], $output_config_link, $user_info['username'], null, $textcreatuser, $randomString, $user_info['id'], $image = '../images.jpg');
         if (intval($product['price_product']) != 0) {
