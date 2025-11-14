@@ -1,7 +1,7 @@
 .cursor
 .bmad*
 **/*log*
-./config.php
+config.php
 .env
 *.png
 vpnbot/*
