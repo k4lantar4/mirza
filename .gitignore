@@ -9,9 +9,3 @@ vpnbot/*
 error*
 *.txt
 api/error_log
-/*.json
-config.php
-admin.php
-error_log
-log.txt
-bmad/
