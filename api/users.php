@@ -261,7 +261,13 @@ switch ($data['actions'] ?? '') {
             $userInfo = telegram('getChat', ['chat_id' => $data['chat_id']]);
 
             if (!$userInfo['ok']) {
-                sendJsonResponse(false, $userInfo['description'] ?? 'Telegram API error');
+                $error_desc = $userInfo['description'] ?? 'Telegram API error';
+                // Don't log expected errors like "user not found" - they're handled gracefully
+                if (stripos($error_desc, 'user not found') === false &&
+                    stripos($error_desc, 'chat not found') === false) {
+                    error_log("Unexpected Telegram API error in user_add: " . json_encode($userInfo));
+                }
+                sendJsonResponse(false, $error_desc);
             }
 
             // Generate random invitation code
@@ -330,10 +336,10 @@ switch ($data['actions'] ?? '') {
         }
         if ($data['type_block'] == "block") {
             $typeblock = "block";
-            $text_report = "کاربر با آیدی عددی {$data['chat_id']} در ربات  مسدود گردید 
+            $text_report = "کاربر با آیدی عددی {$data['chat_id']} در ربات  مسدود گردید
 ادمین انجام دهنده : api site";
         } else {
-            $text_report = "کاربر با آیدی عددی {$data['chat_id']} در ربات از مسدودیت خارج گردید 
+            $text_report = "کاربر با آیدی عددی {$data['chat_id']} در ربات از مسدودیت خارج گردید
 ادمین انجام دهنده : api site";
             sendmessage($data['chat_id'], "✳️ حساب کاربری شما از مسدودی خارج شد ✳️
 اکنون میتوانید از ربات استفاده کنید ✔️", null, 'HTML');
