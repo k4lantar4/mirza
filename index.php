@@ -627,30 +627,7 @@ if ($text == "/start" || $datain == "start" || $text == "start") {
 } elseif ($user['step'] == "getusernameinfo") {
     if (empty($text))
         return;
-    $usernameconfig = "";
-    if (strlen($text) > 32) {
-        if (!filter_var($text, FILTER_VALIDATE_URL)) {
-            sendmessage($from_id, "❌ لینک اشتراک نامعتبر است", $backuser, 'HTML');
-            return;
-        }
-        $date = outputlinksub($text);
-        if (!isset($date)) {
-            sendmessage($from_id, "❌ لینک اشتراک نامعتبر است", $backuser, 'HTML');
-            return;
-        }
-        $date = json_decode($date, true);
-        if (!isset($date['username'])) {
-            sendmessage($from_id, "❌ لینک اشتراک نامعتبر است", $backuser, 'HTML');
-            return;
-        }
-        $usernameconfig = $date['username'];
-    } else {
-        if (!preg_match('/^\w{3,32}$/', $text)) {
-            sendmessage($from_id, $textbotlang['users']['stateus']['Invalidusername'], $backuser, 'html');
-            return;
-        }
-        $usernameconfig = $text;
-    }
+    $usernameconfig = $text;
     update("user", "Processing_value", $usernameconfig, "id", $from_id);
     sendmessage($from_id, $datatextbot['textselectlocation'], $list_marzban_panel_user, 'html');
     step('getdata', $from_id);
@@ -5271,7 +5248,7 @@ $textonebuy
         $dateacc = date('Y/m/d H:i:s');
         $randomString = bin2hex(random_bytes(5));
         $invoice = "{$user['Processing_value_tow']}|{$user['Processing_value_one']}";
-        $pay = plisio($randomString, $trxprice);
+        $pay = plisio($randomString, $usdprice);
         $stmt = $connect->prepare("INSERT INTO Payment_report (id_user,id_order,time,price,payment_Status,Payment_Method,id_invoice,dec_not_confirmed) VALUES (?,?,?,?,?,?,?,?)");
         $payment_Status = "Unpaid";
         $Payment_Method = "plisio";

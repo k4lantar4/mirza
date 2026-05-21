@@ -174,7 +174,6 @@ try {
         daywarn varchar(45)  NULL,
         categoryhelp varchar(45)  NULL,
         linkappstatus varchar(45)  NULL,
-        iplogin varchar(45)  NULL,
         wheelagent varchar(45)  NULL,
         Lotteryagent varchar(45)  NULL,
         languageen varchar(45)  NULL,
@@ -192,7 +191,29 @@ try {
         limitnumber varchar(200)  NULL)
         ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci");
         $stmt->execute();
-        $stmt = $pdo->prepare("INSERT INTO setting (Bot_Status,roll_Status,get_number,limit_usertest_all,iran_number,NotUser,affiliatesstatus,affiliatespercentage,removedayc,showcard,statuscategory,numbercount,statusnewuser,statusagentrequest,volumewarn,inlinebtnmain,verifystart,statussupportpv,statusnamecustom,statuscategorygenral,agentreqprice,cronvolumere,bulkbuy,on_hold_day,verifybucodeuser,scorestatus,Lottery_prize,wheelـluck,wheelـluck_price,iplogin,daywarn,categoryhelp,linkappstatus,languageen,languageru,wheelagent,Lotteryagent,statusfirstwheel,statuslimitchangeloc,limitnumber,Debtsettlement,Dice,keyboardmain,statusnoteforf,statuscopycart,timeauto_not_verify,status_keyboard_config,cron_status) VALUES ('botstatuson','rolleon','offAuthenticationphone','1','offAuthenticationiran','offnotuser','offaffiliates','0','0','1','offcategory','0','onnewuser','onrequestagent','2','offinline','offverify','offpvsupport','offnamecustom','offcategorys','0','5','onbulk','4','offverify','0','$DATAAWARD','0','0','0','2','0','0','0','0','1','1','0','0','$limitlist','1','0','$keyboardmain','1','0','4','1','$status_cron')");
+        $stmt = $pdo->prepare("INSERT INTO setting (
+Bot_Status,roll_Status,get_number,limit_usertest_all,iran_number,NotUser,
+affiliatesstatus,affiliatespercentage,removedayc,showcard,statuscategory,
+numbercount,statusnewuser,statusagentrequest,volumewarn,inlinebtnmain,
+verifystart,statussupportpv,statusnamecustom,statuscategorygenral,
+agentreqprice,cronvolumere,bulkbuy,on_hold_day,verifybucodeuser,
+scorestatus,Lottery_prize,wheelـluck,wheelـluck_price,daywarn,
+categoryhelp,linkappstatus,languageen,languageru,wheelagent,
+Lotteryagent,statusfirstwheel,statuslimitchangeloc,limitnumber,
+Debtsettlement,Dice,keyboardmain,statusnoteforf,statuscopycart,
+timeauto_not_verify,status_keyboard_config,cron_status
+) VALUES (
+'botstatuson','rolleon','offAuthenticationphone','1','offAuthenticationiran','offnotuser',
+'offaffiliates','0','0','1','offcategory',
+'0','onnewuser','onrequestagent','2','offinline',
+'offverify','offpvsupport','offnamecustom','offcategorys',
+'0','5','onbulk','4','offverify',
+'0','$DATAAWARD','0','0','2',
+'0','0','0','0','1',
+'1','0','0','$limitlist',
+'1','0','$keyboardmain','1','0',
+'4','1','$status_cron'
+)");
         $stmt->execute();
     } else {
         addFieldToTable("setting", "cron_status", $status_cron, "TEXT");
@@ -214,7 +235,6 @@ try {
         addFieldToTable("setting", "categoryhelp", "0", "varchar(45)");
         addFieldToTable("setting", "daywarn", "2", "varchar(45)");
         addFieldToTable("setting", "btn_status_extned", "0", "varchar(45)");
-        addFieldToTable("setting", "iplogin", "0", "varchar(45)");
         addFieldToTable("setting", "wheelـluck_price", "0", "varchar(45)");
         addFieldToTable("setting", "wheelـluck", "0", "varchar(45)");
         addFieldToTable("setting", "Lottery_prize", $DATAAWARD, "TEXT");
@@ -417,7 +437,7 @@ try {
         addFieldToTable("marzban_panel", "version_panel", "0", "VARCHAR(60)");
         $max_stmt = $connect->query("SELECT MAX(CAST(SUBSTRING(code_panel, 3) AS UNSIGNED)) as max_num FROM marzban_panel WHERE code_panel LIKE '7e%'");
         $max_row = $max_stmt->fetch_assoc();
-        $next_num = $max_row['max_num'] ? (int)$max_row['max_num'] + 1 : 15;
+        $next_num = $max_row['max_num'] ? (int) $max_row['max_num'] + 1 : 15;
         $stmt = $connect->query("SELECT id FROM marzban_panel WHERE code_panel IS NULL OR code_panel = ''");
         while ($row = $stmt->fetch_assoc()) {
             $code = '7e' . $next_num;
@@ -1489,6 +1509,16 @@ $connect->query("ALTER TABLE `invoice` CHANGE `time_sell` `time_sell` VARCHAR(20
 $connect->query("ALTER TABLE marzban_panel MODIFY name_panel VARCHAR(255) COLLATE utf8mb4_bin");
 $connect->query("ALTER TABLE product MODIFY name_product VARCHAR(1000) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin");
 $connect->query("ALTER TABLE help MODIFY name_os VARCHAR(500) COLLATE utf8mb4_bin");
+try {
+    $check = $pdo->query("SHOW COLUMNS FROM `user` LIKE 'ref_code'");
+} catch (Exception $e) {
+    error_log("[CHECK:$tableName] ❌ " . $e->getMessage());
+    exit;
+}
+
+if ($check && $check->rowCount() != 0) {
+    $pdo->exec("ALTER TABLE `user` DROP `ref_code`");
+}
 telegram('setwebhook', [
     'url' => "https://$domainhosts/index.php"
 ]);

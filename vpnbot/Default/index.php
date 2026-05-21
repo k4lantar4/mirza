@@ -946,6 +946,11 @@ if ($text == $text_bot_var['btn_keyboard']['buy'] && $setting['active_step_note'
     if (isset($userdate['code_product'])) {
         $product = $userdate['code_product'];
         $product = select("product", "*", "code_product", $product);
+        if ($product == false) {
+            sendmessage($from_id, "❌ خطایی رخ داده است مراحل خرید را از اول انجام دهید", $keyboard, 'html');
+            step("home", $from_id);
+            return;
+        }
         $priceBot = $product['price_product'];
         $productlist = json_decode(file_get_contents('product.json'), true);
         if (isset($productlist[$product['code_product']])) {
@@ -975,6 +980,11 @@ if ($text == $text_bot_var['btn_keyboard']['buy'] && $setting['active_step_note'
             "price_productMain" => intval(($userdate['volume'] * $custompricevalueBot) + ($userdate['time'] * $customtimevaluepriceBot)),
             "data_limit_reset" => "no_reset"
         );
+    }
+    if (!ctype_digit($datafactor['Volume_constraint']) || !ctype_digit($datafactor['Service_time'])) {
+        sendmessage($from_id, "❌ خطایی رخ داده است مراحل خرید را از اول انجام دهید", $keyboard, 'html');
+        step("home", $from_id);
+        return;
     }
     $botbalance = select("botsaz", "*", "bot_token", $ApiToken, "select");
     $userbotbalance = select("user", "*", "id", $botbalance['id_user'], "select");
