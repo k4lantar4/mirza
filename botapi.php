@@ -25,6 +25,12 @@ function telegram($method, $datas = [], $token = null)
     curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
     curl_setopt($ch, CURLOPT_POSTFIELDS, $datas);
 
+    // --- 🛡️ XRAY SOCKS5 PROXY WITH AUTH INJECTION ---
+    curl_setopt($ch, CURLOPT_PROXY, "127.0.0.1:9000");
+    curl_setopt($ch, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5_HOSTNAME);
+    curl_setopt($ch, CURLOPT_PROXYUSERPWD, "zNvNviTYo2:uZalUXLICS");
+    // ------------------------------------------------
+
     $rawResponse = curl_exec($ch);
     if ($rawResponse === false) {
         $curlError = curl_error($ch);

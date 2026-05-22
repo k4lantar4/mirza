@@ -47,14 +47,32 @@ class CurlRequest {
         return $headers;
     }
 
-    private function execute($method, $data = null) {
+private function execute($method, $data = null) {
         $this->timeout = !$this->timeout  ?  10000 : $this->timeout;
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $this->url);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, strtoupper($method));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_TIMEOUT_MS, $this->timeout);
+        
+        // Disable strict SSL for panels with self-signed/Cloudflare certs
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+
+        // --- 🛡️ SMART PROXY ROUTING (MVP) ---
+        $parsed_host = parse_url($this->url, PHP_URL_HOST);
+        // Local ranges AND the panel's direct IP subnet (95.38.x.x)
+        $is_local = preg_match('/^(127\.|10\.|172\.1[6-9]\.|172\.2[0-9]\.|172\.3[0-1]\.|192\.168\.|localhost|95\.38\.)/', $parsed_host);
+	
+        // If your Iran panel uses a public domain (e.g. sub.farsbazar.com), add it here
+        $iran_domains = ['bot.farsbazar.com', 'me.farsbazar.com', 'app.dubaismoke.com', 'app0.dubaismoke.com', 'music.dubaismoke.com']; 
+
+        if (!$is_local && !in_array($parsed_host, $iran_domains)) {
+            curl_setopt($ch, CURLOPT_PROXY, "127.0.0.1:9000");
+            curl_setopt($ch, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5_HOSTNAME);
+            curl_setopt($ch, CURLOPT_PROXYUSERPWD, "zNvNviTYo2:uZalUXLICS");
+        }
+        // ------------------------------------
 
         $finalHeaders = $this->prepareHeaders();
         if (!empty($finalHeaders)) {
@@ -87,7 +105,7 @@ class CurlRequest {
             'status' => $httpCode,
             'body' => $response
         ];
-    }
+}
 
     public function get() {
         return $this->execute("GET");
