@@ -1,6 +1,7 @@
 <?php
 require_once '../config.php';
 require_once '../function.php';
+$textbotlang = languagechange();
 require_once '../botapi.php';
 
 $reportbackup = select("topicid", "idreport", "report", "backupfile", "select")['idreport'];
@@ -34,14 +35,14 @@ if ($return_var !== 0) {
     telegram('sendmessage', [
         'chat_id' => $setting['Channel_Report'],
         'message_thread_id' => $reportbackup,
-        'text' => "❌❌❌❌❌❌ خطا در بکاپ گیری ",
+        'text' => $textbotlang['keyboard']['backupError'],
     ]);
 } else {
     telegram('sendDocument', [
         'chat_id' => $setting['Channel_Report'],
         'message_thread_id' => $reportbackup,
         'document' => new CURLFile($backup_file_name),
-        'caption' => "📌 خروجی دیتابیس ربات اصلی ",
+        'caption' => $textbotlang['hardcoded']['backupDatabaseCaption'],
     ]);
     unlink($backup_file_name);
 }

@@ -3,27 +3,7 @@ date_default_timezone_set('Asia/Tehran');
 require_once __DIR__ . '/../config.php';
 require_once __DIR__ . '/../botapi.php';
 require_once __DIR__ . '/../function.php';
-$datatextbotget = select("textbot", "*",null ,null ,"fetchAll");
-$datatxtbot = array();
-foreach ($datatextbotget as $row) {
-    $datatxtbot[] = array(
-        'id_text' => $row['id_text'],
-        'text' => $row['text']
-    );
-}
-$datatextbot = array(
-    'text_usertest' => '',
-    'text_support' => '',
-    'text_help' => '',
-    'text_sell' => '',
-    'text_affiliates' => '',
-    'text_Add_Balance' => ''
-);
-foreach ($datatxtbot as $item) {
-    if (isset($datatextbot[$item['id_text']])) {
-        $datatextbot[$item['id_text']] = $item['text'];
-    }
-}
+$textbotlang = languagechange();
 if(!is_file('info'))return;
 if(!is_file('users.json'))return;
 
@@ -36,7 +16,7 @@ $count = 0;
 if(count($userid) == 0){
     if(isset($info['id_admin'])){
     deletemessage($info['id_admin'], $info['id_message']);
-    sendmessage($info['id_admin'], "📌 عملیات برای تمامی کاربران درخواستی انجام شد.", null, 'HTML');
+    sendmessage($info['id_admin'], $textbotlang['hardcoded']['bulkMessageDone'], null, 'HTML');
     unlink('info');
     unlink('users.json');
     }
@@ -44,13 +24,11 @@ if(count($userid) == 0){
     
 }
 $count_remein = count($userid);
-$textprocces = "✏️ عملیات ارسال پیام درحال انجام می باشد...
-
-تعداد نفرات باقی مانده :  $count_remein";
+$textprocces = sprintf($textbotlang['hardcoded']['bulkMessageProgress'], $count_remein);
 $cancelmessage = json_encode([
         'inline_keyboard' => [
             [
-                ['text' => "لغو عملیات", 'callback_data' => 'cancel_sendmessage'],
+                ['text' => $textbotlang['keyboard']['cancelOperation'], 'callback_data' => 'cancel_sendmessage'],
             ],
         ]
     ]);
@@ -58,42 +36,42 @@ Editmessagetext($info['id_admin'], $info['id_message'],$textprocces, $cancelmess
 $keyboardbuy = json_encode([
         'inline_keyboard' => [
             [
-                ['text' => $datatextbot['text_sell'], 'callback_data' => 'buy'],
+                ['text' => $textbotlang['textbot']['sell'], 'callback_data' => 'buy'],
             ],
         ]
     ]);
 $keyboardstart = json_encode([
         'inline_keyboard' => [
             [
-                ['text' => "شروع", 'callback_data' => 'start'],
+                ['text' => $textbotlang['keyboard']['start'], 'callback_data' => 'start'],
             ],
         ]
     ]);
 $keyboardusertest = json_encode([
         'inline_keyboard' => [
             [
-                ['text' => $datatextbot['text_usertest'], 'callback_data' => 'usertestbtn'],
+                ['text' => $textbotlang['textbot']['userTest'], 'callback_data' => 'usertestbtn'],
             ],
         ]
     ]);
 $keyboardhelpbtn = json_encode([
         'inline_keyboard' => [
             [
-                ['text' => $datatextbot['text_help'], 'callback_data' => 'helpbtn'],
+                ['text' => $textbotlang['textbot']['help'], 'callback_data' => 'helpbtn'],
             ],
         ]
     ]);
 $keyboardaffiliates = json_encode([
         'inline_keyboard' => [
             [
-                ['text' => $datatextbot['text_affiliates'], 'callback_data' => 'affiliatesbtn'],
+                ['text' => $textbotlang['textbot']['affiliates'], 'callback_data' => 'affiliatesbtn'],
             ],
         ]
     ]);
 $keyboardaddbalance = json_encode([
         'inline_keyboard' => [
             [
-                ['text' => $datatextbot['text_Add_Balance'], 'callback_data' => 'Add_Balance'],
+                ['text' => $textbotlang['textbot']['addBalance'], 'callback_data' => 'Add_Balance'],
             ],
         ]
     ]);

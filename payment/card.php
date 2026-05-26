@@ -28,26 +28,6 @@ $name_bank = $name_post[1];
 $valuepost = $_POST["{$name_post[0]}_$name_bank"];
 $setting = mysqli_fetch_assoc(mysqli_query($connect, "SELECT * FROM setting"));
 $admin_ids = array_column(mysqli_fetch_all(mysqli_query($connect, "SELECT (id_admin) FROM admin"), MYSQLI_ASSOC), 'id_admin');
- $datatextbotget = select("textbot", "*",null ,null ,"fetchAll");
-    $datatxtbot = array();
-foreach ($datatextbotget as $row) {
-    $datatxtbot[] = array(
-        'id_text' => $row['id_text'],
-        'text' => $row['text']
-    );
-}
-$datatextbot = array(
-    'textafterpay' => '',
-    'textaftertext' => '',
-    'textmanual' => '',
-    'textselectlocation' => '',
-    'textafterpayibsng' => ''
-);
-foreach ($datatxtbot as $item) {
-    if (isset($datatextbot[$item['id_text']])) {
-        $datatextbot[$item['id_text']] = $item['text'];
-    }
-}
 if($name_bank == 'blu'){
 $pattern = "/(\d[\d,]+) ریال به حساب شما نشست\./u";
 preg_match($pattern, $valuepost, $matches);
@@ -125,7 +105,7 @@ if(isset($amountInteger) && $amountInteger !== NULL){
     if ($Payment_report['payment_Status'] == "paid" || $Payment_report['payment_Status'] == "reject") {
         telegram('answerCallbackQuery', array(
             'callback_query_id' => $callback_query_id,
-            'text' => $textbotlang['Admin']['Payment']['reviewedpayment'],
+            'text' => $textbotlang['Admin']['Payment']['reviewedPayment'],
             'show_alert' => true,
             'cache_time' => 5,
         ));

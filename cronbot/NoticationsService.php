@@ -26,8 +26,8 @@ class ServiceMonitor
         $this->reportCron = select("topicid", "idreport", "report", "reportcron", "select")['idreport'];
         $this->setting = select("setting", "*");
         $this->status_cron = json_decode($this->setting['cron_status'], true);
-        $this->text_Purchased_services = select("textbot", "text", "id_text", "text_Purchased_services", "select")['text'];
-        $this->textBotLang = languagechange('../text.json');
+        $this->textBotLang = languagechange();
+        $this->text_Purchased_services = $this->textBotLang['textbot']['purchasedServices'] ?? '';
     }
 
     public function RunNotifactions()
@@ -112,13 +112,13 @@ class ServiceMonitor
 
         if ($isVolumeWarning) {
             $formattedVolume = formatBytes($remainingVolume);
-            $message = "با سلام خدمت شما کاربر گرامی 👋\n" .
-                "🚨 از حجم سرویس {$username} تنها {$formattedVolume} باقی مانده است. " .
-                "لطفاً در صورت تمایل برای خرید حجم اضافه و یا تمدید سرویستون از طریق بخش «{$this->text_Purchased_services}» اقدام بفرمایین";
-            $reportMessage = "📌 اطلاعیه کرون حجم\n\n" .
-                "نام کاربری سرویس :‌ <code>{$username}</code>\n" .
-                "وضعیت سرویس : {$userData['status']}\n" .
-                "حجم باقی مانده : {$formattedVolume}";
+            $message = $this->textBotLang['hardcoded']['notifGreeting'] .
+                sprintf($this->textBotLang['hardcoded']['notifVolumeRemaining'], $username, $formattedVolume) .
+                sprintf($this->textBotLang['hardcoded']['notifVolumeActionHint'], $this->text_Purchased_services);
+            $reportMessage = $this->textBotLang['hardcoded']['notifVolumeCronTitle'] .
+                sprintf($this->textBotLang['hardcoded']['notifServiceUsername'], $username) .
+                sprintf($this->textBotLang['hardcoded']['notifServiceStatus'], $userData['status']) .
+                sprintf($this->textBotLang['hardcoded']['notifRemainingVolume'], $formattedVolume);
             $this->send_notifactions($invoice, $user, $message, true, $invoice['bottype']);
             $this->sendReportNotification($reportMessage);
             $this->updateInvoiceStatus("volume", $invoice);
@@ -145,8 +145,8 @@ class ServiceMonitor
         if ($result) {
             update("invoice", "status", "removeTime", "username", $username);
             $this->Panel->RemoveUser($invoice['Service_location'], $username);
-            $message = "📌 کاربر گرامی بدلیل عدم تمدید، سرویس {$invoice['username']} از لیست سرویس های شما حذف گردید\n\n🌟 جهت تهیه سرویس جدید از بخش خرید سرویس اقدام فرمایید";
-            $reportMessage = "📌 اطلاعیه کرون حذف\n\nنام کاربری سرویس :‌ <code>{$invoice['username']}</code>\nوضعیت سرویس : $statusText\nتعداد روز باقی مانده ‌:‌$daysRemaining\nحجم باقی مانده : $remainingVolume";
+            $message = sprintf($this->textBotLang['hardcoded']['notifServiceDeleted'], $invoice['username']);
+            $reportMessage = sprintf($this->textBotLang['hardcoded']['notifDeleteCronInfo'], $invoice['username'], $statusText, $daysRemaining, $remainingVolume);
             $this->send_notifactions($invoice, $user, $message, false, $invoice['bottype']);
             $this->sendReportNotification($reportMessage);
         }
@@ -188,10 +188,8 @@ class ServiceMonitor
         if ($result) {
             update("invoice", "status", "removevolume", "username", $username);
             $this->Panel->RemoveUser($invoice['Service_location'], $username);
-            $message = "📌 کاربر گرامی بدلیل عدم تمدید، سرویس $username از لیست سرویس های شما حذف گردید
-
-🌟 جهت تهیه سرویس جدید از بخش خرید سرویس اقدام فرمایید";
-            $reportMessage = "📌  اطلاعیه کرون حذف حجم \nنام کاربری سرویس : $username \n وضعیت سرویس : $statusText \nتعداد روز باقی مانده :$daysRemaining \n حجم باقی مانده : $remainingVolume\nآخرین اتصال کاربر : {$userData['online_at']}";
+            $message = sprintf($this->textBotLang['hardcoded']['notifServiceDeleted2'], $username);
+            $reportMessage = sprintf($this->textBotLang['hardcoded']['notifVolumeDeleteCronInfo'], $username, $statusText, $daysRemaining, $remainingVolume, $userData['online_at']);
             $this->send_notifactions($invoice, $user, $message, false, $invoice['bottype']);
             $this->sendReportNotification($reportMessage);
         }
@@ -224,14 +222,14 @@ class ServiceMonitor
         $isTimeWarning = $timeRemaining <= $warningThreshold && $timeRemaining > 0;
 
         if ($isTimeWarning) {
-            $message = "با سلام خدمت شما کاربر گرامی 👋\n" .
-                "📌 از مهلت زمانی استفاده از سرویس {$username} فقط {$daysRemaining} روز باقی مانده است. " .
-                "لطفاً در صورت تمایل برای تمدید این سرویس، از طریق بخش «{$this->text_Purchased_services}» اقدام بفرمایین. " .
-                "با تشکر از همراهی شما";
-            $reportMessage = "📌 اطلاعیه کرون زمان\n\n" .
-                "نام کاربری سرویس :‌ <code>{$invoice['username']}</code>\n" .
-                "وضعیت سرویس : {$userData['status']}\n" .
-                "تعداد روز باقی مانده ‌:‌{$daysRemaining}";
+            $message = $this->textBotLang['hardcoded']['notifGreeting2'] .
+                sprintf($this->textBotLang['hardcoded']['notifTimeRemaining'], $username, $daysRemaining) .
+                sprintf($this->textBotLang['hardcoded']['notifTimeActionHint'], $this->text_Purchased_services) .
+                $this->textBotLang['hardcoded']['notifThanks'];
+            $reportMessage = $this->textBotLang['hardcoded']['notifTimeCronTitle'] .
+                sprintf($this->textBotLang['hardcoded']['notifServiceUsername2'], $invoice['username']) .
+                sprintf($this->textBotLang['hardcoded']['notifServiceStatus2'], $userData['status']) .
+                sprintf($this->textBotLang['hardcoded']['notifRemainingDays'], $daysRemaining);
             $this->send_notifactions($invoice, $user, $message, true, $invoice['bottype']);
             $this->sendReportNotification($reportMessage);
             $this->updateInvoiceStatus("time", $invoice);
@@ -250,10 +248,11 @@ class ServiceMonitor
 
     private function createExtendServiceKeyboard($invoiceId)
     {
+        global $textbotlang;
         return json_encode([
             'inline_keyboard' => [
                 [
-                    ['text' => "💊 تمدید سرویس", 'callback_data' => 'extend_' . $invoiceId],
+                    ['text' => $textbotlang['keyboard']['renewService'], 'callback_data' => 'extend_' . $invoiceId],
                 ],
             ]
         ]);

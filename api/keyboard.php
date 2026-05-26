@@ -9,33 +9,8 @@ ini_set('default_charset', 'UTF-8');
 ini_set('error_log', 'error_log');
 
 
-$datatextbot = array(
-    'text_usertest' => '',
-    'text_Purchased_services' => '',
-    'text_support' => '',
-    'text_help' => '',
-    'accountwallet' => '',
-    'text_sell' => '',
-    'text_Tariff_list' => '',
-    'text_affiliates' => '',
-    'text_wheel_luck' => '',
-    'text_extend' => ''
-
-);
-$textdatabot =  select("textbot", "*", null, null,"fetchAll");
-$data_text_bot = array();
-foreach ($textdatabot as $row) {
-    $data_text_bot[] = array(
-        'id_text' => $row['id_text'],
-        'text' => $row['text']
-    );
-}
-foreach ($data_text_bot as $item) {
-        if (isset($datatextbot[$item['id_text']])) {
-        $datatextbot[$item['id_text']] = $item['text'];
-    }
-}
-$keyboardmain = json_decode(select("setting","keyboardmain",null,null,"select")['keyboardmain'],true);
+$textbotlang = languagechange();
+$keyboardmain = json_decode(select("setting", "keyboardmain", null, null, "select")['keyboardmain'], true);
 
 $list_keyboard = array(
     'text_sell',
@@ -48,24 +23,36 @@ $list_keyboard = array(
     'text_Tariff_list',
     'text_support',
     'text_help',
-    );
-foreach ($keyboardmain['keyboard'] as $keyboard){
-    foreach ($keyboard as $arrkey){
-            if(in_array($arrkey['text'],$list_keyboard)){
-                $index_number = array_search($arrkey['text'],$list_keyboard);
-                unset($list_keyboard[$index_number]);
+);
+$textbotlang['textbot'] = [
+    'text_sell' => $textbotlang['textbot']['sell'],
+    'text_extend' => $textbotlang['textbot']['extend'],
+    'text_usertest' => $textbotlang['textbot']['userTest'],
+    'text_wheel_luck' => $textbotlang['textbot']['wheelLuck'],
+    'text_Purchased_services' => $textbotlang['textbot']['purchasedServices'],
+    'accountwallet' => $textbotlang['textbot']['accountWallet'],
+    'text_affiliates' => $textbotlang['textbot']['affiliates'],
+    'text_Tariff_list' => $textbotlang['textbot']['tariffList'],
+    'text_support' => $textbotlang['textbot']['support'],
+    'text_help' => $textbotlang['textbot']['help'],
+];
+foreach ($keyboardmain['keyboard'] as $keyboard) {
+    foreach ($keyboard as $arrkey) {
+        if (in_array($arrkey['text'], $list_keyboard)) {
+            $index_number = array_search($arrkey['text'], $list_keyboard);
+            unset($list_keyboard[$index_number]);
         }
     }
-}    
+}
 $list_keyboard = array_values($list_keyboard);
 $keyboard = [];
-foreach($list_keyboard as $key){
+foreach ($list_keyboard as $key) {
     $keyboard[] = [['text' => $key]];
 }
 
 $list_data = [
     'keylist' => $keyboard,
     'userlist' => $keyboardmain['keyboard'],
-    'text' => $datatextbot
+    'text' => $textbotlang['textbot']
 ];
 echo json_encode($list_data);

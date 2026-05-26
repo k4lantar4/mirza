@@ -25,26 +25,6 @@ $PaySetting = select("PaySetting", "ValuePay", "NamePay", "merchant_zarinpal","s
 $Payment_reports = select("Payment_report", "*", "dec_not_confirmed", $Authority,"select");
 $price = $Payment_reports['price'];
 $invoice_id = $Payment_reports['id_order'];
-    $datatextbotget = select("textbot", "*",null ,null ,"fetchAll");
-    $datatxtbot = array();
-foreach ($datatextbotget as $row) {
-    $datatxtbot[] = array(
-        'id_text' => $row['id_text'],
-        'text' => $row['text']
-    );
-}
-$datatextbot = array(
-    'textafterpay' => '',
-    'textaftertext' => '',
-    'textmanual' => '',
-    'textselectlocation' => '',
-    'textafterpayibsng' => ''
-);
-foreach ($datatxtbot as $item) {
-    if (isset($datatextbot[$item['id_text']])) {
-        $datatextbot[$item['id_text']] = $item['text'];
-    }
-}
 // verify Transaction
 $dec_payment_status = "";
 $payment_status = "";

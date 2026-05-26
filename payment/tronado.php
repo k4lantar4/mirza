@@ -26,26 +26,6 @@ if ($Payment_report['payment_Status'] == "expire")
     return;
 $setting = select("setting", "*", null, null, "select");
 $price = $Payment_report['price'];
-$datatextbotget = select("textbot", "*", null, null, "fetchAll");
-$datatxtbot = array();
-foreach ($datatextbotget as $row) {
-    $datatxtbot[] = array(
-        'id_text' => $row['id_text'],
-        'text' => $row['text']
-    );
-}
-$datatextbot = array(
-    'textafterpay' => '',
-    'textaftertext' => '',
-    'textmanual' => '',
-    'textselectlocation' => '',
-    'textafterpayibsng' => ''
-);
-foreach ($datatxtbot as $item) {
-    if (isset($datatextbot[$item['id_text']])) {
-        $datatextbot[$item['id_text']] = $item['text'];
-    }
-}
 if ($Payment_report['payment_Status'] != "paid") {
     $headers = [
         'Content-Type' => "application/json",
