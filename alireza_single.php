@@ -45,7 +45,6 @@ foreach ($response as $client){
     }
     
 }
-curl_close($curl);
 unlink('cookie.txt');
 return $output;
 }
@@ -114,7 +113,7 @@ function ResetUserDataUsagealirezasin($usernamepanel, $namepanel){
     $req = new CurlRequest($url);
     $req->setHeaders($headers);
     $req->setCookie('cookie.txt');
-    $response = $req->post($configpanel);
+    $response = $req->post(array());
     unlink('cookie.txt');
     return $response;
 }
@@ -156,10 +155,9 @@ curl_setopt_array($curl, array(
   CURLOPT_COOKIEFILE => 'cookie.txt',
 ));
 $response = json_decode(curl_exec($curl),true)['obj'];
+unlink('cookie.txt');
 if($response == null)return "offline";
 if(in_array($username,$response))return "online";
 return "offline";
-curl_close($curl);
-unlink('cookie.txt');
 
 }
