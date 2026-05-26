@@ -407,7 +407,6 @@ if ($setting['inlinebtnmain'] == "oninline") {
             [['text' => $textbotlang['users']['backbtn']]]
         ],
         'resize_keyboard' => true,
-        'input_field_placeholder' => "برای بازگشت روی دکمه زیر کلیک کنید"
     ]);
 }
 $backadmin = json_encode([
@@ -415,7 +414,6 @@ $backadmin = json_encode([
         [['text' => $textbotlang['Admin']['backAdminBtn']], ['text' => $textbotlang['Admin']['backMenuBtn']]]
     ],
     'resize_keyboard' => true,
-    'input_field_placeholder' => "برای بازگشت روی دکمه زیر کلیک کنید"
 ]);
 //------------------  [ list panel ]----------------//
 $stmt = $pdo->prepare("SHOW TABLES LIKE 'marzban_panel'");
@@ -930,7 +928,7 @@ $optionibsng = json_encode([
         [['text' => $textbotlang['keyboard']['panelFeatureStatus']]],
         [['text' => $textbotlang['keyboard']['panelName']], ['text' => $textbotlang['keyboard']['deletePanel']]],
         [['text' => $textbotlang['keyboard']['editPassword']], ['text' => $textbotlang['keyboard']['editUsername']]],
-        [['text' => $textbotlang['keyboard']['editPanelUrl']], ['text' => '🎛 تنظیم نام گروه']],
+        [['text' => $textbotlang['keyboard']['editPanelUrl']], ['text' => $textbotlang['extracted']['keyboard_php']['setGroupName']]],
         [['text' => $textbotlang['keyboard']['renewalMethod']], ['text' => $textbotlang['keyboard']['usernameMethod']]],
         [['text' => $textbotlang['keyboard']['accountCreateLimit']], ['text' => $textbotlang['keyboard']['changeUserGroup']]],
         [['text' => $textbotlang['keyboard']['customVolumePrice']], ['text' => $textbotlang['keyboard']['extraVolumePrice']]],
@@ -948,7 +946,7 @@ $option_mikrotik = json_encode([
         [['text' => $textbotlang['keyboard']['panelFeatureStatus']]],
         [['text' => $textbotlang['keyboard']['panelName']], ['text' => $textbotlang['keyboard']['deletePanel']]],
         [['text' => $textbotlang['keyboard']['editPassword']], ['text' => $textbotlang['keyboard']['editUsername']]],
-        [['text' => $textbotlang['keyboard']['editPanelUrl']], ['text' => '🎛 تنظیم نام گروه']],
+        [['text' => $textbotlang['keyboard']['editPanelUrl']], ['text' => $textbotlang['extracted']['keyboard_php']['setGroupName']]],
         [['text' => $textbotlang['keyboard']['renewalMethod']], ['text' => $textbotlang['keyboard']['usernameMethod']]],
         [['text' => $textbotlang['keyboard']['accountCreateLimit']], ['text' => $textbotlang['keyboard']['changeUserGroup']]],
         [['text' => $textbotlang['keyboard']['customVolumePrice']], ['text' => $textbotlang['keyboard']['extraVolumePrice']]],
@@ -1045,7 +1043,7 @@ $optionX_ui_single = json_encode([
         [['text' => $textbotlang['keyboard']['editPassword']], ['text' => $textbotlang['keyboard']['editUsername']]],
         [['text' => $textbotlang['keyboard']['editPanelUrl']], ['text' => $textbotlang['keyboard']['renewalMethod']]],
         [['text' => $textbotlang['keyboard']['setInboundId']]],
-        [['text' => $textbotlang['keyboard']['usernameMethod']], ['text' => '🔗 دامنه لینک ساب']],
+        [['text' => $textbotlang['keyboard']['usernameMethod']], ['text' => $textbotlang['extracted']['keyboard_php']['subLinkDomain']]],
         [['text' => $textbotlang['keyboard']['changeUserGroup']], ['text' => $textbotlang['keyboard']['accountCreateLimit']]],
         [['text' => $textbotlang['keyboard']['testServiceTime']], ['text' => $textbotlang['keyboard']['testAccountVolume']]],
         [['text' => $textbotlang['keyboard']['changeLocationPrice']], ['text' => $textbotlang['keyboard']['extraVolumePrice']]],
@@ -1067,7 +1065,7 @@ $optionalireza_single = json_encode([
         [['text' => $textbotlang['keyboard']['editPanelUrl']], ['text' => $textbotlang['keyboard']['renewalMethod']]],
         [['text' => $textbotlang['keyboard']['setInboundId']]],
         [['text' => $textbotlang['keyboard']['usernameMethod']]],
-        [['text' => '🔗 دامنه لینک ساب']],
+        [['text' => $textbotlang['extracted']['keyboard_php']['subLinkDomain']]],
         [['text' => $textbotlang['keyboard']['changeUserGroup']], ['text' => $textbotlang['keyboard']['accountCreateLimit']]],
         [['text' => $textbotlang['keyboard']['testServiceTime']], ['text' => $textbotlang['keyboard']['testAccountVolume']]],
         [['text' => $textbotlang['keyboard']['changeLocationPrice']], ['text' => $textbotlang['keyboard']['extraVolumePrice']]],
@@ -1088,7 +1086,7 @@ $optionhiddfy = json_encode([
         [['text' => $textbotlang['keyboard']['editPanelUrl']], ['text' => $textbotlang['keyboard']['renewalMethod']]],
         [['text' => $textbotlang['keyboard']['changeUserGroup']]],
         [['text' => $textbotlang['keyboard']['usernameMethod']]],
-        [['text' => '🔗 دامنه لینک ساب']],
+        [['text' => $textbotlang['extracted']['keyboard_php']['subLinkDomain']]],
         [['text' => $textbotlang['keyboard']['accountCreateLimit']], ['text' => "🔗 uuid admin"]],
         [['text' => $textbotlang['keyboard']['testServiceTime']], ['text' => $textbotlang['keyboard']['testAccountVolume']]],
         [['text' => $textbotlang['keyboard']['changeLocationPrice']], ['text' => $textbotlang['keyboard']['extraVolumePrice']]],
@@ -1189,8 +1187,8 @@ $keyboardtypepanel = json_encode([
             ['text' => $textbotlang['keyboard']['marzneshin'], 'callback_data' => "typepanel#marzneshin"]
         ],
         [
-            ['text' => 'ثنایی تک پورت', 'callback_data' => 'typepanel#x-ui_single'],
-            ['text' => 'علیرضا تک پورت', 'callback_data' => 'typepanel#alireza_single']
+            ['text' => $textbotlang['extracted']['keyboard_php']['panelTypeSanaei'], 'callback_data' => 'typepanel#x-ui_single'],
+            ['text' => $textbotlang['extracted']['keyboard_php']['panelTypeAlireza'], 'callback_data' => 'typepanel#alireza_single']
         ],
         [
             ['text' => $textbotlang['keyboard']['manualSale'], 'callback_data' => 'typepanel#Manualsale'],
@@ -1392,7 +1390,7 @@ function KeyboardProduct($location, $query, $pricediscount, $datakeyboard, $stat
             $resultper = ($result['price_product'] * $pricediscount) / 100;
             $result['price_product'] = $result['price_product'] - $resultper;
         }
-        $namekeyboard = $result['name_product'] . " - " . number_format($result['price_product']) . "تومان";
+        $namekeyboard = $result['name_product'] . " - " . number_format($result['price_product']) . $textbotlang['extracted']['keyboard_php']['currencyToman'];
         if ($statusshowprice == "onshowprice") {
             $result['name_product'] = $namekeyboard;
         }
@@ -1586,7 +1584,6 @@ function keyboard_config($config_split, $id_invoice, $back_active = true)
         if ($type_prtocol == "vmess") {
             $split_config = json_decode($split_config, true)['ps'];
         } elseif ($type_prtocol == "ss") {
-            $split_config = $split_config;
             $split_config = explode("#", $split_config)[1];
         } else {
             $split_config = explode("#", $split_config)[1];
