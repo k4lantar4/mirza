@@ -11,29 +11,6 @@ require_once __DIR__ . '/../jdf.php';
 $ManagePanel = new ManagePanel();
 $setting = select("setting", "*");
 $paymentreports = select("topicid","idreport","report","paymentreport","select")['idreport'];
-$datatextbotget = select("textbot", "*",null ,null ,"fetchAll");
-$PaySetting = select("PaySetting","ValuePay","NamePay",'statuscardautoconfirm',"select")['ValuePay'];
-$paymentverify = select("PaySetting","ValuePay","NamePay","autoconfirmcart","select")['ValuePay'];
-if($PaySetting == "onautoconfirm")return;
-if($paymentverify == "offauto")return;
-    $datatxtbot = array();
-foreach ($datatextbotget as $row) {
-    $datatxtbot[] = array(
-        'id_text' => $row['id_text'],
-        'text' => $row['text']
-    );
-}
-$datatextbot = array(
-    'textafterpay' => '',
-    'textaftertext' => '',
-    'textmanual' => '',
-    'textselectlocation' => ''
-);
-foreach ($datatxtbot as $item) {
-    if (isset($datatextbot[$item['id_text']])) {
-        $datatextbot[$item['id_text']] = $item['text'];
-    }
-}
 $stmt = $pdo->prepare("SELECT * FROM Payment_report WHERE payment_Status = 'waiting' AND (Payment_Method = 'cart to cart' OR Payment_Method = 'arze digital offline') AND bottype IS NULL");
 $stmt->execute();
 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {

@@ -3,27 +3,7 @@ date_default_timezone_set('Asia/Tehran');
 require_once __DIR__ . '/../config.php';
 require_once __DIR__ . '/../botapi.php';
 require_once __DIR__ . '/../function.php';
-$datatextbotget = select("textbot", "*",null ,null ,"fetchAll");
-$datatxtbot = array();
-foreach ($datatextbotget as $row) {
-    $datatxtbot[] = array(
-        'id_text' => $row['id_text'],
-        'text' => $row['text']
-    );
-}
-$datatextbot = array(
-    'text_usertest' => '',
-    'text_support' => '',
-    'text_help' => '',
-    'text_sell' => '',
-    'text_affiliates' => '',
-    'text_Add_Balance' => ''
-);
-foreach ($datatxtbot as $item) {
-    if (isset($datatextbot[$item['id_text']])) {
-        $datatextbot[$item['id_text']] = $item['text'];
-    }
-}
+$textbotlang = languagechange();
 if(!is_file('info'))return;
 if(!is_file('users.json'))return;
 
@@ -58,7 +38,7 @@ Editmessagetext($info['id_admin'], $info['id_message'],$textprocces, $cancelmess
 $keyboardbuy = json_encode([
         'inline_keyboard' => [
             [
-                ['text' => $datatextbot['text_sell'], 'callback_data' => 'buy'],
+                ['text' => $textbotlang['textbot']['text_sell'], 'callback_data' => 'buy'],
             ],
         ]
     ]);
@@ -72,28 +52,28 @@ $keyboardstart = json_encode([
 $keyboardusertest = json_encode([
         'inline_keyboard' => [
             [
-                ['text' => $datatextbot['text_usertest'], 'callback_data' => 'usertestbtn'],
+                ['text' => $textbotlang['textbot']['text_usertest'], 'callback_data' => 'usertestbtn'],
             ],
         ]
     ]);
 $keyboardhelpbtn = json_encode([
         'inline_keyboard' => [
             [
-                ['text' => $datatextbot['text_help'], 'callback_data' => 'helpbtn'],
+                ['text' => $textbotlang['textbot']['text_help'], 'callback_data' => 'helpbtn'],
             ],
         ]
     ]);
 $keyboardaffiliates = json_encode([
         'inline_keyboard' => [
             [
-                ['text' => $datatextbot['text_affiliates'], 'callback_data' => 'affiliatesbtn'],
+                ['text' => $textbotlang['textbot']['text_affiliates'], 'callback_data' => 'affiliatesbtn'],
             ],
         ]
     ]);
 $keyboardaddbalance = json_encode([
         'inline_keyboard' => [
             [
-                ['text' => $datatextbot['text_Add_Balance'], 'callback_data' => 'Add_Balance'],
+                ['text' => $textbotlang['textbot']['text_Add_Balance'], 'callback_data' => 'Add_Balance'],
             ],
         ]
     ]);

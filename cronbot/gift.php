@@ -12,27 +12,7 @@ $ManagePanel = new ManagePanel();
 $setting = select("setting", "*");
 $errorreport = select("topicid","idreport","report","errorreport","select")['idreport'];
 
-$datatextbotget = select("textbot", "*",null ,null ,"fetchAll");
-$datatxtbot = array();
-foreach ($datatextbotget as $row) {
-    $datatxtbot[] = array(
-        'id_text' => $row['id_text'],
-        'text' => $row['text']
-    );
-}
-$datatextbot = array(
-    'text_usertest' => '',
-    'text_support' => '',
-    'text_help' => '',
-    'text_sell' => '',
-    'text_affiliates' => '',
-    'text_Add_Balance' => ''
-);
-foreach ($datatxtbot as $item) {
-    if (isset($datatextbot[$item['id_text']])) {
-        $datatextbot[$item['id_text']] = $item['text'];
-    }
-}
+$textbotlang = languagechange();
 if(!is_file('gift'))return;
 if(!is_file('username.json'))return;
 

@@ -26,8 +26,8 @@ class ServiceMonitor
         $this->reportCron = select("topicid", "idreport", "report", "reportcron", "select")['idreport'];
         $this->setting = select("setting", "*");
         $this->status_cron = json_decode($this->setting['cron_status'], true);
-        $this->text_Purchased_services = select("textbot", "text", "id_text", "text_Purchased_services", "select")['text'];
-        $this->textBotLang = languagechange('../text.json');
+        $this->textBotLang = languagechange();
+        $this->text_Purchased_services = $this->textBotLang['textbot']['text_Purchased_services'] ?? '';
     }
 
     public function RunNotifactions()

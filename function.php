@@ -735,7 +735,7 @@ function outputlink($text)
 }
 function DirectPayment($order_id, $image = 'images.jpg')
 {
-    global $pdo, $ManagePanel, $textbotlang, $keyboardextendfnished, $keyboard, $Confirm_pay, $from_id, $message_id, $datatextbot;
+    global $pdo, $ManagePanel, $textbotlang, $keyboardextendfnished, $keyboard, $Confirm_pay, $from_id, $message_id;
     $buyreport = select("topicid", "idreport", "report", "buyreport", "select")['idreport'];
     $admin_ids = select("admin", "id_admin", null, null, "FETCH_COLUMN");
     $otherservice = select("topicid", "idreport", "report", "otherservice", "select")['idreport'];
@@ -826,12 +826,12 @@ function DirectPayment($order_id, $image = 'images.jpg')
             }
         }
         $output_config_link = $marzban_list_get['sublink'] == "onsublink" ? $dataoutput['subscription_url'] : "";
-        $datatextbot['textafterpay'] = $marzban_list_get['type'] == "Manualsale" ? $datatextbot['textmanual'] : $datatextbot['textafterpay'];
-        $datatextbot['textafterpay'] = $marzban_list_get['type'] == "WGDashboard" ? $datatextbot['text_wgdashboard'] : $datatextbot['textafterpay'];
-        $datatextbot['textafterpay'] = $marzban_list_get['type'] == "ibsng" || $marzban_list_get['type'] == "mikrotik" ? $datatextbot['textafterpayibsng'] : $datatextbot['textafterpay'];
+        $textbotlang['textbot']['textafterpay'] = $marzban_list_get['type'] == "Manualsale" ? $textbotlang['textbot']['textmanual'] : $textbotlang['textbot']['textafterpay'];
+        $textbotlang['textbot']['textafterpay'] = $marzban_list_get['type'] == "WGDashboard" ? $textbotlang['textbot']['text_wgdashboard'] : $textbotlang['textbot']['textafterpay'];
+        $textbotlang['textbot']['textafterpay'] = $marzban_list_get['type'] == "ibsng" || $marzban_list_get['type'] == "mikrotik" ? $textbotlang['textbot']['textafterpayibsng'] : $textbotlang['textbot']['textafterpay'];
         if (intval($get_invoice['Service_time']) == 0)
             $get_invoice['Service_time'] = $textbotlang['users']['stateus']['Unlimited'];
-        $textcreatuser = str_replace('{username}', $dataoutput['username'], $datatextbot['textafterpay']);
+        $textcreatuser = str_replace('{username}', $dataoutput['username'], $textbotlang['textbot']['textafterpay']);
         $textcreatuser = str_replace('{name_service}', $get_invoice['name_product'], $textcreatuser);
         $textcreatuser = str_replace('{location}', $marzban_list_get['name_panel'], $textcreatuser);
         $textcreatuser = str_replace('{day}', $get_invoice['Service_time'], $textcreatuser);
@@ -1774,8 +1774,11 @@ function publickey()
         'preshared_key' => $presharedKey
     ];
 }
-function languagechange($path_dir)
+function languagechange($path_dir = null)
 {
+    if ($path_dir === null) {
+        $path_dir = __DIR__ . '/text.json';
+    }
     $setting = select("setting", "*");
     return json_decode(file_get_contents($path_dir), true)['fa'];
     if (intval($setting['languageen']) == 1) {

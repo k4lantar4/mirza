@@ -9,25 +9,6 @@ require __DIR__ . '/../vendor/autoload.php';
 $ManagePanel = new ManagePanel();
 $setting = mysqli_fetch_assoc(mysqli_query($connect, "SELECT * FROM setting"));
 $paymentreports = select("topicid","idreport","report","paymentreport","select")['idreport'];
-$datatextbotget = select("textbot", "*",null ,null ,"fetchAll");
-    $datatxtbot = array();
-foreach ($datatextbotget as $row) {
-    $datatxtbot[] = array(
-        'id_text' => $row['id_text'],
-        'text' => $row['text']
-    );
-}
-$datatextbot = array(
-    'textafterpay' => '',
-    'textaftertext' => '',
-    'textmanual' => '',
-    'textselectlocation' => ''
-);
-foreach ($datatxtbot as $item) {
-    if (isset($datatextbot[$item['id_text']])) {
-        $datatextbot[$item['id_text']] = $item['text'];
-    }
-}
 $textbotlang = languagechange('../text.json');
 $list_service = mysqli_query($connect, "SELECT * FROM Payment_report WHERE payment_Status = 'Unpaid' AND Payment_Method = 'Currency Rial 3' ORDER BY RAND() LIMIT 10");
 while ($Payment_report = mysqli_fetch_assoc($list_service)) {

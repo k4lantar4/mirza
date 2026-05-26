@@ -23,26 +23,6 @@ $setting = select("setting", "*");
 $PaySetting = select("PaySetting", "ValuePay", "NamePay", "merchant_id_aqayepardakht","select")['ValuePay'];
 $Payment_report = select("Payment_report", "price", "id_order", $invoice_id,"select")['price'];
 $price = $Payment_report;
-    $datatextbotget = select("textbot", "*",null ,null ,"fetchAll");
-    $datatxtbot = array();
-foreach ($datatextbotget as $row) {
-    $datatxtbot[] = array(
-        'id_text' => $row['id_text'],
-        'text' => $row['text']
-    );
-}
-$datatextbot = array(
-    'textafterpay' => '',
-    'textaftertext' => '',
-    'textmanual' => '',
-    'textselectlocation' => '',
-    'textafterpayibsng' => ''
-);
-foreach ($datatxtbot as $item) {
-    if (isset($datatextbot[$item['id_text']])) {
-        $datatextbot[$item['id_text']] = $item['text'];
-    }
-}
 // verify Transaction
 
 $data = [

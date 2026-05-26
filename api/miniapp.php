@@ -14,26 +14,6 @@ $ManagePanel = new ManagePanel();
 $headers = getallheaders();
 $setting = select("setting", "*");
 $method = $_SERVER['REQUEST_METHOD'];
-$datatextbotget = select("textbot", "*", null, null, "fetchAll");
-$datatxtbot = array();
-foreach ($datatextbotget as $row) {
-    $datatxtbot[] = array(
-        'id_text' => $row['id_text'],
-        'text' => $row['text']
-    );
-}
-$datatextbot = array(
-    'textafterpay' => '',
-    'textaftertext' => '',
-    'textmanual' => '',
-    'textselectlocation' => '',
-    'textafterpayibsng' => ''
-);
-foreach ($datatxtbot as $item) {
-    if (isset($datatextbot[$item['id_text']])) {
-        $datatextbot[$item['id_text']] = $item['text'];
-    }
-}
 if ($method == "GET") {
     $data = array(
         'actions' => $_GET['actions'],
@@ -880,15 +860,14 @@ switch ($data['actions']) {
                 $config .= "\n" . $link;
             }
         }
-        error_log(json_encode($datatextbotget));
-        $datatextbot['textafterpay'] = $panel['type'] == "Manualsale" ? $datatextbot['textmanual'] : $datatextbot['textafterpay'];
-        $datatextbot['textafterpay'] = $panel['type'] == "WGDashboard" ? $datatextbot['text_wgdashboard'] : $datatextbot['textafterpay'];
-        $datatextbot['textafterpay'] = $panel['type'] == "ibsng" || $panel['type'] == "mikrotik" ? $datatextbot['textafterpayibsng'] : $datatextbot['textafterpay'];
+        $textbotlang['textbot']['textafterpay'] = $panel['type'] == "Manualsale" ? $textbotlang['textbot']['textmanual'] : $textbotlang['textbot']['textafterpay'];
+        $textbotlang['textbot']['textafterpay'] = $panel['type'] == "WGDashboard" ? $textbotlang['textbot']['text_wgdashboard'] : $textbotlang['textbot']['textafterpay'];
+        $textbotlang['textbot']['textafterpay'] = $panel['type'] == "ibsng" || $panel['type'] == "mikrotik" ? $textbotlang['textbot']['textafterpayibsng'] : $textbotlang['textbot']['textafterpay'];
         if (intval($product['Service_time']) == 0)
             $product['Service_time'] = $textbotlang['users']['stateus']['Unlimited'];
         if (intval($product['Volume_constraint']) == 0)
             $product['Volume_constraint'] = $textbotlang['users']['stateus']['Unlimited'];
-        $textcreatuser = str_replace('{username}', "<code>{$dataoutput['username']}</code>", $datatextbot['textafterpay']);
+        $textcreatuser = str_replace('{username}', "<code>{$dataoutput['username']}</code>", $textbotlang['textbot']['textafterpay']);
         $textcreatuser = str_replace('{name_service}', $product['name_product'], $textcreatuser);
         $textcreatuser = str_replace('{location}', $panel['name_panel'], $textcreatuser);
         $textcreatuser = str_replace('{day}', $product['Service_time'], $textcreatuser);

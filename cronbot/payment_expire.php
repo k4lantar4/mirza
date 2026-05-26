@@ -8,44 +8,7 @@ require_once __DIR__ . '/../function.php';
 require __DIR__ . '/../vendor/autoload.php';
 $ManagePanel = new ManagePanel();
 $setting = select("setting", "*");
-$stmt = $pdo->prepare("SHOW TABLES LIKE 'textbot'");
-$stmt->execute();
-$result = $stmt->fetchAll();
-$table_exists = count($result) > 0;
-$datatextbot = array(
-    'carttocart' => '',
-    'textnowpayment' => '',
-    'textnowpaymenttron' => '',
-    'iranpay1' => '',
-    'iranpay2' => '',
-    'iranpay3' => '',
-    'aqayepardakht' => '',
-    'zarinpal' => '',
-    'perfectmoney' => '',
-    'text_fq' => '',
-    'textpaymentnotverify' =>"",
-    'textrequestagent' => '',
-    'textpanelagent' => '',
-    'text_wheel_luck' => '',
-    'text_star_telegram' => '',
-    'textsnowpayment' => '',
-
-);
-if ($table_exists) {
-    $textdatabot =  select("textbot", "*", null, null,"fetchAll");
-    $data_text_bot = array();
-    foreach ($textdatabot as $row) {
-        $data_text_bot[] = array(
-            'id_text' => $row['id_text'],
-            'text' => $row['text']
-        );
-    }
-    foreach ($data_text_bot as $item) {
-        if (isset($datatextbot[$item['id_text']])) {
-            $datatextbot[$item['id_text']] = $item['text'];
-        }
-    }
-}
+$textbotlang = languagechange();
 $month_date_time_start = time() - 86400;
 $month_date_time_start = date('Y/m/d H:i:s',$month_date_time_start);
 $stmt = $pdo->prepare("SELECT * FROM Payment_report WHERE time < '$month_date_time_start' AND payment_Status = 'Unpaid'");
@@ -53,20 +16,20 @@ $stmt->execute();
 
 while ($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
     $status_var = [
-        'cart to cart' =>  $datatextbot['carttocart'],
-        'aqayepardakht' => $datatextbot['aqayepardakht'],
-        'zarinpal' => $datatextbot['zarinpal'],
-        'plisio' => $datatextbot['textnowpayment'],
-        'arze digital offline' => $datatextbot['textnowpaymenttron'],
-        'Currency Rial 1' => $datatextbot['iranpay2'],
-        'Currency Rial 2' => $datatextbot['iranpay3'],
-        'Currency Rial 3' => $datatextbot['iranpay1'],
+        'cart to cart' =>  $textbotlang['textbot']['carttocart'],
+        'aqayepardakht' => $textbotlang['textbot']['aqayepardakht'],
+        'zarinpal' => $textbotlang['textbot']['zarinpal'],
+        'plisio' => $textbotlang['textbot']['textnowpayment'],
+        'arze digital offline' => $textbotlang['textbot']['textnowpaymenttron'],
+        'Currency Rial 1' => $textbotlang['textbot']['iranpay2'],
+        'Currency Rial 2' => $textbotlang['textbot']['iranpay3'],
+        'Currency Rial 3' => $textbotlang['textbot']['iranpay1'],
         'Currency Rial tow' => "پرداخت ارزی ریالی",
         'Currency Rial gateway3' => "پرداخت ارزی ریالی دوم",
         'perfect' => "پرفکت مانی",
-        'paymentnotverify' => $datatextbot['textpaymentnotverify'],
-        'Star Telegram' => $datatextbot['text_star_telegram'],
-        'nowpayment' => $datatextbot['textsnowpayment']
+        'paymentnotverify' => $textbotlang['textbot']['textpaymentnotverify'],
+        'Star Telegram' => $textbotlang['textbot']['text_star_telegram'],
+        'nowpayment' => $textbotlang['textbot']['textsnowpayment']
         
     ][$result['Payment_Method']];
     $textexpire = "⭕️ کاربر گرامی ، فاکتور زیر به دلیل عدم پرداخت در مدت زمان مشخص شده منقضی شد .

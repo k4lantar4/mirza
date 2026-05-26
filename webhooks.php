@@ -10,7 +10,8 @@ $ManagePanel = new ManagePanel();
 $headers = getallheaders();
 $webhook_secret = isset($headers['X-Webhook-Secret']) ? $headers['X-Webhook-Secret'] : '';
 $reportcron = select("topicid","idreport","report","reportcron","select")['idreport'];
-$textservice = select("textbot","text","id_text","text_Purchased_services","select")['text'];
+$textbotlang = languagechange();
+$textservice = $textbotlang['textbot']['text_Purchased_services'] ?? '';
 $setting = select("setting", "*");
 // if (!is_file('payment/card/hash.txt'))return;
 

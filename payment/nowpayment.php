@@ -10,25 +10,6 @@ require __DIR__ . '/../vendor/autoload.php';
 $ManagePanel = new ManagePanel();
 $setting = select("setting", "*");
 $paymentreports = select("topicid", "idreport", "report", "paymentreport", "select")['idreport'];
-$datatextbotget = select("textbot", "*", null, null, "fetchAll");
-$datatxtbot = array();
-foreach ($datatextbotget as $row) {
-    $datatxtbot[] = array(
-        'id_text' => $row['id_text'],
-        'text' => $row['text']
-    );
-}
-$datatextbot = array(
-    'textafterpay' => '',
-    'textaftertext' => '',
-    'textmanual' => '',
-    'textselectlocation' => ''
-);
-foreach ($datatxtbot as $item) {
-    if (isset($datatextbot[$item['id_text']])) {
-        $datatextbot[$item['id_text']] = $item['text'];
-    }
-}
 $textbotlang = languagechange('../text.json');
 $data = json_decode(file_get_contents("php://input"), true);
 if (isset($data['payment_status']) && $data['payment_status'] == "finished") {
